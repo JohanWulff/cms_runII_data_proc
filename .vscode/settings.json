@@ -75,6 +75,9 @@
         "vector": "cpp",
         "*.tcc": "cpp",
         "memory_resource": "cpp",
-        "cinttypes": "cpp"
+        "cinttypes": "cpp",
+        "list": "cpp",
+        "span": "cpp",
+        "unordered_set": "cpp"
     }
 }
