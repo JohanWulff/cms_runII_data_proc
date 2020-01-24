@@ -33,7 +33,7 @@ private:
 	using LorentzVector = ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float>>;
 
 	// Variables
-    bool _all, _use_deep_csv, _apply_cut, _inc_other_regions, _inc_all_jets;
+    bool _all, _use_deep_csv, _apply_cut, _inc_other_regions, _inc_all_jets, -inc_unc;
     std::set<std::string> _requested;
     unsigned int _n_feats;
     std::vector<std::string> _feat_names;
@@ -41,7 +41,8 @@ private:
 
 	// Methods
     inline int _get_split(const unsigned long int&);
-    void FileLooper::_prep_file(TTree*, std::vector<float*>& feats);
+    void FileLooper::_prep_file(TTree*, const std::vector<float*>& feats), const float&, const int&, const int&, const int&, const bool&, const bool&,
+                                const bool&, const int&, const unsigned long long int&;
     Channel _get_channel(std::string);
     Year _get_year(std::string);
     // int _get_strat_key()
@@ -49,14 +50,14 @@ private:
     void _extract_flags(const std::string&, int&, int&, bool&, bool&, int&, bool&);
     int _jet_cat_lookup(const std::string&);
     int _region_lookup(const std::string&);
-    int _sample_lookup(const std::string&);
+    void _sample_lookup(const std::string&);
     int _sample2class_lookup(const std::string&);
-    bool _accept_evt(const int&, const bool&, const bool&, const int&, const bool&, const int&);
+    bool _accept_evt(const int&, const bool&, const int&, const bool&, const int&);
 
 public:
     // Methods
 	FileLooper(bool return_all=true, std::set<std::string> requested={}, bool use_deep_csv=true,
-               bool apply_cut=true, inc_all_jets=true, inc_other_regions=false, bool inc_data=false);
+               bool apply_cut=true, inc_all_jets=true, inc_other_regions=false, bool inc_data=false, bool inc_unc=false);
 	~FileLooper();
 	bool loop_file(const& std::string&, const std::string&, const std::string&, const std::string&, const long int&, const bool&);
 };
