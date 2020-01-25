@@ -1,7 +1,7 @@
 <use name="root" />
 <use name="rootmath" />
 <use name="rootttreereader" />
-
+<use name="rootinternal" />
 <use name="cms_hh_proc_interface/processing" />
 
 <export>

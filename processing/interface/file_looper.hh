@@ -17,6 +17,7 @@
 #include <TFile.h>
 #include <TTree.h>
 #include <TTreeReader.h>
+#include <TTreeReaderValue.h>
 
 // Plugins
 #include "cms_hh_proc_interface/processing/interface/feat_comp.hh"
