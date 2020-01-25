@@ -165,7 +165,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         b_1.SetCoordinates(*rv_b_1_pT, *rv_b_1_eta, *rv_b_1_phi, *rv_b_1_mass);
         b_2.SetCoordinates(*rv_b_2_pT, *rv_b_2_eta, *rv_b_2_phi, *rv_b_2_mass);
 
-        _evt_proc->process_as_vec(b_1, b_2, l_1, l_2, met, svfit, kinfit_mass, kinfit_chi2, mt2, mt_tot, p_zetavisible, p_zeta, top_1_mass,
+        _evt_proc->process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit, kinfit_mass, kinfit_chi2, mt2, mt_tot, p_zetavisible, p_zeta, top_1_mass,
                                   top_2_mass, l_1_mt, l_2_mt, is_boosted, b_1_csv, b_2_csv, b_1_deepcsv, b_2_deepcsv, e_channel, e_year, res_mass, spin,
                                   klambda);
 
@@ -345,7 +345,7 @@ int FileLooper::_sample2class_lookup(const int& sample) {
 
 bool FileLooper::_accept_evt(const int& region, const bool& syst_unc, const int& jet_cat, const bool& cut, const int& class_id) {
     if (_apply_cut && cut) return false;  // Require cut and cut failed
-    if (!_inc_data && class == -1) return false; // Don't inlclude data and event is data
+    if (!_inc_data && class_id == -1) return false; // Don't inlclude data and event is data
     if (!_inc_other_regions && region != 0) return false;  //Don't include other regions and event is not SS Iso
     if (!_inc_unc && !syst_unc) return false;  //Don't systematicss and event is a systematic
     if (!_inc_all_jets && jet_cat == 0) return false;  // Only use inference category jets and event is non-inference category
@@ -354,13 +354,13 @@ bool FileLooper::_accept_evt(const int& region, const bool& syst_unc, const int&
 
 unsigned long long int FileLooper::_get_strat_key(const int& sample, const int& klambda, const int& res_mass, const int& jet_cat, const int& region,
                                                   const int& spin, const int& syst_unc, const int& cut) {
-    unsigned long long int strat_key = std::(2,  sample)*
-                                       std::(3,  res_mass)*
-                                       std::(5,  klambda)*
-                                       std::(7,  jet_cat)*
-                                       std::(11, region)*
-                                       std::(13, spin)*
-                                       std::(17, syst_unc)*
-                                       std::(19, cut);
+    unsigned long long int strat_key = std::pow(2,  sample)*
+                                       std::pow(3,  res_mass)*
+                                       std::pow(5,  klambda)*
+                                       std::pow(7,  jet_cat)*
+                                       std::pow(11, region)*
+                                       std::pow(13, spin)*
+                                       std::pow(17, syst_unc)*
+                                       std::pow(19, cut);
     return strat_key;
 }
