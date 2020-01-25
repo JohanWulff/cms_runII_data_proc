@@ -33,7 +33,7 @@ private:
 	using LorentzVector = ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float>>;
 
 	// Variables
-    bool _all, _use_deep_csv, _apply_cut, _inc_other_regions, _inc_all_jets, -inc_unc;
+    bool _all, _use_deep_csv, _apply_cut, _inc_other_regions, _inc_all_jets, inc_unc;
     std::set<std::string> _requested;
     unsigned int _n_feats;
     std::vector<std::string> _feat_names;
@@ -41,8 +41,8 @@ private:
 
 	// Methods
     inline int _get_split(const unsigned long int&);
-    void FileLooper::_prep_file(TTree*, const std::vector<float*>& feats), const float&, const int&, const int&, const int&, const bool&, const bool&,
-                                const bool&, const int&, const unsigned long long int&;
+    void _prep_file(TTree*, const std::vector<float*>&, const float&, const int&, const int&, const int&, const bool&, const bool&,
+                    const bool&, const int&, const unsigned long long int&);
     Channel _get_channel(std::string);
     Year _get_year(std::string);
     // int _get_strat_key()
@@ -57,9 +57,9 @@ private:
 public:
     // Methods
 	FileLooper(bool return_all=true, std::set<std::string> requested={}, bool use_deep_csv=true,
-               bool apply_cut=true, inc_all_jets=true, inc_other_regions=false, bool inc_data=false, bool inc_unc=false);
+               bool apply_cut=true, bool inc_all_jets=true, bool inc_other_regions=false, bool inc_data=false, bool inc_unc=false);
 	~FileLooper();
-	bool loop_file(const& std::string&, const std::string&, const std::string&, const std::string&, const long int&, const bool&);
+	bool loop_file(const std::string&, const std::string&, const std::string&, const std::string&, const long int&, const bool&);
 };
 
 #endif /* FILE_LOOPER_HH_ */
