@@ -71,6 +71,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TTreeReaderValue<float> rv_svfit_eta(reader, "eta_sv");
     TTreeReaderValue<float> rv_svfit_phi(reader, "phi_sv");
     TTreeReaderValue<float> rv_svfit_mass(reader, "m_sv");
+    LorentzVectorPEP pep_svfit;
     LorentzVector svfit;
 
     // l1 feats
@@ -80,7 +81,9 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TTreeReaderValue<float> rv_l_1_mass(reader, "m_1");
     TTreeReaderValue<float> rv_l_1_mt(reader, "mt_1");
     float l_1_mt;
+    LorentzVectorPEP pep_l_1;
     LorentzVector l_1;
+
 
     // l2 feats
     TTreeReaderValue<float> rv_l_2_pT(reader, "pt_2");
@@ -89,11 +92,13 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TTreeReaderValue<float> rv_l_2_mass(reader, "m_2");
     TTreeReaderValue<float> rv_l_2_mt(reader, "mt_2");
     float l_2_mass, l_2_mt;
+    LorentzVectorPEP pep_l_2;\
     LorentzVector l_2;
 
     // MET feats
     TTreeReaderValue<float> rv_met_pT(reader, "pt_MET");
     TTreeReaderValue<float> rv_met_phi(reader, "phiMET");
+    LorentzVectorPEP pep_met;
     LorentzVector met;
 
     // b1 feats
@@ -101,6 +106,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TTreeReaderValue<float> rv_b_1_eta(reader, "eta_b1");
     TTreeReaderValue<float> rv_b_1_phi(reader, "phi_b1");
     TTreeReaderValue<float> rv_b_1_mass(reader, "m_b1");
+    LorentzVectorPEP pep_b_1;
     LorentzVector b_1;
 
     // b2 feats
@@ -108,6 +114,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TTreeReaderValue<float> rv_b_2_eta(reader, "eta_b2");
     TTreeReaderValue<float> rv_b_2_phi(reader, "phi_b2");
     TTreeReaderValue<float> rv_b_2_mass(reader, "m_b2");
+    LorentzVectorPEP pep_b_2;
     LorentzVector b_2;
 
     std::vector<float*> feat_vals(_n_feats);
@@ -151,8 +158,8 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         b_2_deepcsv = *rv_b_2_deepcsv;
 
         // Load vectors
-        svfit.SetCoordinates(*rv_svfit_pT, *rv_svfit_eta, *rv_svfit_phi, *rv_svfit_mass);
-        l_1.SetCoordinates(*rv_l_1_pT, *rv_l_1_eta, *rv_l_1_phi, *rv_l_1_mass);
+        pep_svfit.SetCoordinates(*rv_svfit_pT, *rv_svfit_eta, *rv_svfit_phi, *rv_svfit_mass);
+        pep_l_1.SetCoordinates(*rv_l_1_pT, *rv_l_1_eta, *rv_l_1_phi, *rv_l_1_mass);
         if (channel == "muTau") {  // Fix mass for light leptons
             l_2_mass = MU_MASS;
         } else if (channel == "eTau") {
@@ -160,10 +167,17 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         } else {
             l_2_mass = *rv_l_2_mass;
         }
-        l_2.SetCoordinates(*rv_l_2_pT, *rv_l_2_eta, *rv_l_2_phi, l_2_mass);
-        met.SetCoordinates(*rv_met_pT, 0,           *rv_met_phi, 0);
-        b_1.SetCoordinates(*rv_b_1_pT, *rv_b_1_eta, *rv_b_1_phi, *rv_b_1_mass);
-        b_2.SetCoordinates(*rv_b_2_pT, *rv_b_2_eta, *rv_b_2_phi, *rv_b_2_mass);
+        pep_l_2.SetCoordinates(*rv_l_2_pT, *rv_l_2_eta, *rv_l_2_phi, l_2_mass);
+        pep_met.SetCoordinates(*rv_met_pT, 0,           *rv_met_phi, 0);
+        pep_b_1.SetCoordinates(*rv_b_1_pT, *rv_b_1_eta, *rv_b_1_phi, *rv_b_1_mass);
+        pep_b_2.SetCoordinates(*rv_b_2_pT, *rv_b_2_eta, *rv_b_2_phi, *rv_b_2_mass);
+
+        svfit.SetCoordinates(pep_svfit.Px(), pep_svfit.Py(), pep_svfit.Pz(), pep_svfit.M());
+        l_1.SetCoordinates(pep_l_1.Px(), pep_l_1.Py(), pep_l_1.Pz(), pep_l_1.M());
+        l_2.SetCoordinates(pep_l_2.Px(), pep_l_2.Py(), pep_l_2.Pz(), pep_l_2.M());
+        met.SetCoordinates(pep_met.Px(), pep_met.Py(), 0,            0);
+        b_1.SetCoordinates(pep_b_1.Px(), pep_b_1.Py(), pep_b_1.Pz(), pep_b_1.M());
+        b_2.SetCoordinates(pep_b_2.Px(), pep_b_2.Py(), pep_b_2.Pz(), pep_b_2.M());
 
         _evt_proc->process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit, kinfit_mass, kinfit_chi2, mt2, mt_tot, p_zetavisible, p_zeta, top_1_mass,
                                   top_2_mass, l_1_mt, l_2_mt, is_boosted, b_1_csv, b_2_csv, b_1_deepcsv, b_2_deepcsv, e_channel, e_year, res_mass, spin,

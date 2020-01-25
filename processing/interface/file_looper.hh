@@ -13,6 +13,7 @@
 #include <Math/VectorUtil.h>
 #include <Math/LorentzVector.h>
 #include <Math/PtEtaPhiM4D.h>
+#include <Math/PxPyPzM4D.h>
 #include <TFile.h>
 #include <TTree.h>
 #include <TTreeReader.h>
@@ -30,7 +31,8 @@ class FileLooper {
 
 private:
 	// Names
-	using LorentzVector = ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float>>;
+	using LorentzVectorPEP = ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float>>;
+	using LorentzVector    = ROOT::Math::LorentzVector<ROOT::Math::PxPyPzM4D<float>>;
 
 	// Variables
     bool _all, _use_deep_csv, _apply_cut, _inc_other_regions, _inc_all_jets, _inc_unc, _inc_data;
