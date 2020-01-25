@@ -47,10 +47,10 @@ private:
     Year _get_year(std::string);
     int _get_strat_key(const int&, const int&, const int&, const int&, const int&, const int&, const int&, const int&);
     std::string _get_evt_name(TTreeReader&, TTreeReaderValue<unsigned long int>&, TTreeReaderValue<std::string>&, const unsigned long int&);
-    void _extract_flags(const std::string&, int&, int&, bool&, bool&, int&, bool&, int&, Spin*, float&, float&, bool&);
+    void _extract_flags(const std::string&, int&, int&, bool&, bool&, int&, bool&, int&, Spin&, float&, float&, bool&);
     int _jet_cat_lookup(const std::string&);
     int _region_lookup(const std::string&);
-    void _sample_lookup(const std::string&, int&, Spin*, float&, float&);
+    void _sample_lookup(const std::string&, int&, Spin&, float&, float&);
     int _sample2class_lookup(const std::string&);
     bool _accept_evt(const int&, const bool&, const int&, const bool&, const int&);
 

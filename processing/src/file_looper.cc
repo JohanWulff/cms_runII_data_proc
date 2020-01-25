@@ -123,7 +123,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         if (c_event%1000 == 0) std::cout << c_event << " / " << n_tot_events;
         id = *rv_id;
         name = FileLooper::_get_evt_name(aux_reader, rv_aux_id, rv_aux_name, id);
-        FileLooper::_extract_flags(name, sample, region, syst_unc, scale, jet_cat, cut, class_id, &spin, klambda, res_mass, is_boosted);
+        FileLooper::_extract_flags(name, sample, region, syst_unc, scale, jet_cat, cut, class_id, spin, klambda, res_mass, is_boosted);
         if (!FileLooper::_accept_evt(region, syst_unc, jet_cat, cut, class_id)) continue;
         strat_key = FileLooper::_get_strat_key(sample, static_cast<int>(klambda), static_cast<int>(res_mass), static_cast<int>(jet_cat), region,
                                                static_cast<int>(spin), static_cast<int>(syst_unc), static_cast<int>(cut));
@@ -244,7 +244,7 @@ bool FileLooper::_get_evt_name(TTreeReader& aux_reader, TTreeReaderValue& rv_aux
 }
 
 void FileLooper::_extract_flags(const std::string& name, int& sample, int& region, bool& syst_unc, bool& scale, int& jet_cat, bool& cut, int& class_id,
-                                Spin* spin, float& klambda, float& res_mass, bool& is_boosted) {
+                                Spin& spin, float& klambda, float& res_mass, bool& is_boosted) {
     /*
     Extract event flags from name 
     Example: "2j/NoCuts/SS_AntiIsolated/None/Central/DY_MC_M-10-50"
@@ -289,9 +289,9 @@ int FileLooper::_region_lookup(const std::string& region) {
     if (val == "SS_AntiIsolated")  return 3;
 }
 
-void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin* spin, float& klambda, float& res_mass) {
+void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin& spin, float& klambda, float& res_mass) {
     if (sample.find("/Signal_NonRes") != std::string::npos) {
-        *spin = nonres;
+        spin = nonres;
         res_mass = 125;
         sample_id = -125;
         klambda = std::stof(sample.substr(str.find("_kl")+3));
