@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
     if (options.size() == 0) return 1;
 
     FileLooper file_looper;
-    bool ok = file_looper.process(options["-i"], options["-o"], options["-c"], options["-y"], options["-n"]);
+    bool ok = file_looper.loop_file(options["-i"], options["-o"], options["-c"], options["-y"], options["-n"]);
     if (ok) std::cout << "File loop ran ok!";
     return 0;
 }
