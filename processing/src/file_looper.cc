@@ -164,7 +164,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         b_1.SetCoordinates(*rv_b_1_pT, *rv_b_1_eta, *rv_b_1_phi, *rv_b_1_mass);
         b_2.SetCoordinates(*rv_b_2_pT, *rv_b_2_eta, *rv_b_2_phi, *rv_b_2_mass);
 
-        _evt_proc->process_to_vec(&feat_vals, b_1, b_2, l_1, l_2, met, svfit, kinfit_mass, kinfit_chi2, mt2, mt_tot, p_zetavisible, p_zeta, top_1_mass,
+        _evt_proc->process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit, kinfit_mass, kinfit_chi2, mt2, mt_tot, p_zetavisible, p_zeta, top_1_mass,
                                   top_2_mass, l_1_mt, l_2_mt, is_boosted, b_1_csv, b_2_csv, b_1_deepcsv, b_2_deepcsv, e_channel, e_year, res_mass, spin, klambda);
 
         
@@ -189,7 +189,7 @@ void FileLooper::_prep_file(TTree* tree, const std::vector<float*>& feat_vals, c
                             const bool& cut, const bool& scale, const bool& syst_unc, const int& class_id, const unsigned long long int& strat_key) {
     /* Add branches to tree and set addresses for values */
 
-    for (unsigned int i = 0; i < _n_feats; i++) tree->Branch(_feat_names[i], feat_vals[i]);
+    for (unsigned int i = 0; i < _n_feats; i++) tree->Branch(_feat_names[i].c_str(), feat_vals[i]);
     tree->Branch("weight",    weight);
     tree->Branch("sample",    sample);
     tree->Branch("region",    region);
@@ -218,19 +218,19 @@ Channel FileLooper::_get_channel(std::string channel) {
 Year FileLooper::_get_year(std::string year) {
     /* Convert year to enum */
 
-    if (channel == "y16") {
+    if (year == "y16") {
         return Year(y16);
-    } else if (channel == "y17") {
+    } else if (year == "y17") {
         return Year(y17);
-    } else if (channel == "y18") {
+    } else if (year == "y18") {
         return Year(y18);
     }
     throw std::invalid_argument("Invalid year: options are y16, y17, y18");
     return Year(y16);
 }
 
-bool FileLooper::_get_evt_name(TTreeReader& aux_reader, TTreeReaderValue<unsigned long int>& rv_aux_id, TTreeReaderValue<std::string>& rv_aux_name,
-                               const unsigned long int& id) {
+std::string FileLooper::_get_evt_name(TTreeReader& aux_reader, TTreeReaderValue<unsigned long int>& rv_aux_id, TTreeReaderValue<std::string>& rv_aux_name,
+                                      const unsigned long int& id) {
     /* Match data ID to aux name */
     
     aux_reader.reset();
