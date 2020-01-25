@@ -55,15 +55,15 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TTreeReaderValue<float> rv_top_2_mass(reader, "mass_top2");
     TTreeReaderValue<float> rv_p_zetavisible(reader, "p_zetavisible");
     TTreeReaderValue<float> rv_p_zeta(reader, "p_zeta");
-    float kinfit_mass, kinfit_chi2, mt2, top_1_mass, top_2_mass, p_zetavisible, p_zeta;
+    float kinfit_mass, kinfit_chi2, mt2, mt_tot, top_1_mass, top_2_mass, p_zetavisible, p_zeta;
 
     // Tagging
     TTreeReaderValue<float> rv_b_1_csv(reader, "csv_b1");
     TTreeReaderValue<float> rv_b_2_csv(reader, "csv_b2");
     TTreeReaderValue<float> rv_b_1_deepcsv(reader, "deepcsv_b1");
     TTreeReaderValue<float> rv_b_2_deepcsv(reader, "deepcsv_b2");
-    //TODO: is boosted
     float b_1_csv, b_2_csv, b_1_deepcsv, b_2_deepcsv;
+    bool is_boosted;
 
     // SVFit feats
     TTreeReaderValue<float> rv_svfit_pT(reader, "pt_sv");
@@ -118,13 +118,12 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     FileLooper::_prep_file(data_even, feat_vals, weight, sample, region, jet_cat, cut, scale, syst_unc, class_id, strat_key);
     FileLooper::_prep_file(data_odd,  feat_vals, weight, sample, region, jet_cat, cut, scale, syst_unc, class_id, strat_key);
 
-    unsigned long int c_event = 0;
-    unsigned long int n_events = reader.GetEntries(true);
+    unsigned long int c_event(0), n_tot_events(reader.GetEntries(true));
     while (reader.Next()) {
-        if (c_event%1000 == 0) std::cout << c_event << " / " << n_events;
+        if (c_event%1000 == 0) std::cout << c_event << " / " << n_tot_events;
         id = *rv_id;
         name = FileLooper::_get_evt_name(aux_reader, rv_aux_id, rv_aux_name, id);
-        FileLooper::_extract_flags(name, sample, region, syst_unc, scale, jet_cat, cut, class_id, spin, klambda, res_mass);
+        FileLooper::_extract_flags(name, sample, region, syst_unc, scale, jet_cat, cut, class_id, spin, klambda, res_mass, is_boosted);
         if (!FileLooper::_accept_evt(region, syst_unc, jet_cat, cut, class_id)) continue;
         strat_key = FileLooper::_get_strat_key(sample, static_cast<int>(klambda), static_cast<int>(res_mass), static_cast<int>(jet_cat), region,
                                                static_cast<int>(spin), static_cast<int>(syst_unc), static_cast<int>(cut));
@@ -154,9 +153,9 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         svfit.SetCoordinates(*rv_svfit_pT, *rv_svfit_eta, *rv_svfit_phi, *rv_svfit_mass);
         l_1.SetCoordinates(*rv_l_1_pT, *rv_l_1_eta, *rv_l_1_phi, *rv_l_1_mass);
         if (channel == "muTau") {  // Fix mass for light leptons
-            l_2_mass == MU_MASS;
+            l_2_mass = MU_MASS;
         } else if (channel == "eTau") {
-            l_2_mass == E_MASS;
+            l_2_mass = E_MASS;
         } else {
             l_2_mass = *rv_l_2_mass;
         }
@@ -165,8 +164,8 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         b_1.SetCoordinates(*rv_b_1_pT, *rv_b_1_eta, *rv_b_1_phi, *rv_b_1_mass);
         b_2.SetCoordinates(*rv_b_2_pT, *rv_b_2_eta, *rv_b_2_phi, *rv_b_2_mass);
 
-        _evt_proc.process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit, kinfit_mass, kinfit_chi2, mt2, mt_tot, p_zetavisible, p_zeta, top_1_mass,
-                                 top_2_mass, l_1_mt, l_2_mt, is_boosted, csv_1, csv_2, deepcsv_1, deepcsv_2, e_channel, e_year, res_mass, spin, klambda);
+        _evt_proc->process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit, kinfit_mass, kinfit_chi2, mt2, mt_tot, p_zetavisible, p_zeta, top_1_mass,
+                                  top_2_mass, l_1_mt, l_2_mt, is_boosted, b_1_csv, b_2_csv, b_1_deepcsv, b_2_deepcsv, e_channel, e_year, res_mass, spin, klambda);
 
         
         if (c_event%2==0) {  // TODO: Replace with evt once implemented
@@ -186,11 +185,11 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     return true;
 }
 
-void FileLooper::_prep_file(TFile* tree, const std::vector<float*>& feat_vals, const float& weight, const int& sample, const int& region, const int& jet_cat,
+void FileLooper::_prep_file(TTree* tree, const std::vector<float*>& feat_vals, const float& weight, const int& sample, const int& region, const int& jet_cat,
                             const bool& cut, const bool& scale, const bool& syst_unc, const int& class_id, const unsigned long long int& strat_key) {
     /* Add branches to tree and set addresses for values */
 
-    for (unsigned int=0; i < _n_feats; i++) tree->Branch(_feat_names[i], feat_val[i]);
+    for (unsigned int i = 0; i < _n_feats; i++) tree->Branch(_feat_names[i], feat_val[i]);
     tree->Branch("weight",    weight);
     tree->Branch("sample",    sample);
     tree->Branch("region",    region);
@@ -245,7 +244,7 @@ bool FileLooper::_get_evt_name(TTreeReader& aux_reader, TTreeReaderValue& rv_aux
 }
 
 void FileLooper::_extract_flags(const std::string& name, int& sample, int& region, bool& syst_unc, bool& scale, int& jet_cat, bool& cut, int& class_id,
-                                Spin& spin, float& klambda, float& res_mass) {
+                                Spin& spin, float& klambda, float& res_mass, bool& is_boosted) {
     /*
     Extract event flags from name 
     Example: "2j/NoCuts/SS_AntiIsolated/None/Central/DY_MC_M-10-50"
@@ -257,6 +256,7 @@ void FileLooper::_extract_flags(const std::string& name, int& sample, int& regio
     while (std::getline(iss, val, '/')) {   
         if (i == 0) {
             jet_cat = FileLooper::_jet_cat_lookup(val);
+            is_boosted = false;  // TODO: update this
         } else if (i == 1) {
             cut = (val == "NoCuts");
         } else if (i == 2) {
