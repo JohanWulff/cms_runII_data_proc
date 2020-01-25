@@ -164,7 +164,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         b_1.SetCoordinates(*rv_b_1_pT, *rv_b_1_eta, *rv_b_1_phi, *rv_b_1_mass);
         b_2.SetCoordinates(*rv_b_2_pT, *rv_b_2_eta, *rv_b_2_phi, *rv_b_2_mass);
 
-        _evt_proc->process_to_vec(*feat_vals, b_1, b_2, l_1, l_2, met, svfit, kinfit_mass, kinfit_chi2, mt2, mt_tot, p_zetavisible, p_zeta, top_1_mass,
+        _evt_proc->process_to_vec(&feat_vals, b_1, b_2, l_1, l_2, met, svfit, kinfit_mass, kinfit_chi2, mt2, mt_tot, p_zetavisible, p_zeta, top_1_mass,
                                   top_2_mass, l_1_mt, l_2_mt, is_boosted, b_1_csv, b_2_csv, b_1_deepcsv, b_2_deepcsv, e_channel, e_year, res_mass, spin, klambda);
 
         
@@ -212,7 +212,7 @@ Channel FileLooper::_get_channel(std::string channel) {
         return Channel(eTau);
     }
     throw std::invalid_argument("Invalid channel: options are tauTau, muTau, eTau");
-    return Channel;
+    return Channel(tauTau);
 }
 
 Year FileLooper::_get_year(std::string year) {
@@ -226,7 +226,7 @@ Year FileLooper::_get_year(std::string year) {
         return Year(y18);
     }
     throw std::invalid_argument("Invalid year: options are y16, y17, y18");
-    return Year;
+    return Year(y16);
 }
 
 bool FileLooper::_get_evt_name(TTreeReader& aux_reader, TTreeReaderValue<unsigned long int>& rv_aux_id, TTreeReaderValue<std::string>& rv_aux_name,
@@ -295,14 +295,14 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
         spin = nonres;
         res_mass = 125;
         sample_id = -125;
-        klambda = std::stof(sample.substr(str.find("_kl")+3));
+        klambda = std::stof(sample.substr(sample.find("_kl")+3));
     } else if (sample.find("/Signal_Radion") != std::string::npos) {
         spin = radion;
-        res_mass = std::stof(sample.substr(str.find("_M")+2));
+        res_mass = std::stof(sample.substr(sample.find("_M")+2));
         sample_id = -res_mass;
     } else if (sample.find("/Signal_Graviton") != std::string::npos) {
         spin = graviton;
-        res_mass = std::stof(sample.substr(str.find("_M")+2));
+        res_mass = std::stof(sample.substr(sample.find("_M")+2));
         sample_id = -res_mass;
     } else if (sample.find("/Data") != std::string::npos) {
         sample_id = 0;
@@ -342,7 +342,7 @@ bool FileLooper::_accept_evt(const int& region, const bool& syst_unc, const int&
     if (!_inc_data && class == -1) return false; // Don't inlclude data and event is data
     if (!_inc_other_regions && region != 0) return false;  //Don't include other regions and event is not SS Iso
     if (!_inc_unc && !syst_unc) return false;  //Don't systematicss and event is a systematic
-    if (!__inc_all_jets && jet_cat == 0) return false;  // Only use inference category jets and event is non-inference category
+    if (!_inc_all_jets && jet_cat == 0) return false;  // Only use inference category jets and event is non-inference category
     return true;
 }
 

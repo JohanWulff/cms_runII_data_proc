@@ -51,7 +51,7 @@ private:
     int _jet_cat_lookup(const std::string&);
     int _region_lookup(const std::string&);
     void _sample_lookup(const std::string&, int&, Spin&, float&, float&);
-    int _sample2class_lookup(const std::string&);
+    int _sample2class_lookup(const int&);
     bool _accept_evt(const int&, const bool&, const int&, const bool&, const int&);
 
 public:
