@@ -16,7 +16,7 @@ FileLooper::~FileLooper() {
 }
 
 bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir, const std::string& channel, const std::string& year,
-                           const long int& n_events) {
+                           const unsigned long int& n_events) {
     /*
     Loop though file {in_dir}/{year}_{channel}.root processing {n_events} (all events if n_events < 0).
     Processed events will be saved to one of two trees inside {out_dir}/{year}_{channel}.root:
@@ -118,7 +118,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     FileLooper::_prep_file(data_even, feat_vals, weight, sample, region, jet_cat, cut, scale, syst_unc, class_id, strat_key);
     FileLooper::_prep_file(data_odd,  feat_vals, weight, sample, region, jet_cat, cut, scale, syst_unc, class_id, strat_key);
 
-    unsigned long int c_event(0), n_tot_events(reader.GetEntries(true));
+    long int c_event(0), n_tot_events(reader.GetEntries(true));
     while (reader.Next()) {
         if (c_event%1000 == 0) std::cout << c_event << " / " << n_tot_events;
         id = *rv_id;
@@ -164,7 +164,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         b_1.SetCoordinates(*rv_b_1_pT, *rv_b_1_eta, *rv_b_1_phi, *rv_b_1_mass);
         b_2.SetCoordinates(*rv_b_2_pT, *rv_b_2_eta, *rv_b_2_phi, *rv_b_2_mass);
 
-        _evt_proc->process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit, kinfit_mass, kinfit_chi2, mt2, mt_tot, p_zetavisible, p_zeta, top_1_mass,
+        _evt_proc->process_as_vec(b_1, b_2, l_1, l_2, met, svfit, kinfit_mass, kinfit_chi2, mt2, mt_tot, p_zetavisible, p_zeta, top_1_mass,
                                   top_2_mass, l_1_mt, l_2_mt, is_boosted, b_1_csv, b_2_csv, b_1_deepcsv, b_2_deepcsv, e_channel, e_year, res_mass, spin, klambda);
 
         
