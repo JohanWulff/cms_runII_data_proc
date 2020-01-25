@@ -33,7 +33,7 @@ private:
 	using LorentzVector = ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float>>;
 
 	// Variables
-    bool _all, _use_deep_csv, _apply_cut, _inc_other_regions, _inc_all_jets, _inc_unc;
+    bool _all, _use_deep_csv, _apply_cut, _inc_other_regions, _inc_all_jets, _inc_unc, _inc_data;
     std::set<std::string> _requested;
     unsigned int _n_feats;
     std::vector<std::string> _feat_names;
@@ -45,7 +45,7 @@ private:
                     const unsigned long long int&);
     Channel _get_channel(std::string);
     Year _get_year(std::string);
-    int _get_strat_key(const int&, const int&, const int&, const int&, const int&, const int&, const int&, const int&);
+    unsigned long long int _get_strat_key(const int&, const int&, const int&, const int&, const int&, const int&, const int&, const int&);
     std::string _get_evt_name(TTreeReader&, TTreeReaderValue<unsigned long int>&, TTreeReaderValue<std::string>&, const unsigned long int&);
     void _extract_flags(const std::string&, int&, int&, bool&, bool&, int&, bool&, int&, Spin&, float&, float&, bool&);
     int _jet_cat_lookup(const std::string&);

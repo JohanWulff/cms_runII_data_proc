@@ -9,6 +9,7 @@ FileLooper::FileLooper(bool return_all, std::set<std::string> requested, bool us
     _inc_all_jets = inc_all_jets;
     _inc_other_regions = inc_other_regions;
     _inc_unc = inc_unc;
+    _inc_data = inc_data;
 }
 
 FileLooper::~FileLooper() {
@@ -164,11 +165,12 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         b_1.SetCoordinates(*rv_b_1_pT, *rv_b_1_eta, *rv_b_1_phi, *rv_b_1_mass);
         b_2.SetCoordinates(*rv_b_2_pT, *rv_b_2_eta, *rv_b_2_phi, *rv_b_2_mass);
 
-        _evt_proc->process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit, kinfit_mass, kinfit_chi2, mt2, mt_tot, p_zetavisible, p_zeta, top_1_mass,
-                                  top_2_mass, l_1_mt, l_2_mt, is_boosted, b_1_csv, b_2_csv, b_1_deepcsv, b_2_deepcsv, e_channel, e_year, res_mass, spin, klambda);
+        _evt_proc->process_as_vec(b_1, b_2, l_1, l_2, met, svfit, kinfit_mass, kinfit_chi2, mt2, mt_tot, p_zetavisible, p_zeta, top_1_mass,
+                                  top_2_mass, l_1_mt, l_2_mt, is_boosted, b_1_csv, b_2_csv, b_1_deepcsv, b_2_deepcsv, e_channel, e_year, res_mass, spin,
+                                  klambda);
 
         
-        if (c_event%2==0) {  // TODO: Replace with evt once implemented
+        if (c_event%2 == 0) {  // TODO: Replace with evt once implemented
             data_even->Fill();
         } else {
             data_odd->Fill();
@@ -233,9 +235,9 @@ std::string FileLooper::_get_evt_name(TTreeReader& aux_reader, TTreeReaderValue<
                                       const unsigned long int& id) {
     /* Match data ID to aux name */
     
-    aux_reader.reset();
+    aux_reader.Restart();
     std::string name;
-    while (aux_reader.next()) {
+    while (aux_reader.Next()) {
         if (*rv_aux_id == id) {
             name = *rv_aux_name;
             break;
@@ -281,6 +283,8 @@ int FileLooper::_jet_cat_lookup(const std::string& jet_cat) {
     if (jet_cat == "2j2b+R_noVBF") return 3;
     if (jet_cat == "4j1b+_VBF")    return 4;
     // TODO: Boosted?
+    throw std::invalid_argument("Unrecognised jet category: " + jet_cat);
+    return -1;
 }
 
 int FileLooper::_region_lookup(const std::string& region) {
@@ -288,6 +292,8 @@ int FileLooper::_region_lookup(const std::string& region) {
     if (region == "OS_AntiIsolated")  return 1;
     if (region == "SS_Isolated")      return 2;
     if (region == "SS_AntiIsolated")  return 3;
+    throw std::invalid_argument("Unrecognised region: " + region);
+    return -1;
 }
 
 void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin& spin, float& klambda, float& res_mass) {
