@@ -44,7 +44,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     unsigned long long int strat_key;
     bool cut, scale, syst_unc;
     unsigned long int id;
-    unsigned int class_id;
+    int class_id;
 
     // HL feats
     TTreeReaderValue<float> rv_kinfit_mass(reader, "m_ttbb_kinfit");
