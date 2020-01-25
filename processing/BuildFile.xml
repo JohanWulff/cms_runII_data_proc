@@ -1,6 +1,6 @@
 <use name="root" />
 <use name="rootmath" />
-<use name="cms_runII_data_proc/processing" />
+<use name="cms_hh_proc_interface/processing" />
 
 <export>
     <lib name="1" />

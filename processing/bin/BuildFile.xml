@@ -1,5 +1,6 @@
 <bin name="RunLoop" file="run_looper.cc">
     <use name="cms_runII_data_proc/processing" />
+    <use name="cms_hh_proc_interface/processing" />
     <use name="root" />
     <use name="rootmath" />
 </bin>
