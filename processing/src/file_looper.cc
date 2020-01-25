@@ -3,19 +3,20 @@
 FileLooper::FileLooper(bool return_all, std::set<std::string> requested, bool use_deep_csv,
                        bool apply_cut, bool inc_all_jets, bool inc_other_regions, bool inc_data, bool inc_unc) {
     _evt_proc = new EvtProc(return_all, requested, use_deep_csv);
-    _feat_names = EvtProc.get_feats();
-    _n_feats = _feats.size();
+    _feat_names = _evt_proc->get_feats();
+    _n_feats = _feat_names.size();
     _apply_cut = apply_cut;
     _inc_all_jets = inc_all_jets;
     _inc_other_regions = inc_other_regions;
     _inc_unc = inc_unc;
 }
 
-~FileLooper() {
+FileLooper::~FileLooper() {
     delete _evt_proc;
 }
 
-bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir, const std::string& channel, const std::year& year, const long int& n_events) {
+bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir, const std::string& channel, const std::string& year,
+                           const long int& n_events) {
     /*
     Loop though file {in_dir}/{year}_{channel}.root processing {n_events} (all events if n_events < 0).
     Processed events will be saved to one of two trees inside {out_dir}/{year}_{channel}.root:
@@ -24,7 +25,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
 
     TFile* in_file = TFile::Open((in_dir+"/"+year+"_"+channel+".root").c_str());
     TTreeReader reader(channel, in_file);
-    TTreeReader aux_reader('"aux', in_file);
+    TTreeReader aux_reader("aux", in_file);
 
     // Enums
     Channel e_channel = FileLooper::_get_channel(channel);
