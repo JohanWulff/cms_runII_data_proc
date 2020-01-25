@@ -16,7 +16,7 @@ FileLooper::~FileLooper() {
 }
 
 bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir, const std::string& channel, const std::string& year,
-                           const unsigned long int& n_events) {
+                           const long int& n_events) {
     /*
     Loop though file {in_dir}/{year}_{channel}.root processing {n_events} (all events if n_events < 0).
     Processed events will be saved to one of two trees inside {out_dir}/{year}_{channel}.root:
@@ -189,7 +189,7 @@ void FileLooper::_prep_file(TTree* tree, const std::vector<float*>& feat_vals, c
                             const bool& cut, const bool& scale, const bool& syst_unc, const int& class_id, const unsigned long long int& strat_key) {
     /* Add branches to tree and set addresses for values */
 
-    for (unsigned int i = 0; i < _n_feats; i++) tree->Branch(_feat_names[i], feat_val[i]);
+    for (unsigned int i = 0; i < _n_feats; i++) tree->Branch(_feat_names[i], feat_vals[i]);
     tree->Branch("weight",    weight);
     tree->Branch("sample",    sample);
     tree->Branch("region",    region);
@@ -215,7 +215,7 @@ Channel FileLooper::_get_channel(std::string channel) {
     return Channel;
 }
 
-Year FileLooper::_get_year(year) {
+Year FileLooper::_get_year(std::string year) {
     /* Convert year to enum */
 
     if (channel == "y16") {
@@ -229,7 +229,8 @@ Year FileLooper::_get_year(year) {
     return Year;
 }
 
-bool FileLooper::_get_evt_name(TTreeReader& aux_reader, TTreeReaderValue& rv_aux_id, TTreeReaderValue& rv_aux_name, const unsigned long int& id) {
+bool FileLooper::_get_evt_name(TTreeReader& aux_reader, TTreeReaderValue<unsigned long int>& rv_aux_id, TTreeReaderValue<std::string>& rv_aux_name,
+                               const unsigned long int& id) {
     /* Match data ID to aux name */
     
     aux_reader.reset();
@@ -274,19 +275,19 @@ void FileLooper::_extract_flags(const std::string& name, int& sample, int& regio
 }
 
 int FileLooper::_jet_cat_lookup(const std::string& jet_cat) {
-    if (val == "2j")           return 0;
-    if (val == "2j0bR_noVBF")  return 1;
-    if (val == "2j1bR_noVBF")  return 2;
-    if (val == "2j2b+R_noVBF") return 3;
-    if (val == "4j1b+_VBF")    return 4;
+    if (jet_cat == "2j")           return 0;
+    if (jet_cat == "2j0bR_noVBF")  return 1;
+    if (jet_cat == "2j1bR_noVBF")  return 2;
+    if (jet_cat == "2j2b+R_noVBF") return 3;
+    if (jet_cat == "4j1b+_VBF")    return 4;
     // TODO: Boosted?
 }
 
 int FileLooper::_region_lookup(const std::string& region) {
-    if (val == "OS_Isolated")      return 0;
-    if (val == "OS_AntiIsolated")  return 1;
-    if (val == "SS_Isolated")      return 2;
-    if (val == "SS_AntiIsolated")  return 3;
+    if (region == "OS_Isolated")      return 0;
+    if (region == "OS_AntiIsolated")  return 1;
+    if (region == "SS_Isolated")      return 2;
+    if (region == "SS_AntiIsolated")  return 3;
 }
 
 void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin& spin, float& klambda, float& res_mass) {
