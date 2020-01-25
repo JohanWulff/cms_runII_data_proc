@@ -4,5 +4,5 @@
     <use name="root" />
     <use name="rootmath" />
     <use name="rootinternal" />
-    <use name="roottreereader" />
+    <use name="rootinternalttreereadervaluebase" />
 </bin>
