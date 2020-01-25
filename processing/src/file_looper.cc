@@ -24,7 +24,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     */
 
     TFile* in_file = TFile::Open((in_dir+"/"+year+"_"+channel+".root").c_str());
-    TTreeReader reader(channel, in_file);
+    TTreeReader reader(channel.c_str(), in_file);
     TTreeReader aux_reader("aux", in_file);
 
     // Enums
@@ -40,7 +40,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TTreeReaderValue<std::string> rv_aux_name(aux_reader, "dataId_names");
     float weight, res_mass = 0;
     std::string name;
-    int sample, region, jet_cat
+    int sample, region, jet_cat;
     unsigned long long int strat_key;
     bool cut, scale, syst_unc;
     unsigned long int id;
@@ -118,10 +118,11 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     FileLooper::_prep_file(data_even, feat_vals, weight, sample, region, jet_cat, cut, scale, syst_unc, class_id, strat_key);
     FileLooper::_prep_file(data_odd,  feat_vals, weight, sample, region, jet_cat, cut, scale, syst_unc, class_id, strat_key);
 
-    unsigned long c_event(0), n_events(reader.GetEntries());
+    unsigned long int c_event = 0;
+    unsigned long int n_events = reader.GetEntries(true);
     while (reader.Next()) {
         if (c_event%1000 == 0) std::cout << c_event << " / " << n_events;
-        id = *rv_data_id;
+        id = *rv_id;
         name = FileLooper::_get_evt_name(aux_reader, rv_aux_id, rv_aux_name, id);
         FileLooper::_extract_flags(name, sample, region, syst_unc, scale, jet_cat, cut, class_id, spin, klambda, res_mass);
         if (!FileLooper::_accept_evt(region, syst_unc, jet_cat, cut, class_id)) continue;
