@@ -4,4 +4,5 @@
     <use name="root" />
     <use name="rootmath" />
     <use name="rootinternal" />
+    <use name="roottree" />
 </bin>
