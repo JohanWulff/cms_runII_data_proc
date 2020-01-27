@@ -38,7 +38,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TTreeReaderValue<double> rv_weight(reader, "weight");  // TODO: Check this
     TTreeReaderValue<std::vector<unsigned long>> rv_id(reader, "dataIds");
     TTreeReaderValue<std::vector<unsigned long>> rv_aux_id(aux_reader, "dataIds");
-    TTreeReaderValue<std::string> rv_aux_name(aux_reader, "dataId_names");
+    TTreeReaderValue<std::vector<std::string>> rv_aux_name(aux_reader, "dataId_names");
     double weight;
     float res_mass = 0;
     std::string name;
@@ -248,17 +248,18 @@ Year FileLooper::_get_year(std::string year) {
 }
 
 std::string FileLooper::_get_evt_name(TTreeReader& aux_reader, TTreeReaderValue<std::vector<unsigned long>>& rv_aux_id,
-                                      TTreeReaderValue<std::string>& rv_aux_name, const unsigned long int& id) {
+                                      TTreeReaderValue<std::vector<std::string>>& rv_aux_name, const unsigned long int& id) {
     /* Match data ID to aux name */
     
     aux_reader.Restart();
     std::string name;
     while (aux_reader.Next()) {
         if ((*rv_aux_id)[0] == id) {
-            name = *rv_aux_name;
+            name = (*rv_aux_name)[0];
             break;
         }
     }
+    if (name == "") throw std::runtime_error("ID not found\n");
     return name;
 }
 

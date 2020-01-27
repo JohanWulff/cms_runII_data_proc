@@ -48,7 +48,7 @@ private:
     Channel _get_channel(std::string);
     Year _get_year(std::string);
     unsigned long long int _get_strat_key(const int&, const int&, const int&, const int&, const int&, const int&, const int&, const int&);
-    std::string _get_evt_name(TTreeReader&, TTreeReaderValue<std::vector<unsigned long>>&, TTreeReaderValue<std::string>&, const unsigned long int&);
+    std::string _get_evt_name(TTreeReader&, TTreeReaderValue<std::vector<unsigned long>>&, TTreeReaderValue<std::vector<std::string>>&, const unsigned long int&);
     void _extract_flags(const std::string&, int&, int&, bool&, bool&, int&, bool&, int&, Spin&, float&, float&, bool&);
     int _jet_cat_lookup(const std::string&);
     int _region_lookup(const std::string&);
