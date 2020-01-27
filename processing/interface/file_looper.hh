@@ -48,7 +48,7 @@ private:
     Channel _get_channel(std::string);
     Year _get_year(std::string);
     unsigned long long int _get_strat_key(const int&, const int&, const int&, const int&, const int&, const int&, const int&, const int&);
-    std::vector<std::string>  _get_evt_name(const std::map<unsigned long, std::string>& id2name, const std::vector<unsigned long>& ids);
+    std::vector<std::string> _get_evt_names(const std::map<unsigned long, std::string>& id2name, const std::vector<unsigned long>& ids);
     void _extract_flags(const std::vector<std::string>&, int&, int&, bool&, bool&, int&, int&, int&, Spin&, float&, float&, bool&);
     int _jet_cat_lookup(const std::string&);
     int _region_lookup(const std::string&);
@@ -63,7 +63,7 @@ public:
                bool apply_cut=true, bool inc_all_jets=true, bool inc_other_regions=false, bool inc_data=false, bool inc_unc=false);
 	~FileLooper();
 	bool loop_file(const std::string&, const std::string&, const std::string&, const std::string&, const long int&);
-    std::map<unsigned long, std::string> FileLooper::build_id_map(TFile*);
+    std::map<unsigned long, std::string> build_id_map(TFile*);
 };
 
 #endif /* FILE_LOOPER_HH_ */

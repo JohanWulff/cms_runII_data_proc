@@ -250,7 +250,7 @@ std::vector<std::string> FileLooper::_get_evt_name(const std::map<unsigned long,
     /* Match data IDs to aux names */
     
     std::vector<std::string> names(ids.size());
-    for (int i = 0; i < ids.size(); i++) names[i] = id2name[ids[i]];
+    for (unsigned int i = 0; i < ids.size(); i++) names[i] = id2name[ids[i]];
     return names;
 }
 
