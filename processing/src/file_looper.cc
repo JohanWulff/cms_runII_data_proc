@@ -254,6 +254,7 @@ std::string FileLooper::_get_evt_name(TTreeReader& aux_reader, TTreeReaderValue<
     aux_reader.Restart();
     std::string name;
     while (aux_reader.Next()) {
+        std::cout << id << " : " << (*rv_aux_id)[0] << "\n";
         if ((*rv_aux_id)[0] == id) {
             name = (*rv_aux_name)[0];
             break;
