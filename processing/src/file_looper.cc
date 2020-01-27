@@ -35,7 +35,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     float klambda = 1;
 
     // Meta info
-    TTreeReaderValue<float> rv_weight(reader, "all_weights");  // TODO: Check this
+    TTreeReaderValue<double> rv_weight(reader, "all_weights");  // TODO: Check this
     TTreeReaderValue<unsigned long int> rv_id(reader, "dataIds");
     TTreeReaderValue<unsigned long int> rv_aux_id(aux_reader, "dataIds");
     TTreeReaderValue<std::string> rv_aux_name(aux_reader, "dataId_names");
