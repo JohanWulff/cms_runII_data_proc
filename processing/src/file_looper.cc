@@ -131,6 +131,12 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     while (reader.Next()) {
         if (c_event%1000 == 0) std::cout << c_event << " / " << n_tot_events;
         id = (*rv_id)[0];
+
+        std::cout << id << " : [" ;
+        for (auto i : *rv_id) std::cout << i << " ";
+        std::cout << "]\n";
+        break;
+
         name = FileLooper::_get_evt_name(aux_reader, rv_aux_id, rv_aux_name, id);
         FileLooper::_extract_flags(name, sample, region, syst_unc, scale, jet_cat, cut, class_id, spin, klambda, res_mass, is_boosted);
         if (!FileLooper::_accept_evt(region, syst_unc, jet_cat, cut, class_id)) continue;
