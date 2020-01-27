@@ -116,7 +116,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     LorentzVectorPEP pep_b_2;
     LorentzVector b_2;
 
-    std::vector<std::unique_ptr<float*>> feat_vals;
+    std::vector<std::unique_ptr<float>> feat_vals;
     feat_vals.reserve(_n_feats);
     for (unsigned int i = 0; i < _n_feats; i++) feat_vals.emplace_back(new float(0));
     
@@ -211,7 +211,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     return true;
 }
 
-void FileLooper::_prep_file(TTree* tree, const std::vector<float*>& feat_vals, const double& weight, const int& sample, const int& region, const int& jet_cat,
+void FileLooper::_prep_file(TTree* tree, const std::vector<std::unique_ptr<float>>& feat_vals, const double& weight, const int& sample, const int& region, const int& jet_cat,
                             const int& cut, const bool& scale, const bool& syst_unc, const int& class_id, const unsigned long long int& strat_key) {
     /* Add branches to tree and set addresses for values */
 
