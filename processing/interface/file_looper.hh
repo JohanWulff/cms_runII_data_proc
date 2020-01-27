@@ -43,18 +43,19 @@ private:
 
 	// Methods
     inline int _get_split(const unsigned long int&);
-    void _prep_file(TTree*, const std::vector<float*>&, const double&, const int&, const int&, const int&, const bool&, const bool&, const bool&, const int&,
+    void _prep_file(TTree*, const std::vector<float*>&, const double&, const int&, const int&, const int&, const int&, const bool&, const bool&, const int&,
                     const unsigned long long int&);
     Channel _get_channel(std::string);
     Year _get_year(std::string);
     unsigned long long int _get_strat_key(const int&, const int&, const int&, const int&, const int&, const int&, const int&, const int&);
-    std::string _get_evt_name(TTreeReader&, TTreeReaderValue<std::vector<unsigned long>>&, TTreeReaderValue<std::vector<std::string>>&, const unsigned long int&);
-    void _extract_flags(const std::string&, int&, int&, bool&, bool&, int&, bool&, int&, Spin&, float&, float&, bool&);
+    std::vector<std::string>  _get_evt_name(const std::map<unsigned long, std::string>& id2name, const std::vector<unsigned long>& ids);
+    void _extract_flags(const std::vector<std::string>&, int&, int&, bool&, bool&, int&, int&, int&, Spin&, float&, float&, bool&);
     int _jet_cat_lookup(const std::string&);
     int _region_lookup(const std::string&);
     void _sample_lookup(const std::string&, int&, Spin&, float&, float&);
     int _sample2class_lookup(const int&);
-    bool _accept_evt(const int&, const bool&, const int&, const bool&, const int&);
+    bool _accept_evt(const int&, const bool&, const int&, const int&, const int&);
+    int _cut_lookup(const std::string&);
 
 public:
     // Methods
@@ -62,6 +63,7 @@ public:
                bool apply_cut=true, bool inc_all_jets=true, bool inc_other_regions=false, bool inc_data=false, bool inc_unc=false);
 	~FileLooper();
 	bool loop_file(const std::string&, const std::string&, const std::string&, const std::string&, const long int&);
+    std::map<unsigned long, std::string> FileLooper::build_id_map(TFile*);
 };
 
 #endif /* FILE_LOOPER_HH_ */

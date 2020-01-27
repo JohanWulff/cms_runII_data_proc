@@ -26,7 +26,6 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
 
     TFile* in_file = TFile::Open((in_dir+"/"+year+"_"+channel+".root").c_str());
     TTreeReader reader(channel.c_str(), in_file);
-    TTreeReader aux_reader("aux", in_file);
 
     // Enums
     Channel e_channel = FileLooper::_get_channel(channel);
@@ -35,17 +34,16 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     float klambda = 1;
 
     // Meta info
-    TTreeReaderValue<double> rv_weight(reader, "weight");  // TODO: Check this
+    TTreeReaderValue<std::vector<double>> rv_weight(reader, "all_weights");  // TODO: Check this
     TTreeReaderValue<std::vector<unsigned long>> rv_id(reader, "dataIds");
-    TTreeReaderValue<std::vector<unsigned long>> rv_aux_id(aux_reader, "dataIds");
-    TTreeReaderValue<std::vector<std::string>> rv_aux_name(aux_reader, "dataId_names");
+    std::map<unsigned long, std::string> id2name = FileLooper::build_id_map(in_file);
     double weight;
     float res_mass = 0;
-    std::string name;
-    int sample, region, jet_cat;
+    std::vector<std::string> names;
+    int sample, region, jet_cat, cut;
     unsigned long long int strat_key;
-    bool cut, scale, syst_unc;
-    unsigned long int id;
+    bool scale, syst_unc;
+    std::vector<unsigned long> ids;
     int class_id;
 
     // HL feats
@@ -129,22 +127,17 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
 
     long int c_event(0), n_tot_events(reader.GetEntries(true));
     while (reader.Next()) {
-        if (c_event%1000 == 0) std::cout << c_event << " / " << n_tot_events;
-        id = (*rv_id)[0];
+        if (c_event%1000 == 0) std::cout << c_event << " / " << n_tot_events << "\n";
+        ids = *rv_id;
 
-        std::cout << "[" ;
-        for (auto i : *rv_id) std::cout << i << " ";
-        std::cout << "]\n";
-        break;
-
-        name = FileLooper::_get_evt_name(aux_reader, rv_aux_id, rv_aux_name, id);
-        FileLooper::_extract_flags(name, sample, region, syst_unc, scale, jet_cat, cut, class_id, spin, klambda, res_mass, is_boosted);
+        names = FileLooper::_get_evt_names(id2name, ids);
+        FileLooper::_extract_flags(names, sample, region, syst_unc, scale, jet_cat, cut, class_id, spin, klambda, res_mass, is_boosted);
         if (!FileLooper::_accept_evt(region, syst_unc, jet_cat, cut, class_id)) continue;
         strat_key = FileLooper::_get_strat_key(sample, static_cast<int>(klambda), static_cast<int>(res_mass), static_cast<int>(jet_cat), region,
                                                static_cast<int>(spin), static_cast<int>(syst_unc), static_cast<int>(cut));
 
         // Load meta
-        weight = *rv_weight;
+        weight = (*rv_weight)[0];
 
         // Load HL feats
         kinfit_mass   = *rv_kinfit_mass;
@@ -210,7 +203,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
 }
 
 void FileLooper::_prep_file(TTree* tree, const std::vector<float*>& feat_vals, const double& weight, const int& sample, const int& region, const int& jet_cat,
-                            const bool& cut, const bool& scale, const bool& syst_unc, const int& class_id, const unsigned long long int& strat_key) {
+                            const int& cut, const bool& scale, const bool& syst_unc, const int& class_id, const unsigned long long int& strat_key) {
     /* Add branches to tree and set addresses for values */
 
     for (unsigned int i = 0; i < _n_feats; i++) tree->Branch(_feat_names[i].c_str(), feat_vals[i]);
@@ -253,26 +246,15 @@ Year FileLooper::_get_year(std::string year) {
     return Year(y16);
 }
 
-std::string FileLooper::_get_evt_name(TTreeReader& aux_reader, TTreeReaderValue<std::vector<unsigned long>>& rv_aux_id,
-                                      TTreeReaderValue<std::vector<std::string>>& rv_aux_name, const unsigned long int& id) {
-    /* Match data ID to aux name */
+std::vector<std::string> FileLooper::_get_evt_name(const std::map<unsigned long, std::string>& id2name, const std::vector<unsigned long>& ids) {
+    /* Match data IDs to aux names */
     
-    aux_reader.Restart();
-    std::string name;
-    while (aux_reader.Next()) {
-        std::cout << id << " : [" ;
-        for (auto i : *rv_aux_id) std::cout << i << " ";
-        std::cout << "]\n";
-        if ((*rv_aux_id)[0] == id) {
-            name = (*rv_aux_name)[0];
-            break;
-        }
-    }
-    if (name == "") throw std::runtime_error("ID not found\n");
-    return name;
+    std::vector<std::string> names(ids.size());
+    for (int i = 0; i < ids.size(); i++) names[i] = id2name[ids[i]];
+    return names;
 }
 
-void FileLooper::_extract_flags(const std::string& name, int& sample, int& region, bool& syst_unc, bool& scale, int& jet_cat, bool& cut, int& class_id,
+void FileLooper::_extract_flags(const std::vector<std::string>& name, int& sample, int& region, bool& syst_unc, bool& scale, int& jet_cat, int& cut, int& class_id,
                                 Spin& spin, float& klambda, float& res_mass, bool& is_boosted) {
     /*
     Extract event flags from name 
@@ -280,26 +262,39 @@ void FileLooper::_extract_flags(const std::string& name, int& sample, int& regio
     */
 
     std::string val;
-    std::istringstream iss(name);
-    int i = 0;
-    while (std::getline(iss, val, '/')) {   
-        if (i == 0) {
-            jet_cat = FileLooper::_jet_cat_lookup(val);
-            is_boosted = false;  // TODO: update this
-        } else if (i == 1) {
-            cut = (val == "NoCuts");
-        } else if (i == 2) {
-            region = FileLooper::_region_lookup(val);
-        } else if (i == 3) {
-            syst_unc = (val == "None");
-        } else if (i == 4) {
-            scale = (val == "Central");
-        } else if (i == 5) {
-            FileLooper::_sample_lookup(val, sample, spin, klambda, res_mass);
+    int tmp;
+    jet_cat = -1;
+    for (int n = 0; n < name.size(); n++) {
+        std::istringstream iss(name[n]);
+        int i = 0;
+        while (std::getline(iss, val, '/')) {   
+            if (i == 0) {
+                tmp = FileLooper::_jet_cat_lookup(val);
+                if (tmp > jet_cat) jet_cat = tmp;
+                is_boosted = false;  // TODO: update this
+            } else if (i == 1) {
+                tmp = FileLooper::_cut_lookup(val);
+                if (tmp > cut) cut = tmp;
+            } else if (i == 2 && n == 0) {
+                region = FileLooper::_region_lookup(val);
+            } else if (i == 3 && n == 0) {
+                syst_unc = (val == "None");
+            } else if (i == 4 && n == 0) {
+                scale = (val == "Central");
+            } else if (i == 5 && n == 0) {
+                FileLooper::_sample_lookup(val, sample, spin, klambda, res_mass);
+            }
+            i++;
         }
-        i++;
+        class_id = FileLooper::_sample2class_lookup(sample);
     }
-    class_id = FileLooper::_sample2class_lookup(sample);
+}
+
+int FileLooper::_cut_lookup(const std::string& cut) {
+    if (cut == "NoCuts") return 0;
+    if (cut == "mhVis")  return 1;
+    throw std::invalid_argument("Unrecognised cut category: " + cut);
+    return -1;
 }
 
 int FileLooper::_jet_cat_lookup(const std::string& jet_cat) {
@@ -369,8 +364,8 @@ int FileLooper::_sample2class_lookup(const int& sample) {
     return 0;                    // Background
 }
 
-bool FileLooper::_accept_evt(const int& region, const bool& syst_unc, const int& jet_cat, const bool& cut, const int& class_id) {
-    if (_apply_cut && cut) return false;  // Require cut and cut failed
+bool FileLooper::_accept_evt(const int& region, const bool& syst_unc, const int& jet_cat, const int& cut, const int& class_id) {
+    if (_apply_cut && cut == 0) return false;  // Require cut and cut failed
     if (!_inc_data && class_id == -1) return false; // Don't inlclude data and event is data
     if (!_inc_other_regions && region != 0) return false;  //Don't include other regions and event is not SS Iso
     if (!_inc_unc && !syst_unc) return false;  //Don't systematicss and event is a systematic
@@ -389,4 +384,19 @@ unsigned long long int FileLooper::_get_strat_key(const int& sample, const int& 
                                        std::pow(17, syst_unc)*
                                        std::pow(19, cut);
     return strat_key;
+}
+
+std::map<unsigned long, std::string> FileLooper::build_id_map(TFile* in_file);
+    TTreeReader aux_reader("aux", in_file);
+    TTreeReaderValue<std::vector<unsigned long>> rv_aux_id(aux_reader, "dataIds");
+    TTreeReaderValue<std::vector<std::string>> rv_aux_name(aux_reader, "dataId_names");
+    std::vector<unsigned long> ids;
+    std::vector<std::string> names;
+    while (aux_reader.Next()) {
+        ids   = *rv_aux_id;
+        names = *rv_aux_name
+    }
+    std::map<unsigned long, std::string> id2name;
+    for (int i = 0; i < ids.size(); i++) id2name[ids[i]] = names[i];
+    return id2name;
 }
