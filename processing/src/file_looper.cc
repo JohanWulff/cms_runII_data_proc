@@ -326,7 +326,7 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
         sample_id = -125;
         try {
             klambda = std::stof(sample.substr(sample.find("_kl")+3));
-        } catch () {
+        } catch (...) {
             std::cout << "Error in sample " << sample << " attempting to parse " << sample.substr(sample.find("_kl")+3) << "\n";
             assert(false);
         }
@@ -334,7 +334,7 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
         spin = radion;
         try {
             res_mass = std::stof(sample.substr(sample.find("_M")+2));
-        } catch () {
+        } catch (...) {
             std::cout << "Error in sample " << sample << " attempting to parse " << sample.substr(sample.find("_M")+2) << "\n";
             assert(false);
         }
@@ -343,7 +343,7 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
         spin = graviton;
         try {
             res_mass = std::stof(sample.substr(sample.find("_M")+2));
-        } catch () {
+        } catch (...) {
             std::cout << "Error in sample " << sample << " attempting to parse " << sample.substr(sample.find("_M")+2) << "\n";
             assert(false);
         }
