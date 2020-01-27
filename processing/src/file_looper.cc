@@ -183,17 +183,9 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         b_1.SetCoordinates(pep_b_1.Px(), pep_b_1.Py(), pep_b_1.Pz(), pep_b_1.M());
         b_2.SetCoordinates(pep_b_2.Px(), pep_b_2.Py(), pep_b_2.Pz(), pep_b_2.M());
 
-        std::cout << "[";
-        for (unsigned int i = 0; i < feat_vals.size(); i++) std::cout << *(feat_vals[i]) << ",";
-        std::cout << "]\n";
-
         _evt_proc->process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit, kinfit_mass, kinfit_chi2, mt2, mt_tot, p_zetavisible, p_zeta, top_1_mass,
                                   top_2_mass, l_1_mt, l_2_mt, is_boosted, b_1_csv, b_2_csv, b_1_deepcsv, b_2_deepcsv, e_channel, e_year, res_mass, spin,
                                   klambda);
-
-        std::cout << "[";
-        for (unsigned int i = 0; i < feat_vals.size(); i++) std::cout << *(feat_vals[i]) << ",";
-        std::cout << "]\n";
 
         
         if (c_event%2 == 0) {  // TODO: Replace with evt once implemented
@@ -201,7 +193,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         } else {
             data_odd->Fill();
         }        
-        if (c_event >= n_events) break;
+        if (n_events > 0 && c_event >= n_events) break;
     }
 
     delete data_even;
