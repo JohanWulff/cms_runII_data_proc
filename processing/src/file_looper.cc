@@ -116,7 +116,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     LorentzVectorPEP pep_b_2;
     LorentzVector b_2;
 
-    std::vector<float*> feat_vals(_n_feats, 0);
+    std::vector<float> feat_vals(_n_feats, 0);
     
     // Outfiles
     TFile* out_file  = new TFile((out_dir+"/"+year+"_"+channel+".root").c_str(), "recreate");
@@ -209,11 +209,11 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     return true;
 }
 
-void FileLooper::_prep_file(TTree* tree, const std::vector<float*>& feat_vals, const double& weight, const int& sample, const int& region, const int& jet_cat,
+void FileLooper::_prep_file(TTree* tree, const std::vector<float>& feat_vals, const double& weight, const int& sample, const int& region, const int& jet_cat,
                             const int& cut, const bool& scale, const bool& syst_unc, const int& class_id, const unsigned long long int& strat_key) {
     /* Add branches to tree and set addresses for values */
 
-    for (unsigned int i = 0; i < _n_feats; i++) tree->Branch(_feat_names[i].c_str(), feat_vals[i]);
+    for (unsigned int i = 0; i < _n_feats; i++) tree->Branch(_feat_names[i].c_str(), &feat_vals[i]);
     tree->Branch("weight",    weight);
     tree->Branch("sample",    sample);
     tree->Branch("region",    region);
