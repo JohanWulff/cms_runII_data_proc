@@ -116,7 +116,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     LorentzVectorPEP pep_b_2;
     LorentzVector b_2;
 
-    std::vector<float*> feat_vals(_n_feats);
+    std::vector<float*> feat_vals(_n_feats, 0);
     
     // Outfiles
     TFile* out_file  = new TFile((out_dir+"/"+year+"_"+channel+".root").c_str(), "recreate");
