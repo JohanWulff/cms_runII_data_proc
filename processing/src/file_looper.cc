@@ -68,9 +68,9 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     bool is_boosted;
 
     // SVFit feats
-    TTreeReaderValue<float> rv_svfit_pT(reader, "pt_sv");
-    TTreeReaderValue<float> rv_svfit_eta(reader, "eta_sv");
-    TTreeReaderValue<float> rv_svfit_phi(reader, "phi_sv");
+    //TTreeReaderValue<float> rv_svfit_pT(reader, "pt_sv");
+    //TTreeReaderValue<float> rv_svfit_eta(reader, "eta_sv");
+    //TTreeReaderValue<float> rv_svfit_phi(reader, "phi_sv");
     TTreeReaderValue<float> rv_svfit_mass(reader, "m_sv");
     LorentzVectorPEP pep_svfit;
     LorentzVector svfit;
@@ -159,7 +159,8 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         b_2_deepcsv = *rv_b_2_deepcsv;
 
         // Load vectors
-        pep_svfit.SetCoordinates(*rv_svfit_pT, *rv_svfit_eta, *rv_svfit_phi, *rv_svfit_mass);
+        // pep_svfit.SetCoordinates(*rv_svfit_pT, *rv_svfit_eta, *rv_svfit_phi, *rv_svfit_mass);
+        pep_svfit.SetCoordinates(0, 0, 0, *rv_svfit_mass); // TODO remove once svfit present
         pep_l_1.SetCoordinates(*rv_l_1_pT, *rv_l_1_eta, *rv_l_1_phi, *rv_l_1_mass);
         if (channel == "muTau") {  // Fix mass for light leptons
             l_2_mass = MU_MASS;
