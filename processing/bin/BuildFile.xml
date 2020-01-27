@@ -3,5 +3,6 @@
     <use name="cms_hh_proc_interface/processing" />
     <use name="root" />
     <use name="rootmath" />
-    <use name="rootinternal" />
+    <use name="rootcore"/>
+    <use name="PhysicsTools/FWLite" />
 </bin>

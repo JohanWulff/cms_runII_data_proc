@@ -1,6 +1,6 @@
 <use name="root" />
 <use name="rootmath" />
-<use name="rootinternal" />
+<use name="PhysicsTools/FWLite" />
 <use name="cms_hh_proc_interface/processing" />
 
 <export>
