@@ -184,7 +184,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         b_2.SetCoordinates(pep_b_2.Px(), pep_b_2.Py(), pep_b_2.Pz(), pep_b_2.M());
 
         std::cout << "[";
-        for (int i = 0; i < feat_vals.size(); i++) std::cout << *(feat_vals[i]) << ",";
+        for (unsigned int i = 0; i < feat_vals.size(); i++) std::cout << *(feat_vals[i]) << ",";
         std::cout << "]\n";
 
         _evt_proc->process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit, kinfit_mass, kinfit_chi2, mt2, mt_tot, p_zetavisible, p_zeta, top_1_mass,
@@ -192,7 +192,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
                                   klambda);
 
         std::cout << "[";
-        for (int i = 0; i < feat_vals.size(); i++) std::cout << *(feat_vals[i]) << ",";
+        for (unsigned int i = 0; i < feat_vals.size(); i++) std::cout << *(feat_vals[i]) << ",";
         std::cout << "]\n";
 
         
