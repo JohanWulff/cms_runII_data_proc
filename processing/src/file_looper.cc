@@ -246,7 +246,7 @@ Year FileLooper::_get_year(std::string year) {
     return Year(y16);
 }
 
-std::vector<std::string> FileLooper::_get_evt_name(const std::map<unsigned long, std::string>& id2name, const std::vector<unsigned long>& ids) {
+std::vector<std::string> FileLooper::_get_evt_names(const std::map<unsigned long, std::string>& id2name, const std::vector<unsigned long>& ids) {
     /* Match data IDs to aux names */
     
     std::vector<std::string> names(ids.size());
