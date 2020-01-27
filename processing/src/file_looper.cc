@@ -324,14 +324,29 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
         spin = nonres;
         res_mass = 125;
         sample_id = -125;
-        klambda = std::stof(sample.substr(sample.find("_kl")+3));
+        try {
+            klambda = std::stof(sample.substr(sample.find("_kl")+3));
+        } catch () {
+            std::cout << "Error in sample " << sample << " attempting to parse " << sample.substr(sample.find("_kl")+3) << "\n";
+            assert(false);
+        }
     } else if (sample.find("Signal_Radion") != std::string::npos) {
         spin = radion;
-        res_mass = std::stof(sample.substr(sample.find("_M")+2));
+        try {
+            res_mass = std::stof(sample.substr(sample.find("_M")+2));
+        } catch () {
+            std::cout << "Error in sample " << sample << " attempting to parse " << sample.substr(sample.find("_M")+2) << "\n";
+            assert(false);
+        }
         sample_id = -res_mass;
     } else if (sample.find("Signal_Graviton") != std::string::npos) {
         spin = graviton;
-        res_mass = std::stof(sample.substr(sample.find("_M")+2));
+        try {
+            res_mass = std::stof(sample.substr(sample.find("_M")+2));
+        } catch () {
+            std::cout << "Error in sample " << sample << " attempting to parse " << sample.substr(sample.find("_M")+2) << "\n";
+            assert(false);
+        }
         sample_id = -res_mass;
     } else if (sample.find("/Data") != std::string::npos) {
         sample_id = 0;
