@@ -318,16 +318,16 @@ int FileLooper::_region_lookup(const std::string& region) {
 }
 
 void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin& spin, float& klambda, float& res_mass) {
-    if (sample.find("/Signal_NonRes") != std::string::npos) {
+    if (sample.find("Signal_NonRes") != std::string::npos) {
         spin = nonres;
         res_mass = 125;
         sample_id = -125;
         klambda = std::stof(sample.substr(sample.find("_kl")+3));
-    } else if (sample.find("/Signal_Radion") != std::string::npos) {
+    } else if (sample.find("Signal_Radion") != std::string::npos) {
         spin = radion;
         res_mass = std::stof(sample.substr(sample.find("_M")+2));
         sample_id = -res_mass;
-    } else if (sample.find("/Signal_Graviton") != std::string::npos) {
+    } else if (sample.find("Signal_Graviton") != std::string::npos) {
         spin = graviton;
         res_mass = std::stof(sample.substr(sample.find("_M")+2));
         sample_id = -res_mass;
