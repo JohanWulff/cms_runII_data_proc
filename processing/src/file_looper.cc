@@ -35,11 +35,12 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     float klambda = 1;
 
     // Meta info
-    TTreeReaderValue<float> rv_weight(reader, "weight");  // TODO: Check this
-    TTreeReaderValue<unsigned long int> rv_id(reader, "dataIds");
-    TTreeReaderValue<unsigned long int> rv_aux_id(aux_reader, "dataIds");
+    TTreeReaderValue<double> rv_weight(reader, "weight");  // TODO: Check this
+    TTreeReaderValue<std::vector<unsigned long>> rv_id(reader, "dataIds");
+    TTreeReaderValue<std::vector<unsigned long>> rv_aux_id(aux_reader, "dataIds");
     TTreeReaderValue<std::string> rv_aux_name(aux_reader, "dataId_names");
-    float weight, res_mass = 0;
+    double weight;
+    float res_mass = 0;
     std::string name;
     int sample, region, jet_cat;
     unsigned long long int strat_key;
@@ -129,7 +130,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     long int c_event(0), n_tot_events(reader.GetEntries(true));
     while (reader.Next()) {
         if (c_event%1000 == 0) std::cout << c_event << " / " << n_tot_events;
-        id = *rv_id;
+        id = *rv_id[0];
         name = FileLooper::_get_evt_name(aux_reader, rv_aux_id, rv_aux_name, id);
         FileLooper::_extract_flags(name, sample, region, syst_unc, scale, jet_cat, cut, class_id, spin, klambda, res_mass, is_boosted);
         if (!FileLooper::_accept_evt(region, syst_unc, jet_cat, cut, class_id)) continue;
@@ -201,7 +202,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     return true;
 }
 
-void FileLooper::_prep_file(TTree* tree, const std::vector<float*>& feat_vals, const float& weight, const int& sample, const int& region, const int& jet_cat,
+void FileLooper::_prep_file(TTree* tree, const std::vector<float*>& feat_vals, const double& weight, const int& sample, const int& region, const int& jet_cat,
                             const bool& cut, const bool& scale, const bool& syst_unc, const int& class_id, const unsigned long long int& strat_key) {
     /* Add branches to tree and set addresses for values */
 
@@ -245,14 +246,14 @@ Year FileLooper::_get_year(std::string year) {
     return Year(y16);
 }
 
-std::string FileLooper::_get_evt_name(TTreeReader& aux_reader, TTreeReaderValue<unsigned long int>& rv_aux_id, TTreeReaderValue<std::string>& rv_aux_name,
-                                      const unsigned long int& id) {
+std::string FileLooper::_get_evt_name(TTreeReader& aux_reader, TTreeReaderValue<std::vector<unsigned long>>& rv_aux_id,
+                                      TTreeReaderValue<std::string>& rv_aux_name, const unsigned long int& id) {
     /* Match data ID to aux name */
     
     aux_reader.Restart();
     std::string name;
     while (aux_reader.Next()) {
-        if (*rv_aux_id == id) {
+        if ((*rv_aux_id)[0] == id) {
             name = *rv_aux_name;
             break;
         }
