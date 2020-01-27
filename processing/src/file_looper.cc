@@ -264,7 +264,7 @@ void FileLooper::_extract_flags(const std::vector<std::string>& name, int& sampl
     std::string val;
     int tmp;
     jet_cat = -1;
-    for (int n = 0; n < name.size(); n++) {
+    for (unsigned int n = 0; n < name.size(); n++) {
         std::istringstream iss(name[n]);
         int i = 0;
         while (std::getline(iss, val, '/')) {   
@@ -386,7 +386,7 @@ unsigned long long int FileLooper::_get_strat_key(const int& sample, const int& 
     return strat_key;
 }
 
-std::map<unsigned long, std::string> FileLooper::build_id_map(TFile* in_file);
+std::map<unsigned long, std::string> FileLooper::build_id_map(TFile* in_file) {
     TTreeReader aux_reader("aux", in_file);
     TTreeReaderValue<std::vector<unsigned long>> rv_aux_id(aux_reader, "dataIds");
     TTreeReaderValue<std::vector<std::string>> rv_aux_name(aux_reader, "dataId_names");
