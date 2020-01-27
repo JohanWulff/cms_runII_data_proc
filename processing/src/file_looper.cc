@@ -125,8 +125,9 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     FileLooper::_prep_file(data_even, feat_vals, weight, sample, region, jet_cat, cut, scale, syst_unc, class_id, strat_key);
     FileLooper::_prep_file(data_odd,  feat_vals, weight, sample, region, jet_cat, cut, scale, syst_unc, class_id, strat_key);
 
-    long int c_event(0), n_tot_events(reader.GetEntries(true));
+    long int c_event(-1), n_tot_events(reader.GetEntries(true));
     while (reader.Next()) {
+        c_event++;
         if (c_event%1000 == 0) std::cout << c_event << " / " << n_tot_events << "\n";
         ids = *rv_id;
 
@@ -180,10 +181,6 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         b_1.SetCoordinates(pep_b_1.Px(), pep_b_1.Py(), pep_b_1.Pz(), pep_b_1.M());
         b_2.SetCoordinates(pep_b_2.Px(), pep_b_2.Py(), pep_b_2.Pz(), pep_b_2.M());
 
-        std::cout << "[";
-        for (auto f : feat_vals) std::cout << f << ",";
-        std::cout << "]\n";
-
         _evt_proc->process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit, kinfit_mass, kinfit_chi2, mt2, mt_tot, p_zetavisible, p_zeta, top_1_mass,
                                   top_2_mass, l_1_mt, l_2_mt, is_boosted, b_1_csv, b_2_csv, b_1_deepcsv, b_2_deepcsv, e_channel, e_year, res_mass, spin,
                                   klambda);
@@ -193,9 +190,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
             data_even->Fill();
         } else {
             data_odd->Fill();
-        }
-        
-        c_event++;
+        }        
         if (c_event >= n_events) break;
     }
 
