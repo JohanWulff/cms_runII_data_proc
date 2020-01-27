@@ -314,6 +314,7 @@ int FileLooper::_region_lookup(const std::string& region) {
     if (region == "OS_AntiIsolated")  return 1;
     if (region == "SS_Isolated")      return 2;
     if (region == "SS_AntiIsolated")  return 3;
+    if (region == "SS_LooseIsolated") return 4;
     throw std::invalid_argument("Unrecognised region: " + region);
     return -1;
 }
