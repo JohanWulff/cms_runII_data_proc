@@ -234,14 +234,14 @@ Channel FileLooper::_get_channel(std::string channel) {
 Year FileLooper::_get_year(std::string year) {
     /* Convert year to enum */
 
-    if (year == "y16") {
+    if (year == "2016") {
         return Year(y16);
-    } else if (year == "y17") {
+    } else if (year == "2017") {
         return Year(y17);
-    } else if (year == "y18") {
+    } else if (year == "2018") {
         return Year(y18);
     }
-    throw std::invalid_argument("Invalid year: options are y16, y17, y18");
+    throw std::invalid_argument("Invalid year: options are 2016, 2017, 2018");
     return Year(y16);
 }
 
