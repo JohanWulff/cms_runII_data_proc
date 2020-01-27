@@ -397,6 +397,6 @@ std::map<unsigned long, std::string> FileLooper::build_id_map(TFile* in_file) {
         names = *rv_aux_name
     }
     std::map<unsigned long, std::string> id2name;
-    for (int i = 0; i < ids.size(); i++) id2name[ids[i]] = names[i];
+    for (unsigned int i = 0; i < ids.size(); i++) id2name[ids[i]] = names[i];
     return id2name;
 }

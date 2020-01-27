@@ -48,7 +48,7 @@ private:
     Channel _get_channel(std::string);
     Year _get_year(std::string);
     unsigned long long int _get_strat_key(const int&, const int&, const int&, const int&, const int&, const int&, const int&, const int&);
-    std::vector<std::string> FileLooper::_get_evt_name(const std::map<unsigned long, std::string>&, const std::vector<unsigned long>&) {
+    std::vector<std::string> _get_evt_name(const std::map<unsigned long, std::string>&, const std::vector<unsigned long>&) {
     void _extract_flags(const std::vector<std::string>&, int&, int&, bool&, bool&, int&, int&, int&, Spin&, float&, float&, bool&);
     int _jet_cat_lookup(const std::string&);
     int _region_lookup(const std::string&);
