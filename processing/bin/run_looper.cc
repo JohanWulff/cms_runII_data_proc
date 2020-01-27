@@ -54,6 +54,6 @@ int main(int argc, char *argv[]) {
 
     FileLooper file_looper;
     bool ok = file_looper.loop_file(options["-i"], options["-o"], options["-c"], options["-y"], std::stoi(options["-n"]));
-    if (ok) std::cout << "File loop ran ok!";
+    if (ok) std::cout << "File loop ran ok!\n";
     return 0;
 }

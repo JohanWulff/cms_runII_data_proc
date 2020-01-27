@@ -132,7 +132,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         if (c_event%1000 == 0) std::cout << c_event << " / " << n_tot_events;
         id = (*rv_id)[0];
 
-        std::cout << id << " : [" ;
+        std::cout << "[" ;
         for (auto i : *rv_id) std::cout << i << " ";
         std::cout << "]\n";
         break;
