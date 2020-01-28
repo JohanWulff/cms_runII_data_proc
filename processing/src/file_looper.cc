@@ -134,7 +134,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     FileLooper::_prep_file(data_odd,  feat_vals, &weight, &sample, &region, &jet_cat, &cut, &scale, &syst_unc, &class_id, &strat_key);
     std::cout << "\tprepared.\nBeginning loop.\n";
 
-    long int c_event(-1), n_tot_events(reader.GetEntries(true));
+    long int c_event(0), n_tot_events(reader.GetEntries(true));
     while (reader.Next()) {
         c_event++;
         if (c_event%1000 == 0) std::cout << c_event << " / " << n_tot_events << "\n";
@@ -200,7 +200,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         } else {
             data_odd->Fill();
         }        
-        if (n_events > 0 && c_event >= n_events-1) {
+        if (n_events > 0 && c_event >= n_events) {
             std::cout << "Exiting after " << c_event << " events.\n";
             break;
         }
