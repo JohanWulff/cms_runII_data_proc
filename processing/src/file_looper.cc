@@ -278,6 +278,7 @@ void FileLooper::_extract_flags(const std::vector<std::string>& name, int& sampl
     std::string val;
     int tmp;
     jet_cat = -1;
+    cut = -1;
     for (unsigned int n = 0; n < name.size(); n++) {
         std::istringstream iss(name[n]);
         int i = 0;
