@@ -130,8 +130,8 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TFile* out_file  = new TFile(oname.c_str(), "recreate");
     TTree* data_even = new TTree("data_0", "Even id data");
     TTree* data_odd  = new TTree("data_1", "Odd id data");
-    FileLooper::_prep_file(data_even, feat_vals, weight, sample, region, jet_cat, cut, scale, syst_unc, class_id, strat_key);
-    FileLooper::_prep_file(data_odd,  feat_vals, weight, sample, region, jet_cat, cut, scale, syst_unc, class_id, strat_key);
+    FileLooper::_prep_file(data_even, feat_vals, &weight, &sample, &region, &jet_cat, &cut, &scale, &syst_unc, &class_id, &strat_key);
+    FileLooper::_prep_file(data_odd,  feat_vals, &weight, &sample, &region, &jet_cat, &cut, &scale, &syst_unc, &class_id, &strat_key);
     std::cout << "\tprepared.\nBeginning loop.\n";
 
     long int c_event(-1), n_tot_events(reader.GetEntries(true));
@@ -216,20 +216,20 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     return true;
 }
 
-void FileLooper::_prep_file(TTree* tree, const std::vector<std::unique_ptr<float>>& feat_vals, const double& weight, const int& sample, const int& region, const int& jet_cat,
-                            const int& cut, const bool& scale, const bool& syst_unc, const int& class_id, const unsigned long long int& strat_key) {
+void FileLooper::_prep_file(TTree* tree, const std::vector<std::unique_ptr<float>>& feat_vals, double* weight, int* sample, int* region, int* jet_cat,
+                            int* cut, bool* scale, bool* syst_unc, int* class_id, unsigned long long int* strat_key) {
     /* Add branches to tree and set addresses for values */
 
     for (unsigned int i = 0; i < _n_feats; i++) tree->Branch(_feat_names[i].c_str(), feat_vals[i].get());
-    tree->Branch("weight",    &weight);
-    tree->Branch("sample",    &sample);
-    tree->Branch("region",    &region);
-    tree->Branch("jet_cat",   &jet_cat);
-    tree->Branch("cut",       &cut);
-    tree->Branch("scale",     &scale);
-    tree->Branch("syst_unc",  &syst_unc);
-    tree->Branch("class_id",  &class_id);
-    tree->Branch("strat_key", &strat_key);
+    tree->Branch("weight",    weight);
+    tree->Branch("sample",    sample);
+    tree->Branch("region",    region);
+    tree->Branch("jet_cat",   jet_cat);
+    tree->Branch("cut",       cut);
+    tree->Branch("scale",     scale);
+    tree->Branch("syst_unc",  syst_unc);
+    tree->Branch("class_id",  class_id);
+    tree->Branch("strat_key", strat_key);
 }
 
 Channel FileLooper::_get_channel(std::string channel) {
