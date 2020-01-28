@@ -36,9 +36,11 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     float klambda = 1;
 
     // Meta info
+    std::cout << "Extracting auxiliary data...";
     TTreeReaderValue<std::vector<double>> rv_weight(reader, "all_weights");  // TODO: Check this
     TTreeReaderValue<std::vector<unsigned long>> rv_id(reader, "dataIds");
     std::map<unsigned long, std::string> id2name = FileLooper::build_id_map(in_file);
+    std::cout << " Extracted\n";
     double weight;
     float res_mass = 0;
     std::vector<std::string> names;
@@ -130,7 +132,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TTree* data_odd  = new TTree("data_1", "Odd id data");
     FileLooper::_prep_file(data_even, feat_vals, weight, sample, region, jet_cat, cut, scale, syst_unc, class_id, strat_key);
     FileLooper::_prep_file(data_odd,  feat_vals, weight, sample, region, jet_cat, cut, scale, syst_unc, class_id, strat_key);
-    std::cout << "\tprepared. Beginning loop.\n";
+    std::cout << "\tprepared.\nBeginning loop.\n";
 
     long int c_event(-1), n_tot_events(reader.GetEntries(true));
     while (reader.Next()) {
@@ -365,28 +367,26 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
             assert(false);
         }
         sample_id = -res_mass;
-    } else if (sample.find("/Data") != std::string::npos) {
+    } else if (sample.find("Data") != std::string::npos) {
         sample_id = 0;
-    } else if (sample.find("/TT") != std::string::npos) {
+    } else if (sample.find("TT") != std::string::npos) {
         sample_id = 1;
-    } else if (sample.find("/ttH") != std::string::npos) {
+    } else if (sample.find("ttH") != std::string::npos) {
         sample_id = 2;
-    } else if (sample.find("/DY") != std::string::npos) {
+    } else if (sample.find("DY") != std::string::npos) {
         sample_id = 3;
-    } else if (sample.find("/Wjets") != std::string::npos) {
+    } else if (sample.find("Wjets") != std::string::npos) {
         sample_id = 4;
-    } else if (sample.find("/SM_Higgs") != std::string::npos) {
+    } else if (sample.find("SM_Higgs") != std::string::npos) {
         sample_id = 5;
-    } else if (sample.find("/SM_Higgs") != std::string::npos) {
+    } else if (sample.find("VH") != std::string::npos) {
         sample_id = 6;
-    } else if (sample.find("/VH") != std::string::npos) {
+    } else if (sampl7.find("VVV") != std::string::npos) {
         sample_id = 7;
-    } else if (sample.find("/VVV") != std::string::npos) {
+    } else if (sample.find("EWK") != std::string::npos) {
         sample_id = 8;
-    } else if (sample.find("/EWK") != std::string::npos) {
+    } else if (sample.find("VV") != std::string::npos) {
         sample_id = 9;
-    } else if (sample.find("/VV") != std::string::npos) {
-        sample_id = 10;
     } else{
         throw std::invalid_argument("Unrecognised sample: " + sample);
     }
