@@ -421,6 +421,8 @@ unsigned long long int FileLooper::_get_strat_key(const int& sample, const int& 
                                        std::pow(13, spin)*
                                        std::pow(17, syst_unc)*
                                        std::pow(19, cut);
+    std::cout << std::abs(sample) << " " << res_mass << " " << std::abs(klambda)<< " " << jet_cat << " " << region << " " << spin << " " << syst_unc << " " << cut << " -> " << strat_key << "\n";
+    
     return strat_key;
 }
 
