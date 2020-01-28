@@ -285,7 +285,7 @@ void FileLooper::_extract_flags(const std::vector<std::string>& name, int& sampl
             if (i == 0) {
                 tmp = FileLooper::_jet_cat_lookup(val);
                 if (tmp > jet_cat) jet_cat = tmp;
-                is_boosted = false;  // TODO: update this
+                is_boosted = (jet_cat == 5);  // TODO: update this
             } else if (i == 1) {
                 tmp = FileLooper::_cut_lookup(val);
                 if (tmp > cut) cut = tmp;
@@ -312,12 +312,12 @@ int FileLooper::_cut_lookup(const std::string& cut) {
 }
 
 int FileLooper::_jet_cat_lookup(const std::string& jet_cat) {
-    if (jet_cat == "2j")           return 0;
-    if (jet_cat == "2j0bR_noVBF")  return 1;
-    if (jet_cat == "2j1bR_noVBF")  return 2;
-    if (jet_cat == "2j2b+R_noVBF") return 3;
-    if (jet_cat == "4j1b+_VBF")    return 4;
-    // TODO: Boosted?
+    if (jet_cat == "2j")            return 0;
+    if (jet_cat == "2j0bR_noVBF")   return 1;
+    if (jet_cat == "2j1bR_noVBF")   return 2;
+    if (jet_cat == "2j2b+R_noVBF")  return 3;
+    if (jet_cat == "4j1b+_VBF")     return 4;
+    if (jet_cat == "2j2Lb+B_noVBF") return 5;
     throw std::invalid_argument("Unrecognised jet category: " + jet_cat);
     return -1;
 }
