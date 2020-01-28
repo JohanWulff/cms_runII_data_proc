@@ -143,8 +143,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         names = FileLooper::_get_evt_names(id2name, ids);
         FileLooper::_extract_flags(names, sample, region, syst_unc, scale, jet_cat, cut, class_id, spin, klambda, res_mass, is_boosted);
         if (!FileLooper::_accept_evt(region, syst_unc, jet_cat, cut, class_id)) continue;
-        strat_key = FileLooper::_get_strat_key(sample, static_cast<int>(klambda), static_cast<int>(res_mass), static_cast<int>(jet_cat), region,
-                                               static_cast<int>(spin), static_cast<int>(syst_unc), cut);
+        strat_key = FileLooper::_get_strat_key(sample, static_cast<int>(jet_cat), region, static_cast<int>(spin), static_cast<int>(syst_unc), cut);
 
         // Load meta
         weight = (*rv_weight)[0];
@@ -412,17 +411,15 @@ bool FileLooper::_accept_evt(const int& region, const bool& syst_unc, const int&
     return true;
 }
 
-unsigned long long int FileLooper::_get_strat_key(const int& sample, const int& klambda, const int& res_mass, const int& jet_cat, const int& region,
-                                                  const int& spin, const int& syst_unc, const int& cut) {
+unsigned long long int FileLooper::_get_strat_key(const int& sample, const int& jet_cat, const int& region, const int& spin, const int& syst_unc,
+                                                  const int& cut) {
     unsigned long long int strat_key = std::pow(2,  std::abs(sample))*
-                                       std::pow(3,  res_mass)*
-                                       std::pow(5,  std::abs(klambda))*
-                                       std::pow(7,  jet_cat)*
-                                       std::pow(11, region)*
-                                       std::pow(13, spin)*
-                                       std::pow(17, syst_unc)*
-                                       std::pow(19, cut);
-    std::cout << std::abs(sample) << " " << res_mass << " " << std::abs(klambda)<< " " << jet_cat << " " << region << " " << spin << " " << syst_unc << " " << cut << " -> " << strat_key << "\n";
+                                       std::pow(3,  jet_cat)*
+                                       std::pow(5, region)*
+                                       std::pow(7, spin)*
+                                       std::pow(11, cut)*
+                                       std::pow(13, syst_unc);
+    std::cout << std::abs(sample) << jet_cat << " " << region << " " << spin << " " << cut << " " << syst_unc << " -> " << strat_key << "\n";
     
     return strat_key;
 }
