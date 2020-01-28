@@ -339,7 +339,7 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
     
     if (sample.find("Signal_NonRes") != std::string::npos) {
         if (sample.find("_kl") != std::string::npos) {
-            sample_id = -125;
+            sample_id = -12;
             try {
                 klambda = std::stof(sample.substr(sample.find("_kl")+3));
             } catch (...) {
@@ -347,7 +347,7 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
                 assert(false);
             }
         } else {  // VBF
-            sample_id = -12;
+            sample_id = -13;
         }
     } else if (sample.find("Signal_Radion") != std::string::npos) {
         spin = radion;
@@ -357,7 +357,13 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
             std::cout << "Error in sample " << sample << " attempting to parse " << sample.substr(sample.find("_M")+2) << "\n";
             assert(false);
         }
-        sample_id = -res_mass;
+        if (res_mass <= 400) {
+            sample_id = -14;
+        } else if (res_mass <= 600) {
+            sample_id = -15;
+        } else {
+            sample_id = -16;
+        }
     } else if (sample.find("Signal_Graviton") != std::string::npos) {
         spin = graviton;
         try {
@@ -366,7 +372,13 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
             std::cout << "Error in sample " << sample << " attempting to parse " << sample.substr(sample.find("_M")+2) << "\n";
             assert(false);
         }
-        sample_id = -res_mass;
+        if (res_mass <= 400) {
+            sample_id = -17;
+        } else if (res_mass <= 600) {
+            sample_id = -18;
+        } else {
+            sample_id = -19;
+        }
     } else if (sample.find("Data") != std::string::npos) {
         sample_id = 0;
     } else if (sample.find("TT") != std::string::npos) {
@@ -413,15 +425,17 @@ bool FileLooper::_accept_evt(const int& region, const bool& syst_unc, const int&
 
 unsigned long long int FileLooper::_get_strat_key(const int& sample, const int& jet_cat, const int& region, const int& spin, const int& syst_unc,
                                                   const int& cut) {
-    double strat_key = std::pow(2,  std::abs(sample))*
+    unsigned long long int strat_key = std::pow(2,  std::abs(sample))*
                        std::pow(3,  jet_cat)*
                        std::pow(5, region)*
                        std::pow(7, spin)*
                        std::pow(11, cut)*
                        std::pow(13, syst_unc);
+    if (strat_key == 0) throw std::overflow_error("Strat key overflow based on: "+std::to_string(std::abs(sample))+" "+std::to_string(jet_cat)+" "
+                                                  +std::to_string(region)+" "+std::string(spin)+" "+std::to_string(cut)+" "+std::to_string(syst_unc)+"\n");
     std::cout << std::abs(sample) << " " << jet_cat << " " << region << " " << spin << " " << cut << " " << syst_unc << " -> " << strat_key << "\n";
     
-    return static_cast<unsigned long long int>(strat_key);
+    return strat_key;
 }
 
 std::map<unsigned long, std::string> FileLooper::build_id_map(TFile* in_file) {
