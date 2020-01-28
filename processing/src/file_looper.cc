@@ -144,7 +144,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         FileLooper::_extract_flags(names, sample, region, syst_unc, scale, jet_cat, cut, class_id, spin, klambda, res_mass, is_boosted);
         if (!FileLooper::_accept_evt(region, syst_unc, jet_cat, cut, class_id)) continue;
         strat_key = FileLooper::_get_strat_key(sample, static_cast<int>(klambda), static_cast<int>(res_mass), static_cast<int>(jet_cat), region,
-                                               static_cast<int>(spin), static_cast<int>(syst_unc), static_cast<int>(cut));
+                                               static_cast<int>(spin), static_cast<int>(syst_unc), cut);
 
         // Load meta
         weight = (*rv_weight)[0];
