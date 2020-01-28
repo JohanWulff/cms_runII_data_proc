@@ -431,8 +431,7 @@ unsigned long long int FileLooper::_get_strat_key(const int& sample, const int& 
                        std::pow(7, spin)*
                        std::pow(11, cut)*
                        std::pow(13, syst_unc);
-    if (strat_key == 0) throw std::overflow_error("Strat key overflow based on: "+std::to_string(std::abs(sample))+" "+std::to_string(jet_cat)+" "
-                                                  +std::to_string(region)+" "+std::string(spin)+" "+std::to_string(cut)+" "+std::to_string(syst_unc)+"\n");
+    if (strat_key == 0) throw std::overflow_error("Strat key overflow\n");
     std::cout << std::abs(sample) << " " << jet_cat << " " << region << " " << spin << " " << cut << " " << syst_unc << " -> " << strat_key << "\n";
     
     return strat_key;
