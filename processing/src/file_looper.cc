@@ -24,7 +24,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     Even event IDs will be saved to data_0 and odd to data_1.
     */
 
-    std::string fname = in_dir+"/"+year+"_"+channel+".root"
+    std::string fname = in_dir+"/"+year+"_"+channel+".root";
     std::cout << "Reading from file: " << fname << "\n";
     TFile* in_file = TFile::Open(fname.c_str());
     TTreeReader reader(channel.c_str(), in_file);
@@ -124,7 +124,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     
     // Outfiles
     std::string oname = out_dir+"/"+year+"_"+channel+".root";
-    std::cout << "Preparing output file: " << ooname;
+    std::cout << "Preparing output file: " << oname;
     TFile* out_file  = new TFile(oname.c_str(), "recreate");
     TTree* data_even = new TTree("data_0", "Even id data");
     TTree* data_odd  = new TTree("data_1", "Odd id data");
@@ -199,12 +199,12 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
             data_odd->Fill();
         }        
         if (n_events > 0 && c_event >= n_events) {
-            std::cout << "Exiting after " << c_event << " events.\n"
+            std::cout << "Exiting after " << c_event << " events.\n";
             break;
         }
     }
 
-    std::cout << "Loop complete, saving results.\n"
+    std::cout << "Loop complete, saving results.\n";
     data_even->Write();
     data_odd->Write();
     in_file->Close();
