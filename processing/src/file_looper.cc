@@ -413,15 +413,15 @@ bool FileLooper::_accept_evt(const int& region, const bool& syst_unc, const int&
 
 unsigned long long int FileLooper::_get_strat_key(const int& sample, const int& jet_cat, const int& region, const int& spin, const int& syst_unc,
                                                   const int& cut) {
-    unsigned long long int strat_key = std::pow(2,  std::abs(sample))*
-                                       std::pow(3,  jet_cat)*
-                                       std::pow(5, region)*
-                                       std::pow(7, spin)*
-                                       std::pow(11, cut)*
-                                       std::pow(13, syst_unc);
-    std::cout << std::abs(sample) << jet_cat << " " << region << " " << spin << " " << cut << " " << syst_unc << " -> " << strat_key << "\n";
+    double strat_key = std::pow(2,  std::abs(sample))*
+                       std::pow(3,  jet_cat)*
+                       std::pow(5, region)*
+                       std::pow(7, spin)*
+                       std::pow(11, cut)*
+                       std::pow(13, syst_unc);
+    std::cout << std::abs(sample) << " " << jet_cat << " " << region << " " << spin << " " << cut << " " << syst_unc << " -> " << strat_key << "\n";
     
-    return strat_key;
+    return static_cast<unsigned long long int> strat_key;
 }
 
 std::map<unsigned long, std::string> FileLooper::build_id_map(TFile* in_file) {
