@@ -421,7 +421,7 @@ unsigned long long int FileLooper::_get_strat_key(const int& sample, const int& 
                        std::pow(13, syst_unc);
     std::cout << std::abs(sample) << " " << jet_cat << " " << region << " " << spin << " " << cut << " " << syst_unc << " -> " << strat_key << "\n";
     
-    return static_cast<unsigned long long int> strat_key;
+    return static_cast<unsigned long long int>(strat_key);
 }
 
 std::map<unsigned long, std::string> FileLooper::build_id_map(TFile* in_file) {
