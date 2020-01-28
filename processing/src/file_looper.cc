@@ -381,7 +381,7 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
         sample_id = 5;
     } else if (sample.find("VH") != std::string::npos) {
         sample_id = 6;
-    } else if (sampl7.find("VVV") != std::string::npos) {
+    } else if (sample.find("VVV") != std::string::npos) {
         sample_id = 7;
     } else if (sample.find("EWK") != std::string::npos) {
         sample_id = 8;
