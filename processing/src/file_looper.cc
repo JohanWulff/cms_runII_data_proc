@@ -221,15 +221,15 @@ void FileLooper::_prep_file(TTree* tree, const std::vector<std::unique_ptr<float
     /* Add branches to tree and set addresses for values */
 
     for (unsigned int i = 0; i < _n_feats; i++) tree->Branch(_feat_names[i].c_str(), feat_vals[i].get());
-    tree->Branch("weight",    weight);
-    tree->Branch("sample",    sample);
-    tree->Branch("region",    region);
-    tree->Branch("jet_cat",   jet_cat);
-    tree->Branch("cut",       cut);
-    tree->Branch("scale",     scale);
-    tree->Branch("syst_unc",  syst_unc);
-    tree->Branch("class_id",  class_id);
-    tree->Branch("strat_key", strat_key);
+    tree->Branch("weight",    &weight);
+    tree->Branch("sample",    &sample);
+    tree->Branch("region",    &region);
+    tree->Branch("jet_cat",   &jet_cat);
+    tree->Branch("cut",       &cut);
+    tree->Branch("scale",     &scale);
+    tree->Branch("syst_unc",  &syst_unc);
+    tree->Branch("class_id",  &class_id);
+    tree->Branch("strat_key", &strat_key);
 }
 
 Channel FileLooper::_get_channel(std::string channel) {
