@@ -200,7 +200,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         } else {
             data_odd->Fill();
         }        
-        if (n_events > 0 && c_event >= n_events) {
+        if (n_events > 0 && c_event >= n_events-1) {
             std::cout << "Exiting after " << c_event << " events.\n";
             break;
         }
