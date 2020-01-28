@@ -387,6 +387,8 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
         sample_id = 8;
     } else if (sample.find("VV") != std::string::npos) {
         sample_id = 9;
+    } else if (sample.find("ST") != std::string::npos) {
+        sample_id = 10;
     } else{
         throw std::invalid_argument("Unrecognised sample: " + sample);
     }
