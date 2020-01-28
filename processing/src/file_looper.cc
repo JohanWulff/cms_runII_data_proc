@@ -24,7 +24,9 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     Even event IDs will be saved to data_0 and odd to data_1.
     */
 
-    TFile* in_file = TFile::Open((in_dir+"/"+year+"_"+channel+".root").c_str());
+    std::string fname = in_dir+"/"+year+"_"+channel+".root"
+    std::cout << "Reading from file: " << fname << "\n";
+    TFile* in_file = TFile::Open(fname.c_str());
     TTreeReader reader(channel.c_str(), in_file);
 
     // Enums
@@ -121,11 +123,14 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     for (unsigned int i = 0; i < _n_feats; i++) feat_vals.emplace_back(new float(0));
     
     // Outfiles
-    TFile* out_file  = new TFile((out_dir+"/"+year+"_"+channel+".root").c_str(), "recreate");
+    std::string oname = out_dir+"/"+year+"_"+channel+".root";
+    std::cout << "Preparing output file: " << ooname;
+    TFile* out_file  = new TFile(oname.c_str(), "recreate");
     TTree* data_even = new TTree("data_0", "Even id data");
     TTree* data_odd  = new TTree("data_1", "Odd id data");
     FileLooper::_prep_file(data_even, feat_vals, weight, sample, region, jet_cat, cut, scale, syst_unc, class_id, strat_key);
     FileLooper::_prep_file(data_odd,  feat_vals, weight, sample, region, jet_cat, cut, scale, syst_unc, class_id, strat_key);
+    std::cout << "\tprepared. Beginning loop.\n";
 
     long int c_event(-1), n_tot_events(reader.GetEntries(true));
     while (reader.Next()) {
@@ -193,13 +198,19 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         } else {
             data_odd->Fill();
         }        
-        if (n_events > 0 && c_event >= n_events) break;
+        if (n_events > 0 && c_event >= n_events) {
+            std::cout << "Exiting after " << c_event << " events.\n"
+            break;
+        }
     }
 
-    delete data_even;
-    delete data_odd;
+    std::cout << "Loop complete, saving results.\n"
+    data_even->Write();
+    data_odd->Write();
     in_file->Close();
     out_file->Close();
+    delete data_even;
+    delete data_odd;
     return true;
 }
 
@@ -320,15 +331,21 @@ int FileLooper::_region_lookup(const std::string& region) {
 }
 
 void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin& spin, float& klambda, float& res_mass) {
+    spin = nonres;
+    res_mass = 125;
+    klambda = 1;
+    
     if (sample.find("Signal_NonRes") != std::string::npos) {
-        spin = nonres;
-        res_mass = 125;
-        sample_id = -125;
-        try {
-            klambda = std::stof(sample.substr(sample.find("_kl")+3));
-        } catch (...) {
-            std::cout << "Error in sample " << sample << " attempting to parse " << sample.substr(sample.find("_kl")+3) << "\n";
-            assert(false);
+        if (sample.find("_kl") != std::string::npos) {
+            sample_id = -125;
+            try {
+                klambda = std::stof(sample.substr(sample.find("_kl")+3));
+            } catch (...) {
+                std::cout << "Error in sample " << sample << " attempting to parse " << sample.substr(sample.find("_kl")+3) << "\n";
+                assert(false);
+            }
+        } else {
+            sample_id = -11;
         }
     } else if (sample.find("Signal_Radion") != std::string::npos) {
         spin = radion;
@@ -392,9 +409,9 @@ bool FileLooper::_accept_evt(const int& region, const bool& syst_unc, const int&
 
 unsigned long long int FileLooper::_get_strat_key(const int& sample, const int& klambda, const int& res_mass, const int& jet_cat, const int& region,
                                                   const int& spin, const int& syst_unc, const int& cut) {
-    unsigned long long int strat_key = std::pow(2,  sample)*
+    unsigned long long int strat_key = std::pow(2,  std::abs(sample))*
                                        std::pow(3,  res_mass)*
-                                       std::pow(5,  klambda)*
+                                       std::pow(5,  std::abs(klambda))*
                                        std::pow(7,  jet_cat)*
                                        std::pow(11, region)*
                                        std::pow(13, spin)*
