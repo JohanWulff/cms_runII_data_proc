@@ -209,10 +209,10 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     std::cout << "Loop complete, saving results.\n";
     data_even->Write();
     data_odd->Write();
-    in_file->Close();
-    out_file->Close();
     delete data_even;
     delete data_odd;
+    in_file->Close();
+    out_file->Close();
     return true;
 }
 
@@ -346,7 +346,7 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
                 std::cout << "Error in sample " << sample << " attempting to parse " << sample.substr(sample.find("_kl")+3) << "\n";
                 assert(false);
             }
-        } else {
+        } else {  // VBF
             sample_id = -12;
         }
     } else if (sample.find("Signal_Radion") != std::string::npos) {
