@@ -347,7 +347,7 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
                 assert(false);
             }
         } else {
-            sample_id = -11;
+            sample_id = -12;
         }
     } else if (sample.find("Signal_Radion") != std::string::npos) {
         spin = radion;
@@ -389,6 +389,8 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
         sample_id = 9;
     } else if (sample.find("ST") != std::string::npos) {
         sample_id = 10;
+    } else if (sample.find("ttV") != std::string::npos) {
+        sample_id = 11;
     } else{
         throw std::invalid_argument("Unrecognised sample: " + sample);
     }
