@@ -150,7 +150,6 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
 
         // Load HL feats
         kinfit_mass   = *rv_kinfit_mass;
-        if (kinfit_mass < 0) kinfit_mass == std::nanf;  // TODO: Replace with visible/naive estimate?
         kinfit_chi2   = *rv_kinfit_chi2;
         mt2           = *rv_mt2;
         mt_tot        = *rv_mt_tot;
