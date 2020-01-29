@@ -2,8 +2,8 @@
 #include <iostream>
 #include <string>
 
-std::string root_dir = "/eos/home-k/kandroso/cms-it-hh-bbtautau/anaTuples/2020-01-10/";
-std::string out_dir = "/eos/user/g/gstrong/cms_runII_dnn/data/";
+std::string root_dir = "/eos/home-k/kandroso/cms-it-hh-bbtautau/anaTuples/2020-01-10";
+std::string out_dir = "/eos/user/g/gstrong/cms_runII_dnn/data";
 
 
 void show_help() {

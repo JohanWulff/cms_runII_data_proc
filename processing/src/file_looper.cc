@@ -126,7 +126,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     
     // Outfiles
     std::string oname = out_dir+"/"+year+"_"+channel+".root";
-    std::cout << "Preparing output file: " << oname;
+    std::cout << "Preparing output file: " << oname << " ...";
     TFile* out_file  = new TFile(oname.c_str(), "recreate");
     TTree* data_even = new TTree("data_0", "Even id data");
     TTree* data_odd  = new TTree("data_1", "Odd id data");
@@ -150,6 +150,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
 
         // Load HL feats
         kinfit_mass   = *rv_kinfit_mass;
+        if (kinfit_mass < 0) kinfit_mass == std::nanf;  // TODO: Replace with visible/naive estimate?
         kinfit_chi2   = *rv_kinfit_chi2;
         mt2           = *rv_mt2;
         mt_tot        = *rv_mt_tot;
