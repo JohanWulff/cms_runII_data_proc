@@ -120,6 +120,22 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     LorentzVectorPEP pep_b_2;
     LorentzVector b_2;
 
+    // vbf1 feats
+    TTreeReaderValue<float> rv_vbf_1_pT(reader, "pt_vbf1");
+    TTreeReaderValue<float> rv_vbf_1_eta(reader, "eta_vbf1");
+    TTreeReaderValue<float> rv_vbf_1_phi(reader, "phi_vbf1");
+    TTreeReaderValue<float> rv_vbf_1_mass(reader, "m_vbf1");
+    LorentzVectorPEP pep_vbf_1;
+    LorentzVector vbf_1;
+
+    // vbf2 feats
+    TTreeReaderValue<float> rv_vbf_2_pT(reader, "pt_vbf2");
+    TTreeReaderValue<float> rv_vbf_2_eta(reader, "eta_vbf2");
+    TTreeReaderValue<float> rv_vbf_2_phi(reader, "phi_vbf2");
+    TTreeReaderValue<float> rv_vbf_2_mass(reader, "m_vbf2");
+    LorentzVectorPEP pep_vbf_2;
+    LorentzVector vbf_2;
+
     std::vector<std::unique_ptr<float>> feat_vals;
     feat_vals.reserve(_n_feats);
     for (unsigned int i = 0; i < _n_feats; i++) feat_vals.emplace_back(new float(0));
@@ -181,15 +197,19 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         pep_met.SetCoordinates(*rv_met_pT, 0,           *rv_met_phi, 0);
         pep_b_1.SetCoordinates(*rv_b_1_pT, *rv_b_1_eta, *rv_b_1_phi, *rv_b_1_mass);
         pep_b_2.SetCoordinates(*rv_b_2_pT, *rv_b_2_eta, *rv_b_2_phi, *rv_b_2_mass);
+        pep_vbf_1.SetCoordinates(*rv_vbf_1_pT, *rv_vbf_1_eta, *rv_vbf_1_phi, *rv_vbf_1_mass);
+        pep_vbf_2.SetCoordinates(*rv_vbf_2_pT, *rv_vbf_2_eta, *rv_vbf_2_phi, *rv_vbf_2_mass);
 
         svfit.SetCoordinates(pep_svfit.Px(), pep_svfit.Py(), pep_svfit.Pz(), pep_svfit.M());
-        l_1.SetCoordinates(pep_l_1.Px(), pep_l_1.Py(), pep_l_1.Pz(), pep_l_1.M());
-        l_2.SetCoordinates(pep_l_2.Px(), pep_l_2.Py(), pep_l_2.Pz(), pep_l_2.M());
-        met.SetCoordinates(pep_met.Px(), pep_met.Py(), 0,            0);
-        b_1.SetCoordinates(pep_b_1.Px(), pep_b_1.Py(), pep_b_1.Pz(), pep_b_1.M());
-        b_2.SetCoordinates(pep_b_2.Px(), pep_b_2.Py(), pep_b_2.Pz(), pep_b_2.M());
+        l_1.SetCoordinates(pep_l_1.Px(),     pep_l_1.Py(),   pep_l_1.Pz(),   pep_l_1.M());
+        l_2.SetCoordinates(pep_l_2.Px(),     pep_l_2.Py(),   pep_l_2.Pz(),   pep_l_2.M());
+        met.SetCoordinates(pep_met.Px(),     pep_met.Py(),   0,              0);
+        b_1.SetCoordinates(pep_b_1.Px(),     pep_b_1.Py(),   pep_b_1.Pz(),   pep_b_1.M());
+        b_2.SetCoordinates(pep_b_2.Px(),     pep_b_2.Py(),   pep_b_2.Pz(),   pep_b_2.M());
+        vbf_1.SetCoordinates(pep_vbf_1.Px(), pep_vbf_1.Py(), pep_vbf_1.Pz(), pep_vbf_1.M());
+        vbf_2.SetCoordinates(pep_vbf_2.Px(), pep_vbf_2.Py(), pep_vbf_2.Pz(), pep_vbf_2.M());
 
-        _evt_proc->process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit, kinfit_mass, kinfit_chi2, mt2, mt_tot, p_zetavisible, p_zeta, top_1_mass,
+        _evt_proc->process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit, vbf_1, vbf_2, kinfit_mass, kinfit_chi2, mt2, mt_tot, p_zetavisible, p_zeta, top_1_mass,
                                   top_2_mass, l_1_mt, l_2_mt, is_boosted, b_1_csv, b_2_csv, b_1_deepcsv, b_2_deepcsv, e_channel, e_year, res_mass, spin,
                                   klambda);
 
