@@ -33,16 +33,17 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     Channel e_channel = FileLooper::_get_channel(channel);
     Year e_year = FileLooper::_get_year(year);
     Spin spin(nonres);
-    float klambda = 1;
+    float klambda;
 
     // Meta info
     std::cout << "Extracting auxiliary data...";
-    TTreeReaderValue<std::vector<double>> rv_weight(reader, "all_weights");  // TODO: Check this
+    TTreeReaderValue<std::vector<double>> rv_weight(reader, "all_weights");
+    TTreeReaderValue<std::vector<float>> rv_weight(reader, "evt");
     TTreeReaderValue<std::vector<unsigned long>> rv_id(reader, "dataIds");
     std::map<unsigned long, std::string> id2name = FileLooper::build_id_map(in_file);
     std::cout << " Extracted\n";
     double weight;
-    float res_mass = 0;
+    float res_mass, evt;
     std::vector<std::string> names;
     int sample, region, jet_cat, cut;
     unsigned long long int strat_key;
@@ -121,18 +122,18 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     LorentzVector b_2;
 
     // vbf1 feats
-    TTreeReaderValue<float> rv_vbf_1_pT(reader, "pt_vbf1");
-    TTreeReaderValue<float> rv_vbf_1_eta(reader, "eta_vbf1");
-    TTreeReaderValue<float> rv_vbf_1_phi(reader, "phi_vbf1");
-    TTreeReaderValue<float> rv_vbf_1_mass(reader, "m_vbf1");
+    TTreeReaderValue<float> rv_vbf_1_pT(reader, "pt_VBF_1");
+    TTreeReaderValue<float> rv_vbf_1_eta(reader, "eta_VBF_1");
+    TTreeReaderValue<float> rv_vbf_1_phi(reader, "phi_VBF_1");
+    TTreeReaderValue<float> rv_vbf_1_mass(reader, "m_VBF_1");
     LorentzVectorPEP pep_vbf_1;
     LorentzVector vbf_1;
 
     // vbf2 feats
-    TTreeReaderValue<float> rv_vbf_2_pT(reader, "pt_vbf2");
-    TTreeReaderValue<float> rv_vbf_2_eta(reader, "eta_vbf2");
-    TTreeReaderValue<float> rv_vbf_2_phi(reader, "phi_vbf2");
-    TTreeReaderValue<float> rv_vbf_2_mass(reader, "m_vbf2");
+    TTreeReaderValue<float> rv_vbf_2_pT(reader, "pt_VBF_2");
+    TTreeReaderValue<float> rv_vbf_2_eta(reader, "eta_VBF_2");
+    TTreeReaderValue<float> rv_vbf_2_phi(reader, "phi_VBF_2");
+    TTreeReaderValue<float> rv_vbf_2_mass(reader, "m_VBF_2");
     LorentzVectorPEP pep_vbf_2;
     LorentzVector vbf_2;
 
@@ -163,6 +164,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
 
         // Load meta
         weight = (*rv_weight)[0];
+        evt    =  *evt;
 
         // Load HL feats
         kinfit_mass   = *rv_kinfit_mass;
@@ -213,7 +215,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
                                   top_2_mass, l_1_mt, l_2_mt, is_boosted, b_1_csv, b_2_csv, b_1_deepcsv, b_2_deepcsv, e_channel, e_year, res_mass, spin,
                                   klambda);
 
-        
+        std::cout << evt << "\n";
         if (c_event%2 == 0) {  // TODO: Replace with evt once implemented
             data_even->Fill();
         } else {
