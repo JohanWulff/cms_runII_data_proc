@@ -329,6 +329,7 @@ void FileLooper::_extract_flags(const std::vector<std::string>& name, int& sampl
 int FileLooper::_cut_lookup(const std::string& cut) {
     if (cut == "NoCuts") return 0;
     if (cut == "mhVis")  return 1;
+    if (cut == "mh")     return 2;
     throw std::invalid_argument("Unrecognised cut category: " + cut);
     return -1;
 }
