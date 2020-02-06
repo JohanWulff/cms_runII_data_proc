@@ -215,8 +215,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
                                   top_2_mass, l_1_mt, l_2_mt, is_boosted, b_1_csv, b_2_csv, b_1_deepcsv, b_2_deepcsv, e_channel, e_year, res_mass, spin,
                                   klambda);
 
-        std::cout << evt << "\n";
-        if (c_event%2 == 0) {  // TODO: Replace with evt once implemented
+        if (evt%2 == 0) {  // TODO: Replace with evt once implemented
             data_even->Fill();
         } else {
             data_odd->Fill();
