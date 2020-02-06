@@ -38,7 +38,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     // Meta info
     std::cout << "Extracting auxiliary data...";
     TTreeReaderValue<std::vector<double>> rv_weight(reader, "all_weights");
-    TTreeReaderValue<std::vector<float>> rv_evt(reader, "evt");
+    TTreeReaderValue<float> rv_evt(reader, "evt");
     TTreeReaderValue<std::vector<unsigned long>> rv_id(reader, "dataIds");
     std::map<unsigned long, std::string> id2name = FileLooper::build_id_map(in_file);
     std::cout << " Extracted\n";
