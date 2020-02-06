@@ -43,9 +43,9 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     std::map<unsigned long, std::string> id2name = FileLooper::build_id_map(in_file);
     std::cout << " Extracted\n";
     double weight;
-    float res_mass, evt;
+    float res_mass;
     std::vector<std::string> names;
-    int sample, region, jet_cat, cut;
+    int sample, region, jet_cat, cut, evt;
     unsigned long long int strat_key;
     bool scale, syst_unc;
     std::vector<unsigned long> ids;
@@ -164,7 +164,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
 
         // Load meta
         weight = (*rv_weight)[0];
-        evt    =  *rv_evt;
+        evt    =  static_cast<int>(*rv_evt);
 
         // Load HL feats
         kinfit_mass   = *rv_kinfit_mass;
