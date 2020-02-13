@@ -306,7 +306,7 @@ void FileLooper::_extract_flags(const std::vector<std::string>& name, int& sampl
             if (i == 0) {
                 tmp = FileLooper::_jet_cat_lookup(val);
                 if (tmp > jet_cat) jet_cat = tmp;
-                is_boosted = (jet_cat == 5);  // TODO: update this
+                is_boosted = (jet_cat == 5);
             } else if (i == 1) {
                 tmp = FileLooper::_cut_lookup(val);
                 if (tmp > cut) cut = tmp;
@@ -359,8 +359,8 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
     res_mass = 125;
     klambda = 1;
     
-    if (sample.find("Signal_NonRes") != std::string::npos) {
-        if (sample.find("_kl") != std::string::npos) {
+    if (sample.find("GluGluSignal") != std::string::npos) { 
+        if (sample.find("NonRes") != std::string::npos) {
             sample_id = -12;
             try {
                 klambda = std::stof(sample.substr(sample.find("_kl")+3));
@@ -368,39 +368,72 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
                 std::cout << "Error in sample " << sample << " attempting to parse " << sample.substr(sample.find("_kl")+3) << "\n";
                 assert(false);
             }
-        } else {  // VBF
-            sample_id = -13;
+        } else if (sample.find("Radion") != std::string::npos) {
+            spin = radion;
+            try {
+                res_mass = std::stof(sample.substr(sample.find("_M")+2));
+            } catch (...) {
+                std::cout << "Error in sample " << sample << " attempting to parse " << sample.substr(sample.find("_M")+2) << "\n";
+                assert(false);
+            }
+            if (res_mass <= 400) {
+                sample_id = -13;
+            } else if (res_mass <= 600) {
+                sample_id = -14;
+            } else {
+                sample_id = -15;
+            }
+        } else if (sample.find("Graviton") != std::string::npos) {
+            spin = graviton;
+            try {
+                res_mass = std::stof(sample.substr(sample.find("_M")+2));
+            } catch (...) {
+                std::cout << "Error in sample " << sample << " attempting to parse " << sample.substr(sample.find("_M")+2) << "\n";
+                assert(false);
+            }
+            if (res_mass <= 400) {
+                sample_id = -16;
+            } else if (res_mass <= 600) {
+                sample_id = -17;
+            } else {
+                sample_id = -18;
+            }
         }
-    } else if (sample.find("Signal_Radion") != std::string::npos) {
-        spin = radion;
-        try {
-            res_mass = std::stof(sample.substr(sample.find("_M")+2));
-        } catch (...) {
-            std::cout << "Error in sample " << sample << " attempting to parse " << sample.substr(sample.find("_M")+2) << "\n";
-            assert(false);
-        }
-        if (res_mass <= 400) {
-            sample_id = -14;
-        } else if (res_mass <= 600) {
-            sample_id = -15;
-        } else {
-            sample_id = -16;
-        }
-    } else if (sample.find("Signal_Graviton") != std::string::npos) {
-        spin = graviton;
-        try {
-            res_mass = std::stof(sample.substr(sample.find("_M")+2));
-        } catch (...) {
-            std::cout << "Error in sample " << sample << " attempting to parse " << sample.substr(sample.find("_M")+2) << "\n";
-            assert(false);
-        }
-        if (res_mass <= 400) {
-            sample_id = -17;
-        } else if (res_mass <= 600) {
-            sample_id = -18;
-        } else {
+    } else if (sample.find("VBFSignal") != std::string::npos) {
+        if (sample.find("NonRes") != std::string::npos) {
             sample_id = -19;
+        } else if (sample.find("Radion") != std::string::npos) {
+            spin = radion;
+            try {
+                res_mass = std::stof(sample.substr(sample.find("_M")+2));
+            } catch (...) {
+                std::cout << "Error in sample " << sample << " attempting to parse " << sample.substr(sample.find("_M")+2) << "\n";
+                assert(false);
+            }
+            if (res_mass <= 400) {
+                sample_id = -20;
+            } else if (res_mass <= 600) {
+                sample_id = -21;
+            } else {
+                sample_id = -22;
+            }
+        } else if (sample.find("Graviton") != std::string::npos) {
+            spin = graviton;
+            try {
+                res_mass = std::stof(sample.substr(sample.find("_M")+2));
+            } catch (...) {
+                std::cout << "Error in sample " << sample << " attempting to parse " << sample.substr(sample.find("_M")+2) << "\n";
+                assert(false);
+            }
+            if (res_mass <= 400) {
+                sample_id = -23;
+            } else if (res_mass <= 600) {
+                sample_id = -24;
+            } else {
+                sample_id = -25;
+            }
         }
+    }
     } else if (sample.find("Data") != std::string::npos) {
         sample_id = 0;
     } else if (sample.find("TT") != std::string::npos) {
