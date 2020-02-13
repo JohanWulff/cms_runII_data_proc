@@ -433,7 +433,6 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
                 sample_id = -25;
             }
         }
-    }
     } else if (sample.find("Data") != std::string::npos) {
         sample_id = 0;
     } else if (sample.find("TT") != std::string::npos) {
