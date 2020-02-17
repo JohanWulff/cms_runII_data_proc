@@ -38,15 +38,15 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     // Meta info
     std::cout << "Extracting auxiliary data...";
     TTreeReaderValue<std::vector<double>> rv_weight(reader, "all_weights");
-    TTreeReaderValue<float> rv_evt(reader, "evt");
+    TTreeReaderValue<unsigned long long> rv_evt(reader, "evt");
     TTreeReaderValue<std::vector<unsigned long>> rv_id(reader, "dataIds");
     std::map<unsigned long, std::string> id2name = FileLooper::build_id_map(in_file);
     std::cout << " Extracted\n";
     double weight;
     float res_mass;
     std::vector<std::string> names;
-    int sample, region, jet_cat, cut, evt;
-    unsigned long long int strat_key;
+    int sample, region, jet_cat, cut;
+    unsigned long long int strat_key, evt;
     bool scale, syst_unc;
     std::vector<unsigned long> ids;
     int class_id;
@@ -164,7 +164,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
 
         // Load meta
         weight = (*rv_weight)[0];
-        evt    =  static_cast<int>(*rv_evt);
+        evt    =  *rv_evt;
 
         // Load HL feats
         kinfit_mass   = *rv_kinfit_mass;
