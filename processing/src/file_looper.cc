@@ -185,8 +185,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         b_2_deepcsv = *rv_b_2_deepcsv;
 
         // Load vectors
-        // pep_svfit.SetCoordinates(*rv_svfit_pT, *rv_svfit_eta, *rv_svfit_phi, *rv_svfit_mass);
-        pep_svfit.SetCoordinates(0, 0, 0, *rv_svfit_mass); // TODO remove once svfit present
+        pep_svfit.SetCoordinates(*rv_svfit_pT, *rv_svfit_eta, *rv_svfit_phi, *rv_svfit_mass);
         pep_l_1.SetCoordinates(*rv_l_1_pT, *rv_l_1_eta, *rv_l_1_phi, *rv_l_1_mass);
         if (channel == "muTau") {  // Fix mass for light leptons
             l_2_mass = MU_MASS;
@@ -215,7 +214,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
                                   top_2_mass, l_1_mt, l_2_mt, is_boosted, b_1_csv, b_2_csv, b_1_deepcsv, b_2_deepcsv, e_channel, e_year, res_mass, spin,
                                   klambda);
 
-        if (evt%2 == 0) {  // TODO: Replace with evt once implemented
+        if (evt%2 == 0) {
             data_even->Fill();
         } else {
             data_odd->Fill();
