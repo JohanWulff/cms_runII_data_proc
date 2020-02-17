@@ -71,9 +71,9 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     bool is_boosted;
 
     // SVFit feats
-    //TTreeReaderValue<float> rv_svfit_pT(reader, "pt_sv");
-    //TTreeReaderValue<float> rv_svfit_eta(reader, "eta_sv");
-    //TTreeReaderValue<float> rv_svfit_phi(reader, "phi_sv");
+    TTreeReaderValue<float> rv_svfit_pT(reader, "pt_sv");
+    TTreeReaderValue<float> rv_svfit_eta(reader, "eta_sv");
+    TTreeReaderValue<float> rv_svfit_phi(reader, "phi_sv");
     TTreeReaderValue<float> rv_svfit_mass(reader, "m_sv");
     LorentzVectorPEP pep_svfit;
     LorentzVector svfit;
