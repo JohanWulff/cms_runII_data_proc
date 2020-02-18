@@ -59,7 +59,7 @@ private:
 
 public:
     // Methods
-	FileLooper(bool return_all=true, std::set<std::string> requested={}, bool use_deep_csv=true,
+	FileLooper(bool return_all=true, std::vector<std::string> requested={}, bool use_deep_csv=true,
                bool apply_cut=true, bool inc_all_jets=true, bool inc_other_regions=false, bool inc_data=false, bool inc_unc=false);
 	~FileLooper();
 	bool loop_file(const std::string&, const std::string&, const std::string&, const std::string&, const long int&);

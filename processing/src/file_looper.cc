@@ -1,6 +1,6 @@
 #include "cms_runII_data_proc/processing/interface/file_looper.hh"
 
-FileLooper::FileLooper(bool return_all, std::set<std::string> requested, bool use_deep_csv,
+FileLooper::FileLooper(bool return_all, std::vector<std::string> requested, bool use_deep_csv,
                        bool apply_cut, bool inc_all_jets, bool inc_other_regions, bool inc_data, bool inc_unc) {
     _evt_proc = new EvtProc(return_all, requested, use_deep_csv);
     _feat_names = _evt_proc->get_feats();
