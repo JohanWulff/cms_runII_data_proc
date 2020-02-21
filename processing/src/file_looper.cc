@@ -45,11 +45,10 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     double weight;
     float res_mass;
     std::vector<std::string> names;
-    int sample, region, jet_cat, cut;
+    int sample, region, jet_cat, cut, n_vbf, class_id;
     unsigned long long int strat_key, evt;
-    bool scale, syst_unc;
+    bool scale, syst_unc, svfit_conv, hh_kinfit_conv;
     std::vector<unsigned long> ids;
-    int class_id;
 
     // HL feats
     TTreeReaderValue<float> rv_kinfit_mass(reader, "m_ttbb_kinfit");
@@ -210,9 +209,20 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         vbf_1.SetCoordinates(pep_vbf_1.Px(), pep_vbf_1.Py(), pep_vbf_1.Pz(), pep_vbf_1.M());
         vbf_2.SetCoordinates(pep_vbf_2.Px(), pep_vbf_2.Py(), pep_vbf_2.Pz(), pep_vbf_2.M());
 
+        // VBF
+        n_vbf = 0;
+        if (jet_cat == 4) {
+            if (*rv_vbf_1_mass != std::numeric_limits<float>::lowest()) n_vbf++;
+            if (*rv_vbf_2_mass != std::numeric_limits<float>::lowest()) n_vbf++;
+        }
+
+        // Convergence
+        svfit_conv     = *rv_svfit_mass > 0;
+        hh_kinfit_conv = *kinfit_chi2   > 0;
+
         _evt_proc->process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit, vbf_1, vbf_2, kinfit_mass, kinfit_chi2, mt2, mt_tot, p_zetavisible, p_zeta, top_1_mass,
                                   top_2_mass, l_1_mt, l_2_mt, is_boosted, b_1_csv, b_2_csv, b_1_deepcsv, b_2_deepcsv, e_channel, e_year, res_mass, spin,
-                                  klambda);
+                                  klambda, n_vbf, svfit_conv, hh_kinfit_conv);
 
         if (evt%2 == 0) {
             data_even->Fill();
