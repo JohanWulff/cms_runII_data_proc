@@ -218,7 +218,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
 
         // Convergence
         svfit_conv     = *rv_svfit_mass > 0;
-        hh_kinfit_conv = *kinfit_chi2   > 0;
+        hh_kinfit_conv = kinfit_chi2    > 0;
 
         _evt_proc->process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit, vbf_1, vbf_2, kinfit_mass, kinfit_chi2, mt2, mt_tot, p_zetavisible, p_zeta, top_1_mass,
                                   top_2_mass, l_1_mt, l_2_mt, is_boosted, b_1_csv, b_2_csv, b_1_deepcsv, b_2_deepcsv, e_channel, e_year, res_mass, spin,
