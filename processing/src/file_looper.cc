@@ -185,15 +185,15 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
 
         // Load vectors
         pep_svfit.SetCoordinates(*rv_svfit_pT, *rv_svfit_eta, *rv_svfit_phi, *rv_svfit_mass);
-        pep_l_1.SetCoordinates(*rv_l_1_pT, *rv_l_1_eta, *rv_l_1_phi, *rv_l_1_mass);
         if (channel == "muTau") {  // Fix mass for light leptons
-            l_2_mass = MU_MASS;
+            l_1_mass = MU_MASS;
         } else if (channel == "eTau") {
-            l_2_mass = E_MASS;
+            l_1_mass = E_MASS;
         } else {
-            l_2_mass = *rv_l_2_mass;
+            l_1_mass = *rv_l_1_mass;
         }
-        pep_l_2.SetCoordinates(*rv_l_2_pT, *rv_l_2_eta, *rv_l_2_phi, l_2_mass);
+        pep_l_1.SetCoordinates(*rv_l_1_pT, *rv_l_1_eta, *rv_l_1_phi, l_1_mass);
+        pep_l_2.SetCoordinates(*rv_l_2_pT, *rv_l_2_eta, *rv_l_2_phi, *rv_l_2_mass);
         pep_met.SetCoordinates(*rv_met_pT, 0,           *rv_met_phi, 0);
         pep_b_1.SetCoordinates(*rv_b_1_pT, *rv_b_1_eta, *rv_b_1_phi, *rv_b_1_mass);
         pep_b_2.SetCoordinates(*rv_b_2_pT, *rv_b_2_eta, *rv_b_2_phi, *rv_b_2_mass);
