@@ -83,7 +83,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TTreeReaderValue<float> rv_l_1_phi(reader, "phi_1");
     TTreeReaderValue<float> rv_l_1_mass(reader, "m_1");
     TTreeReaderValue<float> rv_l_1_mt(reader, "mt_1");
-    float l_1_mt;
+    float l_1_mass, l_1_mt;
     LorentzVectorPEP pep_l_1;
     LorentzVector l_1;
 
@@ -94,7 +94,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TTreeReaderValue<float> rv_l_2_phi(reader, "phi_2");
     TTreeReaderValue<float> rv_l_2_mass(reader, "m_2");
     TTreeReaderValue<float> rv_l_2_mt(reader, "mt_2");
-    float l_2_mass, l_2_mt;
+    float l_2_mt;
     LorentzVectorPEP pep_l_2;\
     LorentzVector l_2;
 
