@@ -307,7 +307,7 @@ void FileLooper::_extract_flags(const std::vector<std::string>& names, int& samp
     std::string val;
     bool tmp_cut_pass;
     std::vector<int> tmp_jet_cats;
-    std::vector<std::string> tmp_cut_passes;
+    std::vector<bool> tmp_cut_passes;
     int tmp_jet_cat;
     idxs.clear();
     float tmp_klambda;
@@ -345,7 +345,7 @@ void FileLooper::_extract_flags(const std::vector<std::string>& names, int& samp
         for (unsigned int i = 0; i < idxs.size(); i++) {
             if (tmp_jet_cats[i] == 4) is_boosted = true;
             if (tmp_jet_cats[i] > jet_cat) jet_cat = tmp_jet_cats[i];
-            if (tmp_cut_passess[i]) cut_pass = true;
+            if (tmp_cut_passes[i]) cut_pass = true;
         }
     }
 }
@@ -522,7 +522,7 @@ std::map<unsigned long, std::string> FileLooper::build_id_map(TFile* in_file) {
     return id2name;
 }
 
-double FileLooper::_get_weight(const TTreeReaderValue<std::vector<double>>& rv_weight, const std::vector<unsigned int>& idxs) {
+double FileLooper::_get_weight(TTreeReaderValue<std::vector<double>>& rv_weight, const std::vector<unsigned int>& idxs) {
     double del, weight = (*rv_weight)[idxs[0]];
     for (unsigned int i = 1; i < idxs.size(); i++) {
         del = std::abs((*rv_weight)[i]-weight);

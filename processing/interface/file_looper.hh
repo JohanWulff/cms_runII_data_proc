@@ -43,8 +43,8 @@ private:
 
 	// Methods
     inline int _get_split(const unsigned long int&);
-    void _prep_file(TTree*, const std::vector<std::unique_ptr<float>>&, double*, int*, int*, int*, int*, bool*, bool*, int*,
-                    unsigned long long int*);
+    void _prep_file(TTree* tree, const std::vector<std::unique_ptr<float>>& feat_vals, double* weight, int* sample, int* region, int* jet_cat,
+                    bool* cut_pass, bool* scale, bool* central_unc, int* class_id, unsigned long long int* strat_key);
     Channel _get_channel(std::string);
     Year _get_year(std::string);
     unsigned long long int _get_strat_key(const int&, const int&, const int&, const int&, const int&);
