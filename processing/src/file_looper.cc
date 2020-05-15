@@ -110,6 +110,10 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TTreeReaderValue<float> rv_b_1_eta(reader, "eta_b1");
     TTreeReaderValue<float> rv_b_1_phi(reader, "phi_b1");
     TTreeReaderValue<float> rv_b_1_mass(reader, "m_b1");
+    TTreeReaderValue<float> rv_b_1_hhbtag(reader, "b1_HHbtag");
+    TTreeReaderValue<float> rv_b_1_cvsl(reader, "b1_DeepFlavour_CvsL");
+    TTreeReaderValue<float> rv_b_1_cvsb(reader, "b1_DeepFlavour_CvsB");
+    float b_1_hhbtag, b_1_cvsl, b_1_cvsb;
     LorentzVectorPEP pep_b_1;
     LorentzVector b_1;
 
@@ -118,6 +122,10 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TTreeReaderValue<float> rv_b_2_eta(reader, "eta_b2");
     TTreeReaderValue<float> rv_b_2_phi(reader, "phi_b2");
     TTreeReaderValue<float> rv_b_2_mass(reader, "m_b2");
+    TTreeReaderValue<float> rv_b_2_hhbtag(reader, "b2_HHbtag");
+    TTreeReaderValue<float> rv_b_2_cvsl(reader, "b2_DeepFlavour_CvsL");
+    TTreeReaderValue<float> rv_b_2_cvsb(reader, "b2_DeepFlavour_CvsB");
+    float b_2_hhbtag, b_2_cvsl, b_2_cvsb;
     LorentzVectorPEP pep_b_2;
     LorentzVector b_2;
 
@@ -126,6 +134,10 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TTreeReaderValue<float> rv_vbf_1_eta(reader, "eta_VBF_1");
     TTreeReaderValue<float> rv_vbf_1_phi(reader, "phi_VBF_1");
     TTreeReaderValue<float> rv_vbf_1_mass(reader, "m_VBF_1");
+    TTreeReaderValue<float> rv_vbf_1_hhbtag(reader, "VBF1_HHbtag");
+    TTreeReaderValue<float> rv_vbf_1_cvsl(reader, "VBF1_DeepFlavour_CvsL");
+    TTreeReaderValue<float> rv_vbf_1_cvsb(reader, "VBF1_DeepFlavour_CvsB");
+    float vbf_1_hhbtag, vbf_1_cvsl, vbf_1_cvsb;
     LorentzVectorPEP pep_vbf_1;
     LorentzVector vbf_1;
 
@@ -134,6 +146,10 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TTreeReaderValue<float> rv_vbf_2_eta(reader, "eta_VBF_2");
     TTreeReaderValue<float> rv_vbf_2_phi(reader, "phi_VBF_2");
     TTreeReaderValue<float> rv_vbf_2_mass(reader, "m_VBF_2");
+    TTreeReaderValue<float> rv_vbf_2_hhbtag(reader, "VBF2_HHbtag");
+    TTreeReaderValue<float> rv_vbf_2_cvsl(reader, "VBF2_DeepFlavour_CvsL");
+    TTreeReaderValue<float> rv_vbf_2_cvsb(reader, "VBF2_DeepFlavour_CvsB");
+    float vbf_2_hhbtag, vbf_2_cvsl, vbf_2_cvsb;
     LorentzVectorPEP pep_vbf_2;
     LorentzVector vbf_2;
 
@@ -179,6 +195,18 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         p_zeta        = *rv_p_zeta;
         l_1_mt        = *rv_l_1_mt;
         l_2_mt        = *rv_l_2_mt;
+        b_1_hhbtag    = *rv_b_1_hhbtag;
+        b_2_hhbtag    = *rv_b_2_hhbtag;
+        vbf_1_hhbtag  = *rv_vbf_1_hhbtag;
+        vbf_2_hhbtag  = *rv_vbf_2_hhbtag;
+        b_1_cvsl      = *rv_b_1_csvl;
+        b_2_cvsl      = *rv_b_1_csvl;
+        vbf_1_cvsl    = *rv_vbf_1_csvl;
+        vbf_2_cvsl    = *rv_vbf_1_csvl;
+        b_1_cvsb      = *rv_b_1_csvb;
+        b_2_cvsb      = *rv_b_1_csvb;
+        vbf_1_cvsb    = *rv_vbf_1_csvb;
+        vbf_2_cvsb    = *rv_vbf_1_csvb;
 
         // Load tagging
         b_1_csv     = *rv_b_1_csv;
@@ -223,7 +251,8 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
 
         _evt_proc->process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit, vbf_1, vbf_2, kinfit_mass, kinfit_chi2, mt2, mt_tot, p_zetavisible, p_zeta, top_1_mass,
                                   top_2_mass, l_1_mt, l_2_mt, is_boosted, b_1_csv, b_2_csv, e_channel, e_year, res_mass, spin,
-                                  klambda, n_vbf, svfit_conv, hh_kinfit_conv);
+                                  klambda, n_vbf, svfit_conv, hh_kinfit_conv, b_1_hhbtag, b_2_hhbtag, vbf_1_hhbtag, vbf_2_hhbtag,
+                                  b_1_cvsl, b_2_cvsl, vbf_1_cvsl, vbf_2_cvsl, b_1_cvsb, b_2_cvsb, vbf_1_cvsb, vbf_2_cvsb);
 
         if (evt%2 == 0) {
             data_even->Fill();
