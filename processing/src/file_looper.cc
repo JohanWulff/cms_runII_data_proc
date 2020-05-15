@@ -84,7 +84,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TTreeReaderValue<float> rv_l_1_eta(reader, "tau1_eta");
     TTreeReaderValue<float> rv_l_1_phi(reader, "tau1_phi");
     TTreeReaderValue<float> rv_l_1_mass(reader, "tau1_m");
-    TTreeReaderValue<float> rv_l_1_mt(reader, "mt_1");
+    // TTreeReaderValue<float> rv_l_1_mt(reader, "mt_1");
     float l_1_mass, l_1_mt;
     LorentzVectorPEP pep_l_1;
     LorentzVector l_1;
@@ -95,7 +95,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TTreeReaderValue<float> rv_l_2_eta(reader, "tau2_eta");
     TTreeReaderValue<float> rv_l_2_phi(reader, "tau2_phi");
     TTreeReaderValue<float> rv_l_2_mass(reader, "tau2_m");
-    TTreeReaderValue<float> rv_l_2_mt(reader, "mt_2");
+    // TTreeReaderValue<float> rv_l_2_mt(reader, "mt_2");
     float l_2_mt;
     LorentzVectorPEP pep_l_2;\
     LorentzVector l_2;
@@ -195,8 +195,8 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         top_2_mass    = 0;  // *rv_top_2_mass;
         p_zetavisible = 0;  // *rv_p_zetavisible;
         p_zeta        = 0;  // *rv_p_zeta;
-        l_1_mt        = *rv_l_1_mt;
-        l_2_mt        = *rv_l_2_mt;
+        l_1_mt        = 0;  // *rv_l_1_mt;
+        l_2_mt        = 0;  // *rv_l_2_mt;
         b_1_hhbtag    = *rv_b_1_hhbtag;
         b_2_hhbtag    = *rv_b_2_hhbtag;
         vbf_1_hhbtag  = *rv_vbf_1_hhbtag;
