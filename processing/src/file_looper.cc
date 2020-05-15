@@ -597,7 +597,7 @@ double FileLooper::_get_weight(TTreeReaderValue<std::vector<double>>& rv_weight,
 float FileLooper::_get_mva_score(TTreeReaderValue<std::vector<float>>& rv_mva_score, const std::vector<unsigned int>& idxs) {
     float del, mva_score = (*rv_mva_score)[idxs[0]];
     for (unsigned int i = 1; i < idxs.size(); i++) {
-        del = std::abs((*rv_mva_score)[i]-mva_score)/;
+        del = std::abs((*rv_mva_score)[i]-mva_score);
         if (del < 1e-5) {
             std::cout << "Multiple mva scores found. Del = " << del << "\n";
             assert(false);
