@@ -359,7 +359,7 @@ void FileLooper::_extract_flags(const std::vector<std::string>& names, int& samp
                 central_unc = (val == "None");
             } else if (i == 4 &&  n == 0) {
                 scale = (val == "Central");
-            } else if (i == 5) {
+            } else if (i == 5 &&  n == 0) {
                 FileLooper::_sample_lookup(val, sample, spin, tmp_klambda, res_mass, tmp_cv, tmp_c2v, tmp_c3);
                 class_id = FileLooper::_sample2class_lookup(sample);
             }
@@ -585,9 +585,9 @@ std::map<unsigned long, std::string> FileLooper::build_id_map(TFile* in_file) {
 double FileLooper::_get_weight(TTreeReaderValue<std::vector<double>>& rv_weight, const std::vector<unsigned int>& idxs) {
     double del, weight = (*rv_weight)[idxs[0]];
     for (unsigned int i = 1; i < idxs.size(); i++) {
-        del = std::abs((*rv_weight)[i]-weight)/weight;
-        if (del < 1e-3) {
-            std::cout << "Multiple weights found. " << (*rv_weight)[i] << " : " << weight << " Del = " << del << "\n";
+        del = std::abs((*rv_weight)[i]-weight);
+        if (del < 1e-5) {
+            std::cout << "Multiple weights found. Del = " << del << "\n";
             assert(false);
         }
     }
@@ -597,9 +597,9 @@ double FileLooper::_get_weight(TTreeReaderValue<std::vector<double>>& rv_weight,
 float FileLooper::_get_mva_score(TTreeReaderValue<std::vector<float>>& rv_mva_score, const std::vector<unsigned int>& idxs) {
     float del, mva_score = (*rv_mva_score)[idxs[0]];
     for (unsigned int i = 1; i < idxs.size(); i++) {
-        del = std::abs((*rv_mva_score)[i]-mva_score)/mva_score;
-        if (del < 1e-3) {
-            std::cout << "Multiple mva scores found. " << (*rv_mva_score)[i] << " : " << mva_score << " << del << " << del << "\n";
+        del = std::abs((*rv_mva_score)[i]-mva_score)/;
+        if (del < 1e-5) {
+            std::cout << "Multiple mva scores found. Del = " << del << "\n";
             assert(false);
         }
     }
