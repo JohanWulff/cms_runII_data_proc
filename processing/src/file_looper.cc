@@ -308,6 +308,7 @@ void FileLooper::_extract_flags(const std::vector<std::string>& names, int& samp
     std::vector<int> tmp_jet_cats;
     std::vector<std::string> tmp_cuts;
     int tmp_jet_cat;
+    idxs.clear();
     for (unsigned int n = 0; n < names.size(); n++) {
         std::istringstream iss(names[n]);
         int i = 0;
@@ -319,7 +320,7 @@ void FileLooper::_extract_flags(const std::vector<std::string>& names, int& samp
             } else if (i == 2 &&  n == 0) {
                 region = FileLooper::_region_lookup(val);
             } else if (i == 3 &&  n == 0) {
-                syst = (val == "None");
+                syst_unc = (val == "None");
             } else if (i == 4 &&  n == 0) {
                 scale = (val == "Central");
             } else if (i == 5 &&  n == 0) {
@@ -339,7 +340,7 @@ void FileLooper::_extract_flags(const std::vector<std::string>& names, int& samp
     } else {
         accept = true;
         jet_cat = -1;
-        for (unsigned int i = 0; i < tmp_idxs.size(); i++) {
+        for (unsigned int i = 0; i < idxs.size(); i++) {
             if (tmp_jet_cats[i] == 4) is_boosted == true;
             if (tmp_jet_cats[i] > jet_cat) tmp_jet_cats[i] = c;
             if (tmp_cuts[i] == "mh") cut = 1;
