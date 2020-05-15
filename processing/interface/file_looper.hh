@@ -49,14 +49,14 @@ private:
     Year _get_year(std::string);
     unsigned long long int _get_strat_key(const int&, const int&, const int&, const int&, const int&);
     std::vector<std::string> _get_evt_names(const std::map<unsigned long, std::string>&, const std::vector<unsigned long>&);
-    void _extract_flags(const std::vector<std::string>& names, int& sample, int& region, bool& syst_unc, bool& scale,
-                                    int& jet_cat, int& cut, int& class_id, Spin& spin, float& klambda, float& res_mass,
-                                    bool& is_boosted, bool& accept, std::vector<unsigned int>& idxs)
+    void _extract_flags(const std::vector<std::string>& names, int& sample, int& region, bool& central_unc, bool& scale,
+                                    int& jet_cat, bool& cut_pass, int& class_id, Spin& spin, float& klambda, float& res_mass,
+                                    bool& is_boosted, bool& accept, std::vector<unsigned int>& idxs);
     int _jet_cat_lookup(const std::string&);
     int _region_lookup(const std::string&);
     void _sample_lookup(const std::string&, int&, Spin&, float&, float&);
     int _sample2class_lookup(const int&);
-    bool _accept_evt(const int& region, const bool& syst_unc, const int& jet_cat, const int& cut, const int& class_id, const float& klambda);
+    bool _accept_evt(const int& region, const bool& central_unc, const int& jet_cat, const bool& cut_pass, const int& class_id, const float& klambda);
     double _get_weight(const TTreeReaderValue<std::vector<double>>& rv_weight, const std::vector<unsigned int>& idxs);
 
 public:
