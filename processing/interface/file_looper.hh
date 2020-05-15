@@ -35,7 +35,7 @@ private:
 	using LorentzVector    = ROOT::Math::LorentzVector<ROOT::Math::PxPyPzM4D<float>>;
 
 	// Variables
-    bool _all, _use_deep_csv, _apply_cut, _inc_other_regions, _inc_all_jets, _inc_unc, _inc_data, _only_kl1;
+    bool _all, _use_deep_csv, _apply_cut, _inc_other_regions, _inc_all_jets, _inc_unc, _inc_data, _only_kl1, _only_sm_vbf;
     std::set<std::string> _requested;
     unsigned int _n_feats;
     std::vector<std::string> _feat_names;
@@ -50,20 +50,22 @@ private:
     unsigned long long int _get_strat_key(const int&, const int&, const int&, const int&, const int&);
     std::vector<std::string> _get_evt_names(const std::map<unsigned long, std::string>&, const std::vector<unsigned long>&);
     void _extract_flags(const std::vector<std::string>& names, int& sample, int& region, bool& central_unc, bool& scale,
-                                    int& jet_cat, bool& cut_pass, int& class_id, Spin& spin, float& klambda, float& res_mass,
-                                    bool& is_boosted, bool& accept, std::vector<unsigned int>& idxs);
+                        int& jet_cat, bool& cut_pass, int& class_id, Spin& spin, float& klambda, float& res_mass,
+                        bool& is_boosted, bool& accept, std::vector<unsigned int>& idxs , float& cv, float& c2v, float& c3);
     int _jet_cat_lookup(const std::string&);
     int _region_lookup(const std::string&);
-    void _sample_lookup(const std::string&, int&, Spin&, float&, float&);
+    void _sample_lookup(const std::string& sample, int& sample_id, Spin& spin, float& klambda, float& res_mass, float& cv, float& c2v, float& c3)
     int _sample2class_lookup(const int&);
-    bool _accept_evt(const int& region, const bool& central_unc, const int& jet_cat, const bool& cut_pass, const int& class_id, const float& klambda);
+    bool _accept_evt(const int& region, const bool& central_unc, const int& jet_cat, const bool& cut_pass, const int& class_id, const float& klambda,
+                     const float& cv, const float& c2v, const float& c3);
     double _get_weight(TTreeReaderValue<std::vector<double>>& rv_weight, const std::vector<unsigned int>& idxs);
     double _get_mva_score(TTreeReaderValue<std::vector<double>>& rv_mva_score, const std::vector<unsigned int>& idxs);
 
 public:
     // Methods
 	FileLooper(bool return_all=true, std::vector<std::string> requested={}, bool use_deep_bjet_wps=true,
-               bool apply_cut=true, bool inc_all_jets=true, bool inc_other_regions=false, bool inc_data=false, bool inc_unc=false, bool only_kl1=true);
+               bool apply_cut=true, bool inc_all_jets=true, bool inc_other_regions=false, bool inc_data=false, bool inc_unc=false,
+               bool only_kl1=true, , bool only_sm_vbf=true);
 	~FileLooper();
 	bool loop_file(const std::string&, const std::string&, const std::string&, const std::string&, const long int&);
     std::map<unsigned long, std::string> build_id_map(TFile*);
