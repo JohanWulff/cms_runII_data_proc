@@ -278,7 +278,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
 }
 
 void FileLooper::_prep_file(TTree* tree, const std::vector<std::unique_ptr<float>>& feat_vals, double* weight, int* sample, int* region, int* jet_cat,
-                            bool* cut_pass, bool* scale, bool* central_unc, int* class_id, unsigned long long int* strat_key, double* mva_score) {
+                            bool* cut_pass, bool* scale, bool* central_unc, int* class_id, unsigned long long int* strat_key, float* mva_score) {
     /* Add branches to tree and set addresses for values */
 
     for (unsigned int i = 0; i < _n_feats; i++) tree->Branch(_feat_names[i].c_str(), feat_vals[i].get());
