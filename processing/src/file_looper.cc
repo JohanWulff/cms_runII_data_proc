@@ -91,7 +91,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
 
 
     // l2 feats
-    TTreeReaderValue<float> rv_l_2_pT(reader, "tau2_2");
+    TTreeReaderValue<float> rv_l_2_pT(reader, "tau2_pt");
     TTreeReaderValue<float> rv_l_2_eta(reader, "tau2_eta");
     TTreeReaderValue<float> rv_l_2_phi(reader, "tau2_phi");
     TTreeReaderValue<float> rv_l_2_mass(reader, "tau2_m");
