@@ -199,14 +199,14 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         b_2_hhbtag    = *rv_b_2_hhbtag;
         vbf_1_hhbtag  = *rv_vbf_1_hhbtag;
         vbf_2_hhbtag  = *rv_vbf_2_hhbtag;
-        b_1_cvsl      = *rv_b_1_csvl;
-        b_2_cvsl      = *rv_b_1_csvl;
-        vbf_1_cvsl    = *rv_vbf_1_csvl;
-        vbf_2_cvsl    = *rv_vbf_1_csvl;
-        b_1_cvsb      = *rv_b_1_csvb;
-        b_2_cvsb      = *rv_b_1_csvb;
-        vbf_1_cvsb    = *rv_vbf_1_csvb;
-        vbf_2_cvsb    = *rv_vbf_1_csvb;
+        b_1_cvsl      = *rv_b_1_cvsl;
+        b_2_cvsl      = *rv_b_2_cvsl;
+        vbf_1_cvsl    = *rv_vbf_1_cvsl;
+        vbf_2_cvsl    = *rv_vbf_2_cvsl;
+        b_1_cvsb      = *rv_b_1_cvsb;
+        b_2_cvsb      = *rv_b_2_cvsb;
+        vbf_1_cvsb    = *rv_vbf_1_cvsb;
+        vbf_2_cvsb    = *rv_vbf_2_cvsb;
 
         // Load tagging
         b_1_csv     = *rv_b_1_csv;
