@@ -35,7 +35,7 @@ private:
 	using LorentzVector    = ROOT::Math::LorentzVector<ROOT::Math::PxPyPzM4D<float>>;
 
 	// Variables
-    bool _all, _use_deep_csv, _apply_cut, _inc_other_regions, _inc_all_jets, _inc_unc, _inc_data;
+    bool _all, _use_deep_csv, _apply_cut, _inc_other_regions, _inc_all_jets, _inc_unc, _inc_data, _only_kl1;
     std::set<std::string> _requested;
     unsigned int _n_feats;
     std::vector<std::string> _feat_names;
@@ -49,18 +49,20 @@ private:
     Year _get_year(std::string);
     unsigned long long int _get_strat_key(const int&, const int&, const int&, const int&, const int&);
     std::vector<std::string> _get_evt_names(const std::map<unsigned long, std::string>&, const std::vector<unsigned long>&);
-    void _extract_flags(const std::vector<std::string>&, int&, int&, bool&, bool&, int&, int&, int&, Spin&, float&, float&, bool&);
+    void FileLooper::_extract_flags(const std::vector<std::string>& names, int& sample, int& region, bool& syst_unc, bool& scale,
+                                    int& jet_cat, int& cut, int& class_id, Spin& spin, float& klambda, float& res_mass,
+                                    bool& is_boosted, bool& accept, std::vector<unsigned int>& idxs)
     int _jet_cat_lookup(const std::string&);
     int _region_lookup(const std::string&);
     void _sample_lookup(const std::string&, int&, Spin&, float&, float&);
     int _sample2class_lookup(const int&);
     bool _accept_evt(const int&, const bool&, const int&, const int&, const int&);
-    int _cut_lookup(const std::string&);
+    double FileLooper::_get_weight(const TTreeReaderValue<std::vector<double>>& rv_weight, const std::vector<unsigned int>& idxs);
 
 public:
     // Methods
-	FileLooper(bool return_all=true, std::vector<std::string> requested={}, bool use_deep_csv=true,
-               bool apply_cut=true, bool inc_all_jets=true, bool inc_other_regions=false, bool inc_data=false, bool inc_unc=false);
+	FileLooper(bool return_all=true, std::vector<std::string> requested={}, bool use_deep_bjet_wps=true,
+               bool apply_cut=true, bool inc_all_jets=true, bool inc_other_regions=false, bool inc_data=false, bool inc_unc=false, bool only_kl1=true);
 	~FileLooper();
 	bool loop_file(const std::string&, const std::string&, const std::string&, const std::string&, const long int&);
     std::map<unsigned long, std::string> build_id_map(TFile*);

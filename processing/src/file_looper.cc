@@ -1,7 +1,7 @@
 #include "cms_runII_data_proc/processing/interface/file_looper.hh"
 
 FileLooper::FileLooper(bool return_all, std::vector<std::string> requested, bool use_deep_bjet_wps,
-                       bool apply_cut, bool inc_all_jets, bool inc_other_regions, bool inc_data, bool inc_unc) {
+                       bool apply_cut, bool inc_all_jets, bool inc_other_regions, bool inc_data, bool inc_unc, bool only_kl1) {
     _evt_proc = new EvtProc(return_all, requested, use_deep_bjet_wps);
     _feat_names = _evt_proc->get_feats();
     _n_feats = _feat_names.size();
@@ -10,6 +10,7 @@ FileLooper::FileLooper(bool return_all, std::vector<std::string> requested, bool
     _inc_other_regions = inc_other_regions;
     _inc_unc = inc_unc;
     _inc_data = inc_data;
+    _only_kl1 = only_kl1;
 }
 
 FileLooper::~FileLooper() {
@@ -46,8 +47,9 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     float res_mass;
     std::vector<std::string> names;
     int sample, region, jet_cat, cut, n_vbf, class_id;
+    std::vector<unsigned int> idxs;
     unsigned long long int strat_key, evt;
-    bool scale, syst_unc, svfit_conv, hh_kinfit_conv;
+    bool scale, syst_unc, svfit_conv, hh_kinfit_conv, accept;
     std::vector<unsigned long> ids;
 
     // HL feats
@@ -155,12 +157,13 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         ids = *rv_id;
 
         names = FileLooper::_get_evt_names(id2name, ids);
-        FileLooper::_extract_flags(names, sample, region, syst_unc, scale, jet_cat, cut, class_id, spin, klambda, res_mass, is_boosted);
-        if (!FileLooper::_accept_evt(region, syst_unc, jet_cat, cut, class_id)) continue;
+        if (names.size() == 0) continue;
+        FileLooper::_extract_flags(names, sample, region, syst_unc, scale, jet_cat, cut, class_id, spin, klambda, res_mass, is_boosted, accept, idxs);
+        if (!accept) continue;
         strat_key = FileLooper::_get_strat_key(sample, static_cast<int>(jet_cat), region, static_cast<int>(syst_unc), cut);
 
         // Load meta
-        weight = (*rv_weight)[0];
+        weight = FileLooper::_get_weight(rv_weight, idxs); 
         evt    =  *rv_evt;
 
         // Load HL feats
@@ -293,49 +296,55 @@ std::vector<std::string> FileLooper::_get_evt_names(const std::map<unsigned long
     return names;
 }
 
-void FileLooper::_extract_flags(const std::vector<std::string>& name, int& sample, int& region, bool& syst_unc, bool& scale, int& jet_cat, int& cut, int& class_id,
-                                Spin& spin, float& klambda, float& res_mass, bool& is_boosted) {
+void FileLooper::_extract_flags(const std::vector<std::string>& names, int& sample, int& region, bool& syst_unc, bool& scale,
+                                int& jet_cat, int& cut, int& class_id, Spin& spin, float& klambda, float& res_mass,
+                                bool& is_boosted, bool& accept, std::vector<unsigned int>& idxs) {
     /*
     Extract event flags from name 
     Example: "2j/NoCuts/SS_AntiIsolated/None/Central/DY_MC_M-10-50"
     */
 
-    std::string val;
-    int tmp;
-    jet_cat = -1;
-    cut = -1;
-    for (unsigned int n = 0; n < name.size(); n++) {
-        std::istringstream iss(name[n]);
+    std::string val, tmp_cut;
+    std::vector<int> tmp_jet_cats;
+    std::vector<std::string> tmp_cuts;
+    int tmp_jet_cat;
+    for (unsigned int n = 0; n < names.size(); n++) {
+        std::istringstream iss(names[n]);
         int i = 0;
         while (std::getline(iss, val, '/')) {   
             if (i == 0) {
-                tmp = FileLooper::_jet_cat_lookup(val);
-                if (tmp > jet_cat) jet_cat = tmp;
-                is_boosted = (jet_cat == 5);
+                tmp_jet_cat = FileLooper::_jet_cat_lookup(val);
             } else if (i == 1) {
-                tmp = FileLooper::_cut_lookup(val);
-                if (tmp > cut) cut = tmp;
-            } else if (i == 2 && n == 0) {
+                tmp_cut = val;
+            } else if (i == 2 &&  n == 0) {
                 region = FileLooper::_region_lookup(val);
-            } else if (i == 3 && n == 0) {
-                syst_unc = (val == "None");
-            } else if (i == 4 && n == 0) {
+            } else if (i == 3 &&  n == 0) {
+                syst = (val == "None");
+            } else if (i == 4 &&  n == 0) {
                 scale = (val == "Central");
-            } else if (i == 5 && n == 0) {
+            } else if (i == 5 &&  n == 0) {
                 FileLooper::_sample_lookup(val, sample, spin, klambda, res_mass);
+                class_id = FileLooper::_sample2class_lookup(sample);
             }
             i++;
         }
-        class_id = FileLooper::_sample2class_lookup(sample);
+        if (FileLooper::_accept_evt(region, syst_unc, jet_cat, cut, class_id, klambda)) {
+            tmp_jet_cats.push_back(tmp_jet_cat);
+            tmp_cuts.push_back(tmp_cut);
+            idxs.push_back(n);
+        }
     }
-}
-
-int FileLooper::_cut_lookup(const std::string& cut) {
-    if (cut == "NoCuts") return 0;
-    if (cut == "mhVis")  return 1;
-    if (cut == "mh")     return 2;
-    throw std::invalid_argument("Unrecognised cut category: " + cut);
-    return -1;
+    if (idxs.size() == 0) {
+        accept = false;
+    } else {
+        accept = true;
+        jet_cat = -1;
+        for (unsigned int i = 0; i < tmp_idxs.size(); i++) {
+            if (tmp_jet_cats[i] == 4) is_boosted == true;
+            if (tmp_jet_cats[i] > jet_cat) tmp_jet_cats[i] = c;
+            if (tmp_cuts[i] == "mh") cut = 1;
+        }
+    }
 }
 
 int FileLooper::_jet_cat_lookup(const std::string& jet_cat) {
@@ -344,8 +353,8 @@ int FileLooper::_jet_cat_lookup(const std::string& jet_cat) {
     if (jet_cat == "2j1bR_noVBF")   return 2;
     if (jet_cat == "2j2b+R_noVBF")  return 3;
     if (jet_cat == "2j2Lb+B_noVBF") return 4;
-    if (jet_cat == "2j1b+_VBF")     return 5;
-    if (jet_cat == "2j1b+_VBFL")    return 6;
+    if (jet_cat == "2j1b+_VBFL")    return 5;
+    if (jet_cat == "2j1b+_VBF")     return 6;
     throw std::invalid_argument("Unrecognised jet category: " + jet_cat);
     return -1;
 }
@@ -474,11 +483,12 @@ int FileLooper::_sample2class_lookup(const int& sample) {
     return 0;                    // Background
 }
 
-bool FileLooper::_accept_evt(const int& region, const bool& syst_unc, const int& jet_cat, const int& cut, const int& class_id) {
-    if (_apply_cut && cut == 0) return false;  // Require cut and cut failed
-    if (!_inc_data && class_id == -1) return false; // Don't inlclude data and event is data
+bool FileLooper::_accept_evt(const int& region, const bool& syst_unc, const int& jet_cat, const int& cut, const int& class_id, const float& klambda) {
+    if (_only_kl1 && klambda != 1) return false; // Only consider klambda at SM point
+    if (_apply_cut && cut != "mh") return false;  // Require mass cut and cut failed
+    if (!_inc_data && class_id == -1) return false; // Don't include data and event is data
     if (!_inc_other_regions && region != 0) return false;  //Don't include other regions and event is not SS Iso
-    if (!_inc_unc && !syst_unc) return false;  //Don't systematicss and event is a systematic
+    if (!_inc_unc && !syst_unc) return false;  //Don't systematics and event is a systematic
     if (!_inc_all_jets && jet_cat == 0) return false;  // Only use inference category jets and event is non-inference category
     return true;
 }
@@ -507,4 +517,16 @@ std::map<unsigned long, std::string> FileLooper::build_id_map(TFile* in_file) {
     std::map<unsigned long, std::string> id2name;
     for (unsigned int i = 0; i < ids.size(); i++) id2name[ids[i]] = names[i];
     return id2name;
+}
+
+double FileLooper::_get_weight(const TTreeReaderValue<std::vector<double>>& rv_weight, const std::vector<unsigned int>& idxs) {
+    double del, weight = (*rv_weight)[idxs[0]];
+    for (unsigned int i = 1; i < idxs.size(); i++) {
+        del = std::abs((*rv_weight)[i]-weight);
+        if (del < 1e-7) {
+            std::cout << "Multiple weights found. Del = " << del << "\n";
+            assert(false);
+        }
+    }
+    return weight;
 }

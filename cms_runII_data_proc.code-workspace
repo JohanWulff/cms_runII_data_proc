@@ -85,7 +85,8 @@
 			"list": "cpp",
 			"span": "cpp",
 			"unordered_set": "cpp",
-			"filesystem": "cpp"
+			"filesystem": "cpp",
+			"complex": "cpp"
 		}
 	}
 }
