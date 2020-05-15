@@ -58,11 +58,11 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TTreeReaderValue<float> rv_kinfit_mass(reader, "kinFit_m");
     TTreeReaderValue<float> rv_kinfit_chi2(reader, "kinFit_chi2");
     TTreeReaderValue<float> rv_mt2(reader, "MT2");
-    TTreeReaderValue<float> rv_mt_tot(reader, "mt_tot");
-    TTreeReaderValue<float> rv_top_1_mass(reader, "mass_top1");
-    TTreeReaderValue<float> rv_top_2_mass(reader, "mass_top2");
-    TTreeReaderValue<float> rv_p_zetavisible(reader, "p_zetavisible");
-    TTreeReaderValue<float> rv_p_zeta(reader, "p_zeta");
+    // TTreeReaderValue<float> rv_mt_tot(reader, "mt_tot");
+    // TTreeReaderValue<float> rv_top_1_mass(reader, "mass_top1");
+    // TTreeReaderValue<float> rv_top_2_mass(reader, "mass_top2");
+    // TTreeReaderValue<float> rv_p_zetavisible(reader, "p_zetavisible");
+    // TTreeReaderValue<float> rv_p_zeta(reader, "p_zeta");
     float kinfit_mass, kinfit_chi2, mt2, mt_tot, top_1_mass, top_2_mass, p_zetavisible, p_zeta;
 
     // Tagging
@@ -190,11 +190,11 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         kinfit_mass   = *rv_kinfit_mass;
         kinfit_chi2   = *rv_kinfit_chi2;
         mt2           = *rv_mt2;
-        mt_tot        = *rv_mt_tot;
-        top_1_mass    = *rv_top_1_mass;
-        top_2_mass    = *rv_top_2_mass;
-        p_zetavisible = *rv_p_zetavisible;
-        p_zeta        = *rv_p_zeta;
+        mt_tot        = 0;  // *rv_mt_tot;
+        top_1_mass    = 0;  // *rv_top_1_mass;
+        top_2_mass    = 0;  // *rv_top_2_mass;
+        p_zetavisible = 0;  // *rv_p_zetavisible;
+        p_zeta        = 0;  // *rv_p_zeta;
         l_1_mt        = *rv_l_1_mt;
         l_2_mt        = *rv_l_2_mt;
         b_1_hhbtag    = *rv_b_1_hhbtag;
