@@ -40,13 +40,13 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     // Meta info
     std::cout << "Extracting auxiliary data...";
     TTreeReaderValue<std::vector<double>> rv_weight(reader, "all_weights");
-    TTreeReaderValue<std::vector<double>> rv_mva_scores(reader, "all_mva_scores");
+    TTreeReaderValue<std::vector<float>> rv_mva_scores(reader, "all_mva_scores");
     TTreeReaderValue<unsigned long long> rv_evt(reader, "evt");
     TTreeReaderValue<std::vector<unsigned long>> rv_id(reader, "dataIds");
     std::map<unsigned long, std::string> id2name = FileLooper::build_id_map(in_file);
     std::cout << " Extracted\n";
-    double weight, mva_score;
-    float res_mass;
+    double weight;
+    float res_mass, mva_score;
     std::vector<std::string> names;
     int sample, region, jet_cat, n_vbf, class_id;
     std::vector<unsigned int> idxs;
@@ -594,8 +594,8 @@ double FileLooper::_get_weight(TTreeReaderValue<std::vector<double>>& rv_weight,
     return weight;
 }
 
-double FileLooper::_get_mva_score(TTreeReaderValue<std::vector<double>>& rv_mva_score, const std::vector<unsigned int>& idxs) {
-    double del, mva_score = (*rv_mva_score)[idxs[0]];
+float FileLooper::_get_mva_score(TTreeReaderValue<std::vector<float>>& rv_mva_score, const std::vector<unsigned int>& idxs) {
+    float del, mva_score = (*rv_mva_score)[idxs[0]];
     for (unsigned int i = 1; i < idxs.size(); i++) {
         del = std::abs((*rv_mva_score)[i]-mva_score);
         if (del < 1e-7) {
