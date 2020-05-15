@@ -54,7 +54,7 @@ private:
                         bool& is_boosted, bool& accept, std::vector<unsigned int>& idxs , float& cv, float& c2v, float& c3);
     int _jet_cat_lookup(const std::string&);
     int _region_lookup(const std::string&);
-    void _sample_lookup(const std::string& sample, int& sample_id, Spin& spin, float& klambda, float& res_mass, float& cv, float& c2v, float& c3)
+    void _sample_lookup(const std::string& sample, int& sample_id, Spin& spin, float& klambda, float& res_mass, float& cv, float& c2v, float& c3);
     int _sample2class_lookup(const int&);
     bool _accept_evt(const int& region, const bool& central_unc, const int& jet_cat, const bool& cut_pass, const int& class_id, const float& klambda,
                      const float& cv, const float& c2v, const float& c3);
@@ -65,7 +65,7 @@ public:
     // Methods
 	FileLooper(bool return_all=true, std::vector<std::string> requested={}, bool use_deep_bjet_wps=true,
                bool apply_cut=true, bool inc_all_jets=true, bool inc_other_regions=false, bool inc_data=false, bool inc_unc=false,
-               bool only_kl1=true, , bool only_sm_vbf=true);
+               bool only_kl1=true, bool only_sm_vbf=true);
 	~FileLooper();
 	bool loop_file(const std::string&, const std::string&, const std::string&, const std::string&, const long int&);
     std::map<unsigned long, std::string> build_id_map(TFile*);
