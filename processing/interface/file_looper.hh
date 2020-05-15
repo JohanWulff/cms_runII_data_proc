@@ -44,7 +44,7 @@ private:
 	// Methods
     inline int _get_split(const unsigned long int&);
     void _prep_file(TTree* tree, const std::vector<std::unique_ptr<float>>& feat_vals, double* weight, int* sample, int* region, int* jet_cat,
-                    bool* cut_pass, bool* scale, bool* central_unc, int* class_id, unsigned long long int* strat_key);
+                    bool* cut_pass, bool* scale, bool* central_unc, int* class_id, unsigned long long int* strat_key, double* mva_score);
     Channel _get_channel(std::string);
     Year _get_year(std::string);
     unsigned long long int _get_strat_key(const int&, const int&, const int&, const int&, const int&);
@@ -58,7 +58,7 @@ private:
     int _sample2class_lookup(const int&);
     bool _accept_evt(const int& region, const bool& central_unc, const int& jet_cat, const bool& cut_pass, const int& class_id, const float& klambda);
     double _get_weight(TTreeReaderValue<std::vector<double>>& rv_weight, const std::vector<unsigned int>& idxs);
-    double _get_mva_score(TTreeReaderValue<std::vector<double>>& rv_mva_score, const std::vector<unsigned int>& idxs)
+    double _get_mva_score(TTreeReaderValue<std::vector<double>>& rv_mva_score, const std::vector<unsigned int>& idxs);
 
 public:
     // Methods
