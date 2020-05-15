@@ -39,11 +39,12 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     // Meta info
     std::cout << "Extracting auxiliary data...";
     TTreeReaderValue<std::vector<double>> rv_weight(reader, "all_weights");
+    TTreeReaderValue<std::vector<double>> rv_mva_scores(reader, "all_mva_scores");
     TTreeReaderValue<unsigned long long> rv_evt(reader, "evt");
     TTreeReaderValue<std::vector<unsigned long>> rv_id(reader, "dataIds");
     std::map<unsigned long, std::string> id2name = FileLooper::build_id_map(in_file);
     std::cout << " Extracted\n";
-    double weight;
+    double weight, mva_score;
     float res_mass;
     std::vector<std::string> names;
     int sample, region, jet_cat, n_vbf, class_id;
@@ -146,8 +147,8 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TFile* out_file  = new TFile(oname.c_str(), "recreate");
     TTree* data_even = new TTree("data_0", "Even id data");
     TTree* data_odd  = new TTree("data_1", "Odd id data");
-    FileLooper::_prep_file(data_even, feat_vals, &weight, &sample, &region, &jet_cat, &cut_pass, &scale, &central_unc, &class_id, &strat_key);
-    FileLooper::_prep_file(data_odd,  feat_vals, &weight, &sample, &region, &jet_cat, &cut_pass, &scale, &central_unc, &class_id, &strat_key);
+    FileLooper::_prep_file(data_even, feat_vals, &weight, &sample, &region, &jet_cat, &cut_pass, &scale, &central_unc, &class_id, &strat_key, &mva_score);
+    FileLooper::_prep_file(data_odd,  feat_vals, &weight, &sample, &region, &jet_cat, &cut_pass, &scale, &central_unc, &class_id, &strat_key, &mva_score);
     std::cout << "\tprepared.\nBeginning loop.\n";
 
     long int c_event(0), n_tot_events(reader.GetEntries(true));
@@ -164,6 +165,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
 
         // Load meta
         weight = FileLooper::_get_weight(rv_weight, idxs); 
+        mva_score = FileLooper::_get_mva_score(rv_mva_scores, idxs); 
         evt    =  *rv_evt;
 
         // Load HL feats
@@ -245,11 +247,12 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
 }
 
 void FileLooper::_prep_file(TTree* tree, const std::vector<std::unique_ptr<float>>& feat_vals, double* weight, int* sample, int* region, int* jet_cat,
-                            bool* cut_pass, bool* scale, bool* central_unc, int* class_id, unsigned long long int* strat_key) {
+                            bool* cut_pass, bool* scale, bool* central_unc, int* class_id, unsigned long long int* strat_key, double* mva_score) {
     /* Add branches to tree and set addresses for values */
 
     for (unsigned int i = 0; i < _n_feats; i++) tree->Branch(_feat_names[i].c_str(), feat_vals[i].get());
     tree->Branch("weight",      weight);
+    tree->Branch("mva_score",   mva_score);
     tree->Branch("sample",      sample);
     tree->Branch("region",      region);
     tree->Branch("jet_cat",     jet_cat);
@@ -379,7 +382,7 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
     
     if (sample.find("GluGluSignal") != std::string::npos) { 
         if (sample.find("NonRes") != std::string::npos) {
-            sample_id = -12;
+            sample_id = (sample.find("nlo") != std::string::npos) ? -26 : -12;
             try {
                 klambda = std::stof(sample.substr(sample.find("_kl")+3));
             } catch (...) {
@@ -419,7 +422,7 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
         }
     } else if (sample.find("VBFSignal") != std::string::npos) {
         if (sample.find("NonRes") != std::string::npos) {
-            sample_id = -19;
+            sample_id = (sample.find("nlo") != std::string::npos) ? -27 : -19;
         } else if (sample.find("Radion") != std::string::npos) {
             spin = radion;
             try {
@@ -532,4 +535,16 @@ double FileLooper::_get_weight(TTreeReaderValue<std::vector<double>>& rv_weight,
         }
     }
     return weight;
+}
+
+double FileLooper::_get_mva_score(TTreeReaderValue<std::vector<double>>& rv_mva_score, const std::vector<unsigned int>& idxs) {
+    double del, mva_score = (*rv_mva_score)[idxs[0]];
+    for (unsigned int i = 1; i < idxs.size(); i++) {
+        del = std::abs((*rv_mva_score)[i]-mva_score);
+        if (del < 1e-7) {
+            std::cout << "Multiple mva scores found. Del = " << del << "\n";
+            assert(false);
+        }
+    }
+    return mva_score;
 }

@@ -58,6 +58,7 @@ private:
     int _sample2class_lookup(const int&);
     bool _accept_evt(const int& region, const bool& central_unc, const int& jet_cat, const bool& cut_pass, const int& class_id, const float& klambda);
     double _get_weight(TTreeReaderValue<std::vector<double>>& rv_weight, const std::vector<unsigned int>& idxs);
+    double _get_mva_score(TTreeReaderValue<std::vector<double>>& rv_mva_score, const std::vector<unsigned int>& idxs)
 
 public:
     // Methods
