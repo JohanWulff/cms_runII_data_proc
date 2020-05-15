@@ -1,8 +1,8 @@
 #include "cms_runII_data_proc/processing/interface/file_looper.hh"
 
-FileLooper::FileLooper(bool return_all, std::vector<std::string> requested, bool use_deep_csv,
+FileLooper::FileLooper(bool return_all, std::vector<std::string> requested, bool use_deep_bjet_wps,
                        bool apply_cut, bool inc_all_jets, bool inc_other_regions, bool inc_data, bool inc_unc) {
-    _evt_proc = new EvtProc(return_all, requested, use_deep_csv);
+    _evt_proc = new EvtProc(return_all, requested, use_deep_bjet_wps);
     _feat_names = _evt_proc->get_feats();
     _n_feats = _feat_names.size();
     _apply_cut = apply_cut;
@@ -62,11 +62,9 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     float kinfit_mass, kinfit_chi2, mt2, mt_tot, top_1_mass, top_2_mass, p_zetavisible, p_zeta;
 
     // Tagging
-    TTreeReaderValue<float> rv_b_1_csv(reader, "csv_b1");
-    TTreeReaderValue<float> rv_b_2_csv(reader, "csv_b2");
-    TTreeReaderValue<float> rv_b_1_deepcsv(reader, "deepcsv_b1");
-    TTreeReaderValue<float> rv_b_2_deepcsv(reader, "deepcsv_b2");
-    float b_1_csv, b_2_csv, b_1_deepcsv, b_2_deepcsv;
+    TTreeReaderValue<float> rv_b_1_csv(reader, "b1_DeepFlavour");
+    TTreeReaderValue<float> rv_b_2_csv(reader, "b2_DeepFlavour");
+    float b_1_csv, b_2_csv;
     bool is_boosted;
 
     // SVFit feats
@@ -159,7 +157,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         names = FileLooper::_get_evt_names(id2name, ids);
         FileLooper::_extract_flags(names, sample, region, syst_unc, scale, jet_cat, cut, class_id, spin, klambda, res_mass, is_boosted);
         if (!FileLooper::_accept_evt(region, syst_unc, jet_cat, cut, class_id)) continue;
-        strat_key = FileLooper::_get_strat_key(sample, static_cast<int>(jet_cat), region, static_cast<int>(spin), static_cast<int>(syst_unc), cut);
+        strat_key = FileLooper::_get_strat_key(sample, static_cast<int>(jet_cat), region, static_cast<int>(syst_unc), cut);
 
         // Load meta
         weight = (*rv_weight)[0];
@@ -180,8 +178,6 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         // Load tagging
         b_1_csv     = *rv_b_1_csv;
         b_2_csv     = *rv_b_2_csv;
-        b_1_deepcsv = *rv_b_1_deepcsv;
-        b_2_deepcsv = *rv_b_2_deepcsv;
 
         // Load vectors
         pep_svfit.SetCoordinates(*rv_svfit_pT, *rv_svfit_eta, *rv_svfit_phi, *rv_svfit_mass);
@@ -221,7 +217,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         hh_kinfit_conv = kinfit_chi2    > 0;
 
         _evt_proc->process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit, vbf_1, vbf_2, kinfit_mass, kinfit_chi2, mt2, mt_tot, p_zetavisible, p_zeta, top_1_mass,
-                                  top_2_mass, l_1_mt, l_2_mt, is_boosted, b_1_csv, b_2_csv, b_1_deepcsv, b_2_deepcsv, e_channel, e_year, res_mass, spin,
+                                  top_2_mass, l_1_mt, l_2_mt, is_boosted, b_1_csv, b_2_csv, e_channel, e_year, res_mass, spin,
                                   klambda, n_vbf, svfit_conv, hh_kinfit_conv);
 
         if (evt%2 == 0) {
@@ -347,8 +343,9 @@ int FileLooper::_jet_cat_lookup(const std::string& jet_cat) {
     if (jet_cat == "2j0bR_noVBF")   return 1;
     if (jet_cat == "2j1bR_noVBF")   return 2;
     if (jet_cat == "2j2b+R_noVBF")  return 3;
-    if (jet_cat == "4j1b+_VBF")     return 4;
-    if (jet_cat == "2j2Lb+B_noVBF") return 5;
+    if (jet_cat == "2j2Lb+B_noVBF") return 4;
+    if (jet_cat == "2j1b+_VBF")     return 5;
+    if (jet_cat == "2j1b+_VBFL")    return 6;
     throw std::invalid_argument("Unrecognised jet category: " + jet_cat);
     return -1;
 }
@@ -486,14 +483,13 @@ bool FileLooper::_accept_evt(const int& region, const bool& syst_unc, const int&
     return true;
 }
 
-unsigned long long int FileLooper::_get_strat_key(const int& sample, const int& jet_cat, const int& region, const int& spin, const int& syst_unc,
+unsigned long long int FileLooper::_get_strat_key(const int& sample, const int& jet_cat, const int& region, const int& syst_unc,
                                                   const int& cut) {
     unsigned long long int strat_key = std::pow(2,  std::abs(sample))*
                                        std::pow(3,  jet_cat)*
                                        std::pow(5, region)*
-                                       std::pow(7, spin)*
-                                       std::pow(11, cut)*
-                                       std::pow(13, syst_unc);
+                                       std::pow(7, cut)*
+                                       std::pow(11, syst_unc);
     if (strat_key == 0) throw std::overflow_error("Strat key overflow\n");    
     return strat_key;
 }
