@@ -26,7 +26,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     Even event IDs will be saved to data_0 and odd to data_1.
     */
 
-    std::string fname = in_dir+"/"+year+"_"+channel+".root";
+    std::string fname = in_dir+"/"+year+"_"+channel+"_tuple.root";
     std::cout << "Reading from file: " << fname << "\n";
     TFile* in_file = TFile::Open(fname.c_str());
     TTreeReader reader(channel.c_str(), in_file);
