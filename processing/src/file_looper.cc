@@ -631,6 +631,7 @@ float FileLooper::_get_mva_score(TTreeReaderValue<std::vector<float>>& rv_mva_sc
                                  const std::vector<std::string>& names) {
     float del, mva_score = (*rv_mva_score)[idxs[0]];
     for (unsigned int i = 1; i < idxs.size(); i++) {
+        std::cout << names[idxs[i]] << " : " << (*rv_mva_score)[idxs[i]] << "\n";
         if (mva_score == 0) {
             mva_score = (*rv_mva_score)[idxs[i]];
         } else if ((*rv_mva_score)[idxs[i]] != 0) {
