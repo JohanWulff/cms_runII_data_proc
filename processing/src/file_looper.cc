@@ -607,7 +607,7 @@ double FileLooper::_get_weight(TTreeReaderValue<std::vector<double>>& rv_weight,
                                const std::vector<std::string>& names) {
     double del, weight = (*rv_weight)[idxs[0]];
     for (unsigned int i = 1; i < idxs.size(); i++) {
-        del = std::abs((*rv_weight)[i]-weight)/weight;
+        del = std::abs((*rv_weight)[idxs[i]]-weight)/weight;
         if (del > 1e-5) {
             std::cout << "Multiple weights found. " << (*rv_weight)[i] << " : " << weight << " Del = " << del << "\n";
             std::cout << "Names and weights:\n_________________________________\n";
@@ -632,7 +632,7 @@ float FileLooper::_get_mva_score(TTreeReaderValue<std::vector<float>>& rv_mva_sc
     float del, mva_score = (*rv_mva_score)[idxs[0]];
     for (unsigned int i = 1; i < idxs.size(); i++) {
         if (mva_score == 0) {
-            mva_score = (*rv_mva_score)[i];
+            mva_score = (*rv_mva_score)[idxs[i]];
         } else if ((*rv_mva_score)[i] != 0) {
             del = std::abs((*rv_mva_score)[i]-mva_score)/mva_score;
             if (del > 1e-5) {
