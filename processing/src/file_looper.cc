@@ -376,6 +376,8 @@ void FileLooper::_extract_flags(const std::vector<std::string>& names, int& samp
     } else {
         accept = true;
         jet_cat = -1;
+        is_boosted = false;
+        cut_pass = false;
         for (unsigned int i = 0; i < idxs.size(); i++) {
             if (tmp_jet_cats[i] == 4) is_boosted = true;
             if (tmp_jet_cats[i] > jet_cat) jet_cat = tmp_jet_cats[i];
