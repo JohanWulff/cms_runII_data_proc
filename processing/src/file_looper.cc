@@ -630,28 +630,28 @@ double FileLooper::_get_weight(TTreeReaderValue<std::vector<double>>& rv_weight,
 float FileLooper::_get_mva_score(TTreeReaderValue<std::vector<float>>& rv_mva_score, const std::vector<unsigned int>& idxs,
                                  const std::vector<std::string>& names) {
     float del, mva_score = (*rv_mva_score)[idxs[0]];
-    for (unsigned int i = 1; i < idxs.size(); i++) {
-        std::cout << names[idxs[i]] << " : " << (*rv_mva_score)[idxs[i]] << "\n";
-        if (mva_score == 0) {
-            mva_score = (*rv_mva_score)[idxs[i]];
-        } else if ((*rv_mva_score)[idxs[i]] != 0) {
-            del = std::abs((*rv_mva_score)[idxs[i]]-mva_score)/mva_score;
-            if (del > 1e-5) {
-                std::cout << "Multiple mva scores found. " << (*rv_mva_score)[idxs[i]] << " : " << mva_score << " Del = " << del << "\n";
-                std::cout << "Names and scores:\n_________________________________\n";
-                float klambda;
-                for (unsigned int j = 1; j < names.size(); j++) {
-                    if (names[j].find("NonRes") != std::string::npos) {
-                        klambda = std::stof(names[j].substr(names[j].find("_kl")+3));
-                        if (klambda != 1) continue;
-                    }
-                if (std::find(idxs.begin(), idxs.end(), j) != idxs.end()) std::cout << " --> ";
-                std::cout << names[j] << " = " << (*rv_mva_score)[j] << "\n";
-            }
-                std::cout << "_________________________________\n";
-                assert(false);
-            }
-        }
+    for (unsigned int i = 1; i < names.size(); i++) {
+        if ((*rv_mva_score)[i] != 0) std::cout << names[i] << " : " << (*rv_mva_score)[i] << "\n";
+        // if (mva_score == 0) {
+        //     mva_score = (*rv_mva_score)[idxs[i]];
+        // } else if ((*rv_mva_score)[idxs[i]] != 0) {
+        //     del = std::abs((*rv_mva_score)[idxs[i]]-mva_score)/mva_score;
+        //     if (del > 1e-5) {
+        //         std::cout << "Multiple mva scores found. " << (*rv_mva_score)[idxs[i]] << " : " << mva_score << " Del = " << del << "\n";
+        //         std::cout << "Names and scores:\n_________________________________\n";
+        //         float klambda;
+        //         for (unsigned int j = 1; j < names.size(); j++) {
+        //             if (names[j].find("NonRes") != std::string::npos) {
+        //                 klambda = std::stof(names[j].substr(names[j].find("_kl")+3));
+        //                 if (klambda != 1) continue;
+        //             }
+        //         if (std::find(idxs.begin(), idxs.end(), j) != idxs.end()) std::cout << " --> ";
+        //         std::cout << names[j] << " = " << (*rv_mva_score)[j] << "\n";
+        //     }
+        //         std::cout << "_________________________________\n";
+        //         assert(false);
+        //     }
+        // }
     }
     return mva_score != 0 ? mva_score : std::nanf("1");
 }
