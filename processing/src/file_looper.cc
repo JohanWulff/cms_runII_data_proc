@@ -611,8 +611,8 @@ double FileLooper::_get_weight(TTreeReaderValue<std::vector<double>>& rv_weight,
         if (del > 1e-5) {
             std::cout << "Multiple weights found. " << (*rv_weight)[i] << " : " << weight << " Del = " << del << "\n";
             std::cout << "Names and weights:\n_________________________________\n";
-            if (sample.find("NonRes") != std::string::npos) {
-                klambda = std::stof(sample.substr(sample.find("_kl")+3));
+            if (names[j].find("NonRes") != std::string::npos) {
+                klambda = std::stof(names[j].substr(names[j].find("_kl")+3));
                 if (klambda != 1) continue;
             }
             for (unsigned int j = 1; j < names.size(); j++) {
@@ -638,8 +638,8 @@ float FileLooper::_get_mva_score(TTreeReaderValue<std::vector<float>>& rv_mva_sc
                 std::cout << "Multiple mva scores found. " << (*rv_mva_score)[i] << " : " << mva_score << " Del = " << del << "\n";
                 std::cout << "Names and scores:\n_________________________________\n";
                 for (unsigned int j = 1; j < names.size(); j++) {
-                if (sample.find("NonRes") != std::string::npos) {
-                    klambda = std::stof(sample.substr(sample.find("_kl")+3));
+                if (names[j].find("NonRes") != std::string::npos) {
+                    klambda = std::stof(names[j].substr(names[j].find("_kl")+3));
                     if (klambda != 1) continue;
                 }
                 if (std::find(idxs.begin(), idxs.end(), j) != idxs.end()) std::cout << " --> ";
