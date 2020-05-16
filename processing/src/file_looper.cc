@@ -648,5 +648,5 @@ float FileLooper::_get_mva_score(TTreeReaderValue<std::vector<float>>& rv_mva_sc
             assert(false);
         }
     }
-    return weight;
+    return mva_score;
 }
