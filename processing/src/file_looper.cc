@@ -423,6 +423,7 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
             sample_id = (sample.find("nlo") != std::string::npos) ? -26 : -12;
             try {
                 klambda = std::stof(sample.substr(sample.find("_kl")+3));
+                std::cout << "Sample: " << sample << "\n";
             } catch (...) {
                 std::cout << "Error in sample " << sample << " attempting to parse " << sample.substr(sample.find("_kl")+3) << "\n";
                 assert(false);
