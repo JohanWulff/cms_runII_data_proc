@@ -182,8 +182,8 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         strat_key = FileLooper::_get_strat_key(sample, jet_cat, region, static_cast<int>(central_unc), static_cast<int>(cut_pass));
 
         // Load meta
-        weight = FileLooper::_get_weight(rv_weight, idxs); 
-        mva_score = FileLooper::_get_mva_score(rv_mva_scores, idxs); 
+        weight = FileLooper::_get_weight(rv_weight, idxs, names); 
+        mva_score = FileLooper::_get_mva_score(rv_mva_scores, idxs, names); 
         evt    =  *rv_evt;
 
         // Load HL feats
@@ -603,19 +603,24 @@ std::map<unsigned long, std::string> FileLooper::build_id_map(TFile* in_file) {
     return id2name;
 }
 
-double FileLooper::_get_weight(TTreeReaderValue<std::vector<double>>& rv_weight, const std::vector<unsigned int>& idxs) {
+double FileLooper::_get_weight(TTreeReaderValue<std::vector<double>>& rv_weight, const std::vector<unsigned int>& idxs,
+                               const std::vector<std::string>& names) {
     double del, weight = (*rv_weight)[idxs[0]];
     for (unsigned int i = 1; i < idxs.size(); i++) {
         del = std::abs((*rv_weight)[i]-weight)/weight;
         if (del > 1e-5) {
             std::cout << "Multiple weights found. " << (*rv_weight)[i] << " : " << weight << " Del = " << del << "\n";
+            std::cout << "Accepted names:\n_________________________________\n";
+            for (unsigned int idx : idxs) std::cout << names[idx] << "\n";
+            std::cout << "_________________________________\n";
             assert(false);
         }
     }
     return weight;
 }
 
-float FileLooper::_get_mva_score(TTreeReaderValue<std::vector<float>>& rv_mva_score, const std::vector<unsigned int>& idxs) {
+float FileLooper::_get_mva_score(TTreeReaderValue<std::vector<float>>& rv_mva_score, const std::vector<unsigned int>& idxs,
+                                 const std::vector<std::string>& names) {
     float del, mva_score = (*rv_mva_score)[idxs[0]];
     for (unsigned int i = 1; i < idxs.size(); i++) {
         if (mva_score == 0) {
@@ -624,6 +629,9 @@ float FileLooper::_get_mva_score(TTreeReaderValue<std::vector<float>>& rv_mva_sc
             del = std::abs((*rv_mva_score)[i]-mva_score)/mva_score;
             if (del > 1e-5) {
                 std::cout << "Multiple mva scores found. " << (*rv_mva_score)[i] << " : " << mva_score << " Del = " << del << "\n";
+                std::cout << "Accepted names:\n_________________________________\n";
+                for (unsigned int idx : idxs) std::cout << names[idx] << "\n";
+                std::cout << "_________________________________\n";
                 assert(false);
             }
         }
