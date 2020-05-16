@@ -547,13 +547,34 @@ int FileLooper::_sample2class_lookup(const int& sample) {
 
 bool FileLooper::_accept_evt(const int& region, const bool& central_unc, const int& jet_cat, const bool& cut_pass, const int& class_id, const float& klambda,
                              const float& cv, const float& c2v, const float& c3) {
-    if (_only_kl1 && klambda != 1) return false; // Only consider klambda at SM point
-    if (_apply_cut && !cut_pass) return false;  // Require mass cut and cut failed
-    if (!_inc_data && class_id == -1) return false; // Don't include data and event is data
-    if (!_inc_other_regions && region != 0) return false;  //Don't include other regions and event is not SS Iso
-    if (!_inc_unc && !central_unc) return false;  //Don't systematics and event is a systematic
-    if (!_inc_all_jets && jet_cat == 0) return false;  // Only use inference category jets and event is non-inference category
-    if (_only_sm_vbf && (cv != 1 || c2v != 1 || c3 != 1)) return false; // Only consider SM VBF
+    if (_only_kl1 && klambda != 1) {
+        std::cout << "Rejecting due to klambba = " << klambda << "\n";
+        return false; // Only consider klambda at SM point
+    }
+    if (_apply_cut && !cut_pass) {
+        std::cout << "Rejecting due to masss cut = " << cut_pass << "\n";
+        return false;  // Require mass cut and cut failed
+    }
+    if (!_inc_data && class_id == -1) {
+        std::cout << "Rejecting due to class ID = " << class_id << "\n";
+        return false; // Don't include data and event is data
+    }
+    if (!_inc_other_regions && region != 0) {
+        std::cout << "Rejecting due to region = " << region << "\n";
+        return false;  //Don't include other regions and event is not SS Iso
+    }
+    if (!_inc_unc && !central_unc) {
+        std::cout << "Rejecting due to central = " << central << "\n";
+        return false;  //Don't systematics and event is a systematic
+    }
+    if (!_inc_all_jets && jet_cat == 0) {
+        std::cout << "Rejecting due to jet_cat = " << jet_cat << "\n";
+        return false;  // Only use inference category jets and event is non-inference category
+    }
+    if (_only_sm_vbf && (cv != 1 || c2v != 1 || c3 != 1)) {
+        std::cout << "Rejecting due to cv = " << cv << " c2v = " << c2v << " c3 = " << c3 << "\n";
+        return false; // Only consider SM VBF
+    }
     return true;
 }
 
