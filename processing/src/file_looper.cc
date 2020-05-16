@@ -359,7 +359,7 @@ void FileLooper::_extract_flags(const std::vector<std::string>& names, int& samp
                 central_unc = (val == "None");
             } else if (i == 4 &&  n == 0) {
                 scale = (val == "Central");
-            } else if (i == 5 &&  n == 0) {
+            } else if (i == 5) {
                 FileLooper::_sample_lookup(val, sample, spin, tmp_klambda, res_mass, tmp_cv, tmp_c2v, tmp_c3);
                 class_id = FileLooper::_sample2class_lookup(sample);
             }
