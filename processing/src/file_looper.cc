@@ -423,7 +423,6 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
             sample_id = (sample.find("nlo") != std::string::npos) ? -26 : -12;
             try {
                 klambda = std::stof(sample.substr(sample.find("_kl")+3));
-                std::cout << "Sample: " << sample << "\n";
             } catch (...) {
                 std::cout << "Error in sample " << sample << " attempting to parse " << sample.substr(sample.find("_kl")+3) << "\n";
                 assert(false);
@@ -549,11 +548,11 @@ int FileLooper::_sample2class_lookup(const int& sample) {
 bool FileLooper::_accept_evt(const int& region, const bool& central_unc, const int& jet_cat, const bool& cut_pass, const int& class_id, const float& klambda,
                              const float& cv, const float& c2v, const float& c3) {
     if (_only_kl1 && klambda != 1) {
-        std::cout << "Rejecting due to klambba = " << klambda << "\n";
+        // std::cout << "Rejecting due to klambda = " << klambda << "\n";
         return false; // Only consider klambda at SM point
     }
     if (_apply_cut && !cut_pass) {
-        std::cout << "Rejecting due to masss cut = " << cut_pass << "\n";
+        std::cout << "Rejecting due to mass cut = " << cut_pass << "\n";
         return false;  // Require mass cut and cut failed
     }
     if (!_inc_data && class_id == -1) {
