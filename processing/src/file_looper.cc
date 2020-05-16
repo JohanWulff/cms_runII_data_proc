@@ -564,7 +564,7 @@ bool FileLooper::_accept_evt(const int& region, const bool& central_unc, const i
         return false;  //Don't include other regions and event is not SS Iso
     }
     if (!_inc_unc && !central_unc) {
-        std::cout << "Rejecting due to central = " << central << "\n";
+        std::cout << "Rejecting due to central = " << central_unc << "\n";
         return false;  //Don't systematics and event is a systematic
     }
     if (!_inc_all_jets && jet_cat == 0) {
