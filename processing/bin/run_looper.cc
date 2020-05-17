@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 
-std::string root_dir = "/eos/home-k/kandroso/cms-it-hh-bbtautau/anaTuples/2020-02-14";
+std::string root_dir = "/eos/home-k/kandroso/cms-it-hh-bbtautau/anaTuples/2020-05-11-mva";
 std::string out_dir = "/eos/user/g/gstrong/cms_runII_dnn/data";
 
 
