@@ -35,7 +35,7 @@ private:
 	using LorentzVector    = ROOT::Math::LorentzVector<ROOT::Math::PxPyPzM4D<float>>;
 
 	// Variables
-    bool _all, _use_deep_csv, _apply_cut, _inc_other_regions, _inc_all_jets, _inc_unc, _inc_data;
+    bool _all, _use_deep_csv, _apply_cut, _inc_other_regions, _inc_all_jets, _inc_unc, _inc_data, _only_kl1, _only_sm_vbf;
     std::set<std::string> _requested;
     unsigned int _n_feats;
     std::vector<std::string> _feat_names;
@@ -43,24 +43,31 @@ private:
 
 	// Methods
     inline int _get_split(const unsigned long int&);
-    void _prep_file(TTree*, const std::vector<std::unique_ptr<float>>&, double*, int*, int*, int*, int*, bool*, bool*, int*,
-                    unsigned long long int*);
+    void _prep_file(TTree* tree, const std::vector<std::unique_ptr<float>>& feat_vals, double* weight, int* sample, int* region, int* jet_cat,
+                    bool* cut_pass, bool* scale, bool* central_unc, int* class_id, unsigned long long int* strat_key, float* mva_score);
     Channel _get_channel(std::string);
     Year _get_year(std::string);
-    unsigned long long int _get_strat_key(const int&, const int&, const int&, const int&, const int&, const int&);
+    unsigned long long int _get_strat_key(const int&, const int&, const int&, const int&, const int&);
     std::vector<std::string> _get_evt_names(const std::map<unsigned long, std::string>&, const std::vector<unsigned long>&);
-    void _extract_flags(const std::vector<std::string>&, int&, int&, bool&, bool&, int&, int&, int&, Spin&, float&, float&, bool&);
+    void _extract_flags(const std::vector<std::string>& names, int& sample, int& region, bool& central_unc, bool& scale,
+                        int& jet_cat, bool& cut_pass, int& class_id, Spin& spin, float& klambda, float& res_mass,
+                        bool& is_boosted, bool& accept, std::vector<unsigned int>& idxs , float& cv, float& c2v, float& c3);
     int _jet_cat_lookup(const std::string&);
     int _region_lookup(const std::string&);
-    void _sample_lookup(const std::string&, int&, Spin&, float&, float&);
+    void _sample_lookup(const std::string& sample, int& sample_id, Spin& spin, float& klambda, float& res_mass, float& cv, float& c2v, float& c3);
     int _sample2class_lookup(const int&);
-    bool _accept_evt(const int&, const bool&, const int&, const int&, const int&);
-    int _cut_lookup(const std::string&);
+    bool _accept_evt(const int& region, const bool& central_unc, const int& jet_cat, const bool& cut_pass, const int& class_id, const float& klambda,
+                     const float& cv, const float& c2v, const float& c3);
+    double _get_weight(TTreeReaderValue<std::vector<double>>& rv_weight, const std::vector<unsigned int>& idxs,
+                               const std::vector<std::string>& names);
+    float _get_mva_score(TTreeReaderValue<std::vector<float>>& rv_mva_score, const std::vector<unsigned int>& idxs,
+                                 const std::vector<std::string>& names);
 
 public:
     // Methods
-	FileLooper(bool return_all=true, std::vector<std::string> requested={}, bool use_deep_csv=true,
-               bool apply_cut=true, bool inc_all_jets=true, bool inc_other_regions=false, bool inc_data=false, bool inc_unc=false);
+	FileLooper(bool return_all=true, std::vector<std::string> requested={}, bool use_deep_bjet_wps=true,
+               bool apply_cut=true, bool inc_all_jets=true, bool inc_other_regions=false, bool inc_data=false, bool inc_unc=false,
+               bool only_kl1=true, bool only_sm_vbf=true);
 	~FileLooper();
 	bool loop_file(const std::string&, const std::string&, const std::string&, const std::string&, const long int&);
     std::map<unsigned long, std::string> build_id_map(TFile*);
