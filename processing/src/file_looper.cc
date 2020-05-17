@@ -570,8 +570,8 @@ unsigned long long int FileLooper::_get_strat_key(const int& sample, const int& 
     unsigned long long int strat_key = std::pow(2,  std::abs(sample))*
                                        std::pow(3,  jet_cat)*
                                        std::pow(5,  channel)*
-                                       std::pow(7,  channel)*
-                                       std::pow(11,  region)*
+                                       std::pow(7,  year)*
+                                       std::pow(11, region)*
                                        std::pow(13, cut_pass)*
                                        std::pow(17, central_unc);
     if (strat_key == 0) throw std::overflow_error("Strat key overflow\n");    
