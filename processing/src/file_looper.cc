@@ -58,12 +58,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TTreeReaderValue<float> rv_kinfit_mass(reader, "kinFit_m");
     TTreeReaderValue<float> rv_kinfit_chi2(reader, "kinFit_chi2");
     TTreeReaderValue<float> rv_mt2(reader, "MT2");
-    // TTreeReaderValue<float> rv_mt_tot(reader, "mt_tot");
-    // TTreeReaderValue<float> rv_top_1_mass(reader, "mass_top1");
-    // TTreeReaderValue<float> rv_top_2_mass(reader, "mass_top2");
-    // TTreeReaderValue<float> rv_p_zetavisible(reader, "p_zetavisible");
-    // TTreeReaderValue<float> rv_p_zeta(reader, "p_zeta");
-    float kinfit_mass, kinfit_chi2, mt2, mt_tot, top_1_mass, top_2_mass, p_zetavisible, p_zeta;
+    float kinfit_mass, kinfit_chi2, mt2;
 
     // Tagging
     TTreeReaderValue<float> rv_b_1_csv(reader, "b1_DeepFlavour");
@@ -84,8 +79,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TTreeReaderValue<float> rv_l_1_eta(reader, "tau1_eta");
     TTreeReaderValue<float> rv_l_1_phi(reader, "tau1_phi");
     TTreeReaderValue<float> rv_l_1_mass(reader, "tau1_m");
-    // TTreeReaderValue<float> rv_l_1_mt(reader, "mt_1");
-    float l_1_mass, l_1_mt;
+    float l_1_mass;
     LorentzVectorPEP pep_l_1;
     LorentzVector l_1;
 
@@ -95,9 +89,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TTreeReaderValue<float> rv_l_2_eta(reader, "tau2_eta");
     TTreeReaderValue<float> rv_l_2_phi(reader, "tau2_phi");
     TTreeReaderValue<float> rv_l_2_mass(reader, "tau2_m");
-    // TTreeReaderValue<float> rv_l_2_mt(reader, "mt_2");
-    float l_2_mt;
-    LorentzVectorPEP pep_l_2;\
+    LorentzVectorPEP pep_l_2;
     LorentzVector l_2;
 
     // MET feats
@@ -190,13 +182,6 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         kinfit_mass   = *rv_kinfit_mass;
         kinfit_chi2   = *rv_kinfit_chi2;
         mt2           = *rv_mt2;
-        mt_tot        = 0;  // *rv_mt_tot;
-        top_1_mass    = 0;  // *rv_top_1_mass;
-        top_2_mass    = 0;  // *rv_top_2_mass;
-        p_zetavisible = 0;  // *rv_p_zetavisible;
-        p_zeta        = 0;  // *rv_p_zeta;
-        l_1_mt        = 0;  // *rv_l_1_mt;
-        l_2_mt        = 0;  // *rv_l_2_mt;
         b_1_hhbtag    = *rv_b_1_hhbtag;
         b_2_hhbtag    = *rv_b_2_hhbtag;
         vbf_1_hhbtag  = *rv_vbf_1_hhbtag;
@@ -251,10 +236,9 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         svfit_conv     = *rv_svfit_mass > 0;
         hh_kinfit_conv = kinfit_chi2    > 0;
 
-        _evt_proc->process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit, vbf_1, vbf_2, kinfit_mass, kinfit_chi2, mt2, mt_tot, p_zetavisible, p_zeta, top_1_mass,
-                                  top_2_mass, l_1_mt, l_2_mt, is_boosted, b_1_csv, b_2_csv, e_channel, e_year, res_mass, spin,
-                                  klambda, n_vbf, svfit_conv, hh_kinfit_conv, b_1_hhbtag, b_2_hhbtag, vbf_1_hhbtag, vbf_2_hhbtag,
-                                  b_1_cvsl, b_2_cvsl, vbf_1_cvsl, vbf_2_cvsl, b_1_cvsb, b_2_cvsb, vbf_1_cvsb, vbf_2_cvsb, cv, c2v, c3);
+        _evt_proc->process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit, vbf_1, vbf_2, kinfit_mass, kinfit_chi2, mt2, is_boosted, b_1_csv, b_2_csv,
+                                  e_channel, e_year, res_mass, spin, klambda, n_vbf, svfit_conv, hh_kinfit_conv, b_1_hhbtag, b_2_hhbtag, vbf_1_hhbtag,
+                                  vbf_2_hhbtag, b_1_cvsl, b_2_cvsl, vbf_1_cvsl, vbf_2_cvsl, b_1_cvsb, b_2_cvsb, vbf_1_cvsb, vbf_2_cvsb, cv, c2v, c3);
 
         if (evt%2 == 0) {
             data_even->Fill();
