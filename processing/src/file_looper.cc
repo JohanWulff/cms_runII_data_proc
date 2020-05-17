@@ -171,7 +171,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         FileLooper::_extract_flags(names, sample, region, central_unc, scale, jet_cat, cut_pass, class_id, spin, klambda, res_mass, is_boosted, accept, idxs,
                                    cv, c2v, c3);
         if (!accept) continue;
-        strat_key = FileLooper::_get_strat_key(sample, jet_cat, channel, year, region, static_cast<int>(central_unc), static_cast<int>(cut_pass));
+        strat_key = FileLooper::_get_strat_key(sample, jet_cat, static_cast<int>(channel), static_cast<int>(year), region, static_cast<int>(central_unc), static_cast<int>(cut_pass));
 
         // Load meta
         weight = FileLooper::_get_weight(rv_weight, idxs, names); 
@@ -565,7 +565,7 @@ bool FileLooper::_accept_evt(const int& region, const bool& central_unc, const i
     return true;
 }
 
-unsigned long long int FileLooper::_get_strat_key(const int& sample, const int& jet_cat, const Channel& channel, const Year& year, const int& region,
+unsigned long long int FileLooper::_get_strat_key(const int& sample, const int& jet_cat, const int& channel, const int& year, const int& region,
                                                   const int& central_unc, const int& cut_pass) {
     unsigned long long int strat_key = std::pow(2,  std::abs(sample))*
                                        std::pow(3,  jet_cat)*
