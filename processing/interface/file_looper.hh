@@ -47,7 +47,7 @@ private:
                     bool* cut_pass, bool* scale, bool* central_unc, int* class_id, unsigned long long int* strat_key, float* mva_score);
     Channel _get_channel(std::string);
     Year _get_year(std::string);
-    unsigned long long int FileLooper::_get_strat_key(const int& sample, const int& jet_cat, const int& channel, const int& year, const int& region,
+    unsigned long long int _get_strat_key(const int& sample, const int& jet_cat, const int& channel, const int& year, const int& region,
                                                       const int& central_unc, const int& cut_pass);
     std::vector<std::string> _get_evt_names(const std::map<unsigned long, std::string>&, const std::vector<unsigned long>&);
     void _extract_flags(const std::vector<std::string>& names, int& sample, int& region, bool& central_unc, bool& scale,
