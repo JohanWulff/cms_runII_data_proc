@@ -382,6 +382,7 @@ int FileLooper::_jet_cat_lookup(const std::string& jet_cat) {
     if (jet_cat == "2j2Lb+B_noVBF") return 4;
     if (jet_cat == "2j1b+_VBFL")    return 5;
     if (jet_cat == "2j1b+_VBF")     return 6;
+    if (jet_cat == "2j1b+_VBFT")    return 7;
     throw std::invalid_argument("Unrecognised jet category: " + jet_cat);
     return -1;
 }
