@@ -343,6 +343,7 @@ void FileLooper::_extract_flags(const std::vector<std::string>& names, int& samp
                 region = FileLooper::_region_lookup(val);
             } else if (i == 3 &&  n == 0) {
                 central_unc = (val == "None");
+                std::cout << val << " : ";
             } else if (i == 4 &&  n == 0) {
                 scale = (val == "Central");
             } else if (i == 5) {
