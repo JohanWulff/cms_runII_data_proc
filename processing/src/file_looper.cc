@@ -541,7 +541,7 @@ bool FileLooper::_accept_evt(const int& region, const bool& central_unc, const i
         return false; // Only consider klambda at SM point
     }
     if (_apply_cut && !cut_pass) {
-        std::cout << "Rejecting due to mass cut = " << cut_pass << "\n";
+        // std::cout << "Rejecting due to mass cut = " << cut_pass << "\n";
         return false;  // Require mass cut and cut failed
     }
     if (!_inc_data && class_id == -1) {
@@ -564,6 +564,7 @@ bool FileLooper::_accept_evt(const int& region, const bool& central_unc, const i
         // std::cout << "Rejecting due to cv = " << cv << " c2v = " << c2v << " c3 = " << c3 << "\n";
         return false; // Only consider SM VBF
     }
+    std::cout << "Accepting\n";
     return true;
 }
 
