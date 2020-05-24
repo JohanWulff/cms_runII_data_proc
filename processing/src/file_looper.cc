@@ -331,7 +331,6 @@ void FileLooper::_extract_flags(const std::vector<std::string>& names, int& samp
     float tmp_klambda, tmp_cv, tmp_c2v, tmp_c3;
     for (unsigned int n = 0; n < names.size(); n++) {
         if (names[n].find("MVA0") == std::string::npos) continue;
-        std::cout << names[n] << "\n";
         std::istringstream iss(names[n]);
         int i = 0;
         while (std::getline(iss, val, '/')) {   
@@ -355,6 +354,7 @@ void FileLooper::_extract_flags(const std::vector<std::string>& names, int& samp
             tmp_jet_cats.push_back(tmp_jet_cat);
             tmp_cut_passes.push_back(tmp_cut_pass);
             idxs.push_back(n);
+            std::cout << "Accepted\n";
         }
     }
     if (idxs.size() == 0) {
