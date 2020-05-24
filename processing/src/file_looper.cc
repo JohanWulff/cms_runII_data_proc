@@ -339,12 +339,12 @@ void FileLooper::_extract_flags(const std::vector<std::string>& names, int& samp
                 tmp_jet_cat = FileLooper::_jet_cat_lookup(val);
             } else if (i == 1) {
                 tmp_cut_pass = (val == "mh_MVA0");
-            } else if (i == 2 &&  n == 0) {
+            } else if (i == 2) {
                 region = FileLooper::_region_lookup(val);
-            } else if (i == 3 &&  n == 0) {
+            } else if (i == 3) {
                 central_unc = (val == "None");
                 std::cout << val << " : ";
-            } else if (i == 4 &&  n == 0) {
+            } else if (i == 4) {
                 scale = (val == "Central");
             } else if (i == 5) {
                 FileLooper::_sample_lookup(val, sample, spin, tmp_klambda, res_mass, tmp_cv, tmp_c2v, tmp_c3);
