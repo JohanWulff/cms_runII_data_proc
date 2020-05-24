@@ -330,7 +330,7 @@ void FileLooper::_extract_flags(const std::vector<std::string>& names, int& samp
     idxs.clear();
     float tmp_klambda, tmp_cv, tmp_c2v, tmp_c3;
     for (unsigned int n = 0; n < names.size(); n++) {
-        if (names[n].find("MVA0") == std::string::npos) continue;
+        // if (names[n].find("MVA0") == std::string::npos) continue;
         std::istringstream iss(names[n]);
         int i = 0;
         while (std::getline(iss, val, '/')) {   
@@ -557,11 +557,11 @@ bool FileLooper::_accept_evt(const int& region, const bool& central_unc, const i
         return false;  //Don't systematics and event is a systematic
     }
     if (!_inc_all_jets && jet_cat == 0) {
-        std::cout << "Rejecting due to jet_cat = " << jet_cat << "\n";
+        // std::cout << "Rejecting due to jet_cat = " << jet_cat << "\n";
         return false;  // Only use inference category jets and event is non-inference category
     }
     if (_only_sm_vbf && (cv != 1 || c2v != 1 || c3 != 1)) {
-        std::cout << "Rejecting due to cv = " << cv << " c2v = " << c2v << " c3 = " << c3 << "\n";
+        // std::cout << "Rejecting due to cv = " << cv << " c2v = " << c2v << " c3 = " << c3 << "\n";
         return false; // Only consider SM VBF
     }
     std::cout << "Accepting\n";
