@@ -537,7 +537,7 @@ int FileLooper::_sample2class_lookup(const int& sample) {
 bool FileLooper::_accept_evt(const int& region, const bool& central_unc, const int& jet_cat, const bool& cut_pass, const int& class_id, const float& klambda,
                              const float& cv, const float& c2v, const float& c3) {
     if (_only_kl1 && klambda != 1) {
-        std::cout << "Rejecting due to klambda = " << klambda << "\n";
+        // std::cout << "Rejecting due to klambda = " << klambda << "\n";
         return false; // Only consider klambda at SM point
     }
     if (_apply_cut && !cut_pass) {
