@@ -227,7 +227,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
 
         // VBF
         n_vbf = 0;
-        if (jet_cat == 4) {
+        if ((jet_cat == 5) || (jet_cat == 6) || (jet_cat == 7)) {
             if (*rv_vbf_1_mass != std::numeric_limits<float>::lowest()) n_vbf++;
             if (*rv_vbf_2_mass != std::numeric_limits<float>::lowest()) n_vbf++;
         }
@@ -376,6 +376,7 @@ void FileLooper::_extract_flags(const std::vector<std::string>& names, int& samp
 }
 
 int FileLooper::_jet_cat_lookup(const std::string& jet_cat) {
+    /* Ensure n_vbf definition is updtaed */
     if (jet_cat == "2j")            return 0;
     if (jet_cat == "2j0bR_noVBF")   return 1;
     if (jet_cat == "2j1bR_noVBF")   return 2;
