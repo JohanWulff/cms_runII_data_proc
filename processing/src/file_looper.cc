@@ -1,5 +1,9 @@
 #include "cms_runII_data_proc/processing/interface/file_looper.hh"
 
+
+int use_kl = 5;
+
+
 FileLooper::FileLooper(bool return_all, std::vector<std::string> requested, bool use_deep_bjet_wps,
                        bool apply_cut, bool inc_all_jets, bool inc_other_regions, bool inc_data, bool inc_unc, bool only_kl1, bool only_sm_vbf) {
     _evt_proc = new EvtProc(return_all, requested, use_deep_bjet_wps);
@@ -368,7 +372,7 @@ void FileLooper::_extract_flags(const std::vector<std::string>& names, int& samp
             if (tmp_jet_cats[i] > jet_cat) jet_cat = tmp_jet_cats[i];
             if (tmp_cut_passes[i]) cut_pass = true;
         }
-        klambda = 1;
+        klambda = use_kl;
         cv = 1;
         c2v = 1;
         c3 = 1;
@@ -402,7 +406,7 @@ int FileLooper::_region_lookup(const std::string& region) {
 void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin& spin, float& klambda, float& res_mass, float& cv, float& c2v, float& c3) {
     spin = nonres;
     res_mass = 125;
-    klambda = 1;
+    klambda = use_kl;
     cv = 1;
     c2v = 1;
     c3 = 1;
@@ -536,7 +540,7 @@ int FileLooper::_sample2class_lookup(const int& sample) {
 
 bool FileLooper::_accept_evt(const int& region, const bool& central_unc, const int& jet_cat, const bool& cut_pass, const int& class_id, const float& klambda,
                              const float& cv, const float& c2v, const float& c3) {
-    if (_only_kl1 && klambda != 1) {
+    if (_only_kl1 && klambda != use_kl) {
         // std::cout << "Rejecting due to klambda = " << klambda << "\n";
         return false; // Only consider klambda at SM point
     }
@@ -608,7 +612,7 @@ double FileLooper::_get_weight(TTreeReaderValue<std::vector<double>>& rv_weight,
             for (unsigned int j = 1; j < names.size(); j++) {
                 if (names[j].find("NonRes") != std::string::npos) {
                     klambda = std::stof(names[j].substr(names[j].find("_kl")+3));
-                    if (klambda != 1) continue;
+                    if (klambda != 5) continue;
                 }
                 if (std::find(idxs.begin(), idxs.end(), j) != idxs.end()) std::cout << " --> ";
                 std::cout << names[j] << " = " << (*rv_weight)[j] << "\n";
@@ -632,7 +636,7 @@ float FileLooper::_get_mva_score(TTreeReaderValue<std::vector<float>>& rv_mva_sc
             for (unsigned int j = 1; j < names.size(); j++) {
                 if (names[j].find("NonRes") != std::string::npos) {
                     klambda = std::stof(names[j].substr(names[j].find("_kl")+3));
-                    if (klambda != 1) continue;
+                    if (klambda != use_kl) continue;
                 }
                 if (std::find(idxs.begin(), idxs.end(), j) != idxs.end()) std::cout << " --> ";
                 std::cout << names[j] << " = " << (*rv_mva_score)[j] << "\n";
