@@ -378,6 +378,11 @@ void FileLooper::_extract_flags(const std::vector<std::string>& names, int& samp
             if (tmp_jet_cats[i] > jet_cat) jet_cat = tmp_jet_cats[i];
             if (tmp_cut_passes[i]) cut_pass = true;
         }
+        if (jet_cat != 0) {  // Filter names to remove 2j weights
+            std::vector<int> new_idxs;
+            for (unsigned int i = 0; i < idxs.size(); i++) if (tmp_jet_cats[i] != 0) new_idxs.push_back(idxs[i]);
+            idxs = new_idxs
+        }
         klambda = use_kl;
         cv = 1;
         c2v = 1;
