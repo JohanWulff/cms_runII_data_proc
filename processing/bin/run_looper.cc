@@ -26,7 +26,7 @@ std::map<std::string, std::string> get_options(int argc, char* argv[]) {
     options.insert(std::make_pair("-n", "-1")); // # events
     options.insert(std::make_pair("-i", root_dir)); // input dir name
     options.insert(std::make_pair("-o", out_dir)); // output name
-    options.insert(std::make_pair("-t", "")); Tagger order
+    options.insert(std::make_pair("-t", "")); // Tagger order
 
     if (argc >= 2) { //Check if help was requested
         std::string option(argv[1]);
