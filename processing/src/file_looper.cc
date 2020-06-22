@@ -237,7 +237,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
 
         // VBF
         n_vbf = 0;
-        if ((jet_cat == 5) || (jet_cat == 6) || (jet_cat == 7)) {
+        if ((jet_cat == 5 || jet_cat == 6 || jet_cat == 7)) {
             if (*rv_vbf_1_mass != std::numeric_limits<float>::lowest()) n_vbf++;
             if (*rv_vbf_2_mass != std::numeric_limits<float>::lowest()) n_vbf++;
         }
@@ -392,9 +392,9 @@ int FileLooper::_jet_cat_lookup(const std::string& jet_cat) {
     if (jet_cat == "2j1bR_noVBF")   return 2;
     if (jet_cat == "2j2b+R_noVBF")  return 3;
     if (jet_cat == "2j2Lb+B_noVBF") return 4;
-    if (jet_cat == "2j1b+_VBFL")    return 5;
-    if (jet_cat == "2j1b+_VBF")     return 6;
-    if (jet_cat == "2j1b+_VBFT")    return 7;
+    if (jet_cat == "2j1b+_VBFL" || jet_cat == "2j1b+_VBF" || jet_cat == "2j1b+_VBFT") return 5;
+    if (jet_cat == "2j2Lb+" || jet_cat == "2j2b+f" || jet_cat == "2j0b"   || jet_cat == "2j0Tb" || jet_cat == "2j1Tb+" || jet_cat == "2j1Tb" || 
+        jet_cat == "2j0Lb"  || jet_cat == "2j1Lb"  || jet_cat == "2j2Tb+" || jet_cat == "2j1b") return -1;
     throw std::invalid_argument("Unrecognised jet category: " + jet_cat);
     return -1;
 }
@@ -418,7 +418,7 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
     c3 = 1;
     
     if (sample.find("GluGluSignal") != std::string::npos) { 
-        if (sample.find("NonRes") != std::string::npos) {
+        if (sample.find("NonRes_klScan") != std::string::npos) {
             sample_id = (sample.find("nlo") != std::string::npos) ? -26 : -12;
             try {
                 klambda = std::stof(sample.substr(sample.find("_kl")+3));
@@ -456,6 +456,8 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
             } else {
                 sample_id = -18;
             }
+        } else {
+            sample_id = -999; 
         }
     } else if (sample.find("VBFSignal") != std::string::npos) {
         if (sample.find("NonRes") != std::string::npos) {
@@ -519,29 +521,29 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
         sample_id = 3;
     } else if (sample.find("Wjets") != std::string::npos) {
         sample_id = 4;
-    } else if (sample.find("SM_Higgs") != std::string::npos) {
+    } else if (sample.find("GluGluH") != std::string::npos || sample.find("VBFH") != std::string::npos) {
         sample_id = 5;
-    } else if (sample.find("VH") != std::string::npos) {
+    } else if (sample.find("ZH") != std::string::npos || sample.find("WminusH") != std::string::npos || sample.find("WplusH") != std::string::npos) {
         sample_id = 6;
-    } else if (sample.find("VVV") != std::string::npos) {
+    } else if (sample.find("WWW") != std::string::npos || sample.find("WWZ") != std::string::npos || 
+               sample.find("WZZ") != std::string::npos || sample.find("ZZZ") != std::string::npos) {
         sample_id = 7;
     } else if (sample.find("EWK") != std::string::npos) {
         sample_id = 8;
-    } else if (sample.find("VV") != std::string::npos) {
+    } else if (sample.find("WW") != std::string::npos || sample.find("WZ") != std::string::npos || sample.find("ZZ") != std::string::npos) {
         sample_id = 9;
     } else if (sample.find("ST") != std::string::npos) {
         sample_id = 10;
-    } else if (sample.find("ttV") != std::string::npos) {
-        sample_id = 11;
     } else{
         throw std::invalid_argument("Unrecognised sample: " + sample);
     }
 }
 
 int FileLooper::_sample2class_lookup(const int& sample) {
-    if (sample < 0)  return 1;   // Signal
-    if (sample == 0) return -1;  // Collider data
-    return 0;                    // Background
+    if (sample < 0)      return 1;     // Signal
+    if (sample == -999)  return -999;  // Sample to reject
+    if (sample == 0)     return -1;    // Collider data
+    return 0;                          // Background
 }
 
 bool FileLooper::_accept_evt(const int& region, const bool& central_unc, const int& jet_cat, const bool& cut_pass, const int& class_id, const float& klambda,
@@ -573,6 +575,9 @@ bool FileLooper::_accept_evt(const int& region, const bool& central_unc, const i
     if (_only_sm_vbf && (cv != 1 || c2v != 1 || c3 != 1)) {
         // std::cout << "Rejecting due to cv = " << cv << " c2v = " << c2v << " c3 = " << c3 << "\n";
         return false; // Only consider SM VBF
+    } if (class_id == -999) {
+        // std::cout << "Rejecting due to class ID = -999\n";
+        return false; // Reject sample
     }
     // std::cout << "Accepting\n";
     return true;
