@@ -592,7 +592,11 @@ unsigned long long int FileLooper::_get_strat_key(const int& sample, const int& 
                                        std::pow(11, region)*
                                        std::pow(13, cut_pass)*
                                        std::pow(17, central_unc);
-    if (strat_key == 0) throw std::overflow_error("Strat key overflow\n");    
+    if (strat_key == 0) {
+        std::cout << "sample " << sample << " jet_cat " << jet_cat << " channel " << channel << " year " << year << " region " << region << 
+                     " cut_pass " << cut_pass << " central_unc " << central_unc << "\n";
+        throw std::overflow_error("Strat key overflow\n");  
+    }  
     return strat_key;
 }
 
