@@ -540,8 +540,8 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
 }
 
 int FileLooper::_sample2class_lookup(const int& sample) {
-    if (sample < 0)      return 1;     // Signal
     if (sample == -999)  return -999;  // Sample to reject
+    if (sample < 0)      return 1;     // Signal
     if (sample == 0)     return -1;    // Collider data
     return 0;                          // Background
 }
