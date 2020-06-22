@@ -627,7 +627,7 @@ double FileLooper::_get_weight(TTreeReaderValue<std::vector<double>>& rv_weight,
             for (unsigned int j = 1; j < names.size(); j++) {
                 if (names[j].find("NonRes") != std::string::npos) {
                     klambda = std::stof(names[j].substr(names[j].find("_klScan_kl")+10));
-                    if (klambda != 5) continue;
+                    if (klambda != use_kl) continue;
                 }
                 if (std::find(idxs.begin(), idxs.end(), j) != idxs.end()) std::cout << " --> ";
                 std::cout << names[j] << " = " << (*rv_weight)[j] << "\n";
