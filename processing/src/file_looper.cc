@@ -31,8 +31,12 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     */
 
     std::string fname = in_dir+"/"+year+"_"+channel;
-    if (tagger != "") fname += "_"+tagger;
-    fname += "_tuple.root";
+    if (tagger != "") {
+        fname += "_"+tagger;
+    } else {
+        fname += "_tuple";
+    }
+    fname += ".root";
     std::cout << "Reading from file: " << fname << "\n";
     TFile* in_file = TFile::Open(fname.c_str());
     TTreeReader reader(channel.c_str(), in_file);
