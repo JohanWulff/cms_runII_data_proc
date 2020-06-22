@@ -386,7 +386,7 @@ void FileLooper::_extract_flags(const std::vector<std::string>& names, int& samp
 }
 
 int FileLooper::_jet_cat_lookup(const std::string& jet_cat) {
-    /* Ensure n_vbf definition is updtaed */
+    /* Ensure n_vbf definition is updated */
     if (jet_cat == "2j")            return 0;
     if (jet_cat == "2j0bR_noVBF")   return 1;
     if (jet_cat == "2j1bR_noVBF")   return 2;
@@ -568,7 +568,7 @@ bool FileLooper::_accept_evt(const int& region, const bool& central_unc, const i
         // std::cout << "Rejecting due to central = " << central_unc << "\n";
         return false;  //Don't systematics and event is a systematic
     }
-    if (!_inc_all_jets && jet_cat == 0) {
+    if (!_inc_all_jets && jet_cat <= 0) {
         // std::cout << "Rejecting due to jet_cat = " << jet_cat << "\n";
         return false;  // Only use inference category jets and event is non-inference category
     }
