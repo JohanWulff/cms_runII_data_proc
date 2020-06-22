@@ -23,14 +23,16 @@ FileLooper::~FileLooper() {
 }
 
 bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir, const std::string& channel, const std::string& year,
-                           const long int& n_events) {
+                           const std::string& tagger, const long int& n_events) {
     /*
     Loop though file {in_dir}/{year}_{channel}.root processing {n_events} (all events if n_events < 0).
-    Processed events will be saved to one of two trees inside {out_dir}/{year}_{channel}.root:
+    Processed events will be saved to one of two trees inside {out_dir}/{year}_{channel}_{tagger}.root:
     Even event IDs will be saved to data_0 and odd to data_1.
     */
 
-    std::string fname = in_dir+"/"+year+"_"+channel+"_tuple.root";
+    std::string fname = in_dir+"/"+year+"_"+channel;
+    if (tagger != "") fname += "_"+tagger;
+    tagger += "_tuple.root";
     std::cout << "Reading from file: " << fname << "\n";
     TFile* in_file = TFile::Open(fname.c_str());
     TTreeReader reader(channel.c_str(), in_file);
