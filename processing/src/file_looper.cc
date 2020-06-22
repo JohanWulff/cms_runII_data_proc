@@ -421,9 +421,9 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
         if (sample.find("NonRes_klScan") != std::string::npos) {
             sample_id = (sample.find("nlo") != std::string::npos) ? -26 : -12;
             try {
-                klambda = std::stof(sample.substr(sample.find("_kl")+3));
+                klambda = std::stof(sample.substr(sample.find("_klScan_kl")+10));
             } catch (...) {
-                std::cout << "Error in sample " << sample << " attempting to parse " << sample.substr(sample.find("_kl")+3) << "\n";
+                std::cout << "Error in sample " << sample << " attempting to parse " << sample.substr(sample.find("_klScan_kl")+10) << "\n";
                 assert(false);
             }
         } else if (sample.find("Radion") != std::string::npos) {
@@ -626,7 +626,7 @@ double FileLooper::_get_weight(TTreeReaderValue<std::vector<double>>& rv_weight,
             float klambda;
             for (unsigned int j = 1; j < names.size(); j++) {
                 if (names[j].find("NonRes") != std::string::npos) {
-                    klambda = std::stof(names[j].substr(names[j].find("_kl")+3));
+                    klambda = std::stof(names[j].substr(names[j].find("_klScan_kl")+10));
                     if (klambda != 5) continue;
                 }
                 if (std::find(idxs.begin(), idxs.end(), j) != idxs.end()) std::cout << " --> ";
@@ -650,7 +650,7 @@ float FileLooper::_get_mva_score(TTreeReaderValue<std::vector<float>>& rv_mva_sc
             float klambda;
             for (unsigned int j = 1; j < names.size(); j++) {
                 if (names[j].find("NonRes") != std::string::npos) {
-                    klambda = std::stof(names[j].substr(names[j].find("_kl")+3));
+                    klambda = std::stof(names[j].substr(names[j].find("_klScan_kl")+10));
                     if (klambda != use_kl) continue;
                 }
                 if (std::find(idxs.begin(), idxs.end(), j) != idxs.end()) std::cout << " --> ";
