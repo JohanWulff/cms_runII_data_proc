@@ -379,7 +379,7 @@ void FileLooper::_extract_flags(const std::vector<std::string>& names, int& samp
             if (tmp_cut_passes[i]) cut_pass = true;
         }
         if (jet_cat != 0) {  // Filter names to remove 2j weights
-            std::vector<int> new_idxs;
+            std::vector<unsigned int> new_idxs;
             for (unsigned int i = 0; i < idxs.size(); i++) if (tmp_jet_cats[i] != 0) new_idxs.push_back(idxs[i]);
             idxs = new_idxs
         }
@@ -573,9 +573,13 @@ bool FileLooper::_accept_evt(const int& region, const bool& central_unc, const i
         // std::cout << "Rejecting due to central = " << central_unc << "\n";
         return false;  //Don't systematics and event is a systematic
     }
-    if (!_inc_all_jets && jet_cat <= 0) {
+    if (!_inc_all_jets && jet_cat == 0) {
         // std::cout << "Rejecting due to jet_cat = " << jet_cat << "\n";
         return false;  // Only use inference category jets and event is non-inference category
+    }
+    if (jet_cat <= 0) {
+        // std::cout << "Rejecting due to jet_cat = " << jet_cat << "\n";
+        return false;  // Don't include experimental jet categories
     }
     if (_only_sm_vbf && (cv != 1 || c2v != 1 || c3 != 1)) {
         // std::cout << "Rejecting due to cv = " << cv << " c2v = " << c2v << " c3 = " << c3 << "\n";
