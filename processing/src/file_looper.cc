@@ -1,7 +1,7 @@
 #include "cms_runII_data_proc/processing/interface/file_looper.hh"
 
 
-int use_kl = 5;
+int use_kl = 1;
 
 
 FileLooper::FileLooper(bool return_all, std::vector<std::string> requested, bool use_deep_bjet_wps,
