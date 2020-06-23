@@ -577,7 +577,7 @@ bool FileLooper::_accept_evt(const int& region, const bool& central_unc, const i
         // std::cout << "Rejecting due to jet_cat = " << jet_cat << "\n";
         return false;  // Only use inference category jets and event is non-inference category
     }
-    if (jet_cat <= 0) {
+    if (jet_cat < 0) {
         // std::cout << "Rejecting due to jet_cat = " << jet_cat << "\n";
         return false;  // Don't include experimental jet categories
     }
