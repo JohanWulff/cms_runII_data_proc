@@ -166,8 +166,8 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TFile* out_file  = new TFile(oname.c_str(), "recreate");
     TTree* data_even = new TTree("data_0", "Even id data");
     TTree* data_odd  = new TTree("data_1", "Odd id data");
-    FileLooper::_prep_file(data_even, feat_vals, &weight, &sample, &region, &jet_cat, &cut_pass, &scale, &central_unc, &class_id, &strat_key, &mva_score);
-    FileLooper::_prep_file(data_odd,  feat_vals, &weight, &sample, &region, &jet_cat, &cut_pass, &scale, &central_unc, &class_id, &strat_key, &mva_score);
+    FileLooper::_prep_file(data_even, feat_vals, &weight, &sample, &region, &jet_cat, &scale, &central_unc, &class_id, &strat_key, &mva_score);
+    FileLooper::_prep_file(data_odd,  feat_vals, &weight, &sample, &region, &jet_cat, &scale, &central_unc, &class_id, &strat_key, &mva_score);
     std::cout << "\tprepared.\nBeginning loop.\n";
 
     long int c_event(0), n_tot_events(reader.GetEntries(true));
@@ -248,7 +248,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
 
         _evt_proc->process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit, vbf_1, vbf_2, kinfit_mass, kinfit_chi2, mt2, is_boosted, b_1_csv, b_2_csv,
                                   e_channel, e_year, res_mass, spin, klambda, n_vbf, svfit_conv, hh_kinfit_conv, b_1_hhbtag, b_2_hhbtag, vbf_1_hhbtag,
-                                  vbf_2_hhbtag, b_1_cvsl, b_2_cvsl, vbf_1_cvsl, vbf_2_cvsl, b_1_cvsb, b_2_cvsb, vbf_1_cvsb, vbf_2_cvsb, cv, c2v, c3);
+                                  vbf_2_hhbtag, b_1_cvsl, b_2_cvsl, vbf_1_cvsl, vbf_2_cvsl, b_1_cvsb, b_2_cvsb, vbf_1_cvsb, vbf_2_cvsb, cv, c2v, c3, cut_pass);
 
         if (evt%2 == 0) {
             data_even->Fill();
@@ -272,7 +272,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
 }
 
 void FileLooper::_prep_file(TTree* tree, const std::vector<std::unique_ptr<float>>& feat_vals, double* weight, int* sample, int* region, int* jet_cat,
-                            bool* cut_pass, bool* scale, bool* central_unc, int* class_id, unsigned long long int* strat_key, float* mva_score) {
+                            bool* scale, bool* central_unc, int* class_id, unsigned long long int* strat_key, float* mva_score) {
     /* Add branches to tree and set addresses for values */
 
     for (unsigned int i = 0; i < _n_feats; i++) tree->Branch(_feat_names[i].c_str(), feat_vals[i].get());
@@ -281,7 +281,6 @@ void FileLooper::_prep_file(TTree* tree, const std::vector<std::unique_ptr<float
     tree->Branch("sample",      sample);
     tree->Branch("region",      region);
     tree->Branch("jet_cat",     jet_cat);
-    tree->Branch("cut_pass",    cut_pass);
     tree->Branch("scale",       scale);
     tree->Branch("central_unc", central_unc);
     tree->Branch("class_id",    class_id);
