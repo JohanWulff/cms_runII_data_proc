@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 
-std::string root_dir = "/eos/home-k/kandroso/cms-it-hh-bbtautau/anaTuples/2020-06-15-mva";
+std::string root_dir = "/eos/home-k/kandroso/cms-it-hh-bbtautau/anaTuples/2020-12-01";
 std::string out_dir = "/eos/user/g/gstrong/cms_runII_dnn/data";
 
 
@@ -26,7 +26,6 @@ std::map<std::string, std::string> get_options(int argc, char* argv[]) {
     options.insert(std::make_pair("-n", "-1")); // # events
     options.insert(std::make_pair("-i", root_dir)); // input dir name
     options.insert(std::make_pair("-o", out_dir)); // output name
-    options.insert(std::make_pair("-t", "")); // Tagger order
 
     if (argc >= 2) { //Check if help was requested
         std::string option(argv[1]);
@@ -55,7 +54,7 @@ int main(int argc, char *argv[]) {
     if (options.size() == 0) return 1;
 
     FileLooper file_looper;
-    bool ok = file_looper.loop_file(options["-i"], options["-o"], options["-c"], options["-y"], options["-t"], std::stoi(options["-n"]));
+    bool ok = file_looper.loop_file(options["-i"], options["-o"], options["-c"], options["-y"], std::stoi(options["-n"]));
     if (ok) std::cout << "File loop ran ok!\n";
     return 0;
 }

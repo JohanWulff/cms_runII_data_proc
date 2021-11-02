@@ -22,21 +22,14 @@ FileLooper::~FileLooper() {
     delete _evt_proc;
 }
 
-bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir, const std::string& channel, const std::string& year,
-                           const std::string& tagger, const long int& n_events) {
+bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir, const std::string& channel, const std::string& year, const long int& n_events) {
     /*
     Loop though file {in_dir}/{year}_{channel}.root processing {n_events} (all events if n_events < 0).
     Processed events will be saved to one of two trees inside {out_dir}/{year}_{channel}_{tagger}.root:
     Even event IDs will be saved to data_0 and odd to data_1.
     */
 
-    std::string fname = in_dir+"/"+year+"_"+channel;
-    if (tagger != "") {
-        fname += "_"+tagger;
-    } else {
-        fname += "_tuple";
-    }
-    fname += ".root";
+    std::string fname = in_dir+"/"+year+"_"+channel+"_Central.root";
     std::cout << "Reading from file: " << fname << "\n";
     TFile* in_file = TFile::Open(fname.c_str());
     TTreeReader reader(channel.c_str(), in_file);
@@ -527,17 +520,28 @@ void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin&
         sample_id = 4;
     } else if (sample.find("GluGluH") != std::string::npos || sample.find("VBFH") != std::string::npos) {
         sample_id = 5;
-    } else if (sample.find("ZH") != std::string::npos || sample.find("WminusH") != std::string::npos || sample.find("WplusH") != std::string::npos) {
+    } else if (sample.find("ZH") != std::string::npos) {
         sample_id = 6;
-    } else if (sample.find("WWW") != std::string::npos || sample.find("WWZ") != std::string::npos || 
-               sample.find("WZZ") != std::string::npos || sample.find("ZZZ") != std::string::npos) {
+    } else if (sample.find("WminusH") != std::string::npos || sample.find("WplusH") != std::string::npos) {
         sample_id = 7;
-    } else if (sample.find("EWK") != std::string::npos) {
+    } else if (sample.find("WWW") != std::string::npos) {
         sample_id = 8;
-    } else if (sample.find("WW") != std::string::npos || sample.find("WZ") != std::string::npos || sample.find("ZZ") != std::string::npos) {
+    } else if (sample.find("WWZ") != std::string::npos) {
         sample_id = 9;
-    } else if (sample.find("ST") != std::string::npos) {
+    } else if (sample.find("WZZ") != std::string::npos) {
         sample_id = 10;
+    } else if (sample.find("ZZZ") != std::string::npos) {
+        sample_id = 11;
+    } else if (sample.find("EWK") != std::string::npos) {
+        sample_id = 12;
+    } else if (sample.find("WW") != std::string::npos) {
+        sample_id = 13;
+    } else if (sample.find("WZ") != std::string::npos) {
+        sample_id = 14;
+    } else if (sample.find("ZZ") != std::string::npos) {
+        sample_id = 15;
+    } else if (sample.find("ST") != std::string::npos) {
+        sample_id = 16;
     } else{
         throw std::invalid_argument("Unrecognised sample: " + sample);
     }
