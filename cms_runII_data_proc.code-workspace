@@ -86,7 +86,10 @@
 			"span": "cpp",
 			"unordered_set": "cpp",
 			"filesystem": "cpp",
-			"complex": "cpp"
+			"complex": "cpp",
+			"compare": "cpp",
+			"concepts": "cpp",
+			"numbers": "cpp"
 		}
 	}
 }

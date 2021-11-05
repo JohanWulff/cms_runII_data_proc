@@ -5,14 +5,12 @@ int use_kl = 1;
 
 
 FileLooper::FileLooper(bool return_all, std::vector<std::string> requested, bool use_deep_bjet_wps,
-                       bool apply_cut, bool inc_all_jets, bool inc_other_regions, bool inc_data, bool inc_unc, bool only_kl1, bool only_sm_vbf) {
+                       bool inc_all_jets, bool inc_other_regions, bool inc_data, bool only_kl1, bool only_sm_vbf) {
     _evt_proc = new EvtProc(return_all, requested, use_deep_bjet_wps);
     _feat_names = _evt_proc->get_feats();
     _n_feats = _feat_names.size();
-    _apply_cut = apply_cut;
     _inc_all_jets = inc_all_jets;
     _inc_other_regions = inc_other_regions;
-    _inc_unc = inc_unc;
     _inc_data = inc_data;
     _only_kl1 = only_kl1;
     _only_sm_vbf = only_sm_vbf;
@@ -33,6 +31,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     std::cout << "Reading from file: " << fname << "\n";
     TFile* in_file = TFile::Open(fname.c_str());
     TTreeReader reader(channel.c_str(), in_file);
+    TTreeReader aux_reader("aux", in_file);
 
     // Enums
     Channel e_channel = FileLooper::_get_channel(channel);
@@ -42,20 +41,19 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
 
     // Meta info
     std::cout << "Extracting auxiliary data...";
-    TTreeReaderValue<std::vector<double>> rv_weight(reader, "all_weights");
-    TTreeReaderValue<std::vector<float>> rv_mva_scores(reader, "all_mva_scores");
+
     TTreeReaderValue<unsigned long long> rv_evt(reader, "evt");
-    TTreeReaderValue<std::vector<unsigned long>> rv_id(reader, "dataIds");
-    std::map<unsigned long, std::string> id2name = FileLooper::build_id_map(in_file);
+    TTreeReaderValue<float> rv_weight(reader, "weights");
+    TTreeReaderValue<UInt_t> rv_dataset_id(reader, "dataset");
+    TTreeReaderValue<UInt_t> rv_region_id(reader, "event_region");
+    std::map<unsigned, std::string> id2dataset = FileLooper::build_dataset_id_map(in_file);
+    std::map<unsigned, std::string> id2region = FileLooper::build_region_id_map(in_file);
     std::cout << " Extracted\n";
-    double weight;
-    float res_mass, mva_score;
-    std::vector<std::string> names;
-    int sample, region, jet_cat, n_vbf, class_id;
-    std::vector<unsigned int> idxs;
+    
+    float weight, res_mass;
+    int sample, region, jet_cat, n_vbf, class_id, dataset_id, region_id;
     unsigned long long int strat_key, evt;
-    bool scale, central_unc, svfit_conv, hh_kinfit_conv, accept, cut_pass;
-    std::vector<unsigned long> ids;
+    bool svfit_conv, hh_kinfit_conv, accept;
 
     // HL feats
     TTreeReaderValue<float> rv_kinfit_mass(reader, "kinFit_m");
@@ -66,8 +64,10 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     // Tagging
     TTreeReaderValue<float> rv_b_1_csv(reader, "b1_DeepFlavour");
     TTreeReaderValue<float> rv_b_2_csv(reader, "b2_DeepFlavour");
+    TTreeReaderValue<bool> rv_is_boosted(reader, "is_boosted");
+    TTreeReaderValue<bool> rv_has_vbf_pair(reader, "has_vbf_pair");
     float b_1_csv, b_2_csv;
-    bool is_boosted;
+    bool is_boosted, has_vbf_pair;
 
     // SVFit feats
     TTreeReaderValue<float> rv_svfit_pT(reader, "SVfit_pt");
@@ -85,7 +85,6 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     float l_1_mass;
     LorentzVectorPEP pep_l_1;
     LorentzVector l_1;
-
 
     // l2 feats
     TTreeReaderValue<float> rv_l_2_pT(reader, "tau2_pt");
@@ -159,27 +158,27 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TFile* out_file  = new TFile(oname.c_str(), "recreate");
     TTree* data_even = new TTree("data_0", "Even id data");
     TTree* data_odd  = new TTree("data_1", "Odd id data");
-    FileLooper::_prep_file(data_even, feat_vals, &weight, &sample, &region, &jet_cat, &scale, &central_unc, &class_id, &strat_key, &mva_score);
-    FileLooper::_prep_file(data_odd,  feat_vals, &weight, &sample, &region, &jet_cat, &scale, &central_unc, &class_id, &strat_key, &mva_score);
+    FileLooper::_prep_file(data_even, feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key);
+    FileLooper::_prep_file(data_odd,  feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key);
     std::cout << "\tprepared.\nBeginning loop.\n";
 
     long int c_event(0), n_tot_events(reader.GetEntries(true));
     while (reader.Next()) {
         c_event++;
         if (c_event%1000 == 0) std::cout << c_event << " / " << n_tot_events << "\n";
-        ids = *rv_id;
-
-        names = FileLooper::_get_evt_names(id2name, ids);
-        if (names.size() == 0) continue;
-        FileLooper::_extract_flags(names, sample, region, central_unc, scale, jet_cat, cut_pass, class_id, spin, klambda, res_mass, is_boosted, accept, idxs,
-                                   cv, c2v, c3);
-        if (!accept) continue;
-        strat_key = FileLooper::_get_strat_key(sample, jet_cat, e_channel, e_year, region, static_cast<int>(central_unc), static_cast<int>(cut_pass));
 
         // Load meta
-        weight = FileLooper::_get_weight(rv_weight, idxs, names); 
-        mva_score = FileLooper::_get_mva_score(rv_mva_scores, idxs, names); 
-        evt    =  *rv_evt;
+        weight = *rv_weight;
+        evt    = *rv_evt;
+        FileLooper::_sample_lookup(id2dataset[*rv_dataset_id], sample, spin, klambda, res_mass, cv, c2v, c3)
+        class_id = FileLooper::_sample2class_lookup(sample)
+        region = FileLooper::_region_lookup(id2dataset[*rv_region_id])
+        jet_cat = FileLooper::_jet_cat_lookup(/*Add jetcat stuff*/);
+        is_boosted = *rv_is_boosted;
+        has_vbf_pair = *rv_has_vbf_pair;
+        
+        if (!FileLooper::_accept_evt(region, jet_cat, class_id, klambda, cv, c2v, c3)) continue;
+        strat_key = FileLooper::_get_strat_key(sample, jet_cat, e_channel, e_year, region);
 
         // Load HL feats
         kinfit_mass   = *rv_kinfit_mass;
@@ -229,11 +228,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         vbf_2.SetCoordinates(pep_vbf_2.Px(), pep_vbf_2.Py(), pep_vbf_2.Pz(), pep_vbf_2.M());
 
         // VBF
-        n_vbf = 0;
-        if ((jet_cat == 5 || jet_cat == 6 || jet_cat == 7)) {
-            if (*rv_vbf_1_mass != std::numeric_limits<float>::lowest()) n_vbf++;
-            if (*rv_vbf_2_mass != std::numeric_limits<float>::lowest()) n_vbf++;
-        }
+        n_vbf = has_vbf_pair ? 2 : 0;
 
         // Convergence
         svfit_conv     = *rv_svfit_mass > 0;
@@ -241,7 +236,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
 
         _evt_proc->process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit, vbf_1, vbf_2, kinfit_mass, kinfit_chi2, mt2, is_boosted, b_1_csv, b_2_csv,
                                   e_channel, e_year, res_mass, spin, klambda, n_vbf, svfit_conv, hh_kinfit_conv, b_1_hhbtag, b_2_hhbtag, vbf_1_hhbtag,
-                                  vbf_2_hhbtag, b_1_cvsl, b_2_cvsl, vbf_1_cvsl, vbf_2_cvsl, b_1_cvsb, b_2_cvsb, vbf_1_cvsb, vbf_2_cvsb, cv, c2v, c3, cut_pass);
+                                  vbf_2_hhbtag, b_1_cvsl, b_2_cvsl, vbf_1_cvsl, vbf_2_cvsl, b_1_cvsb, b_2_cvsb, vbf_1_cvsb, vbf_2_cvsb, cv, c2v, c3);
 
         if (evt%2 == 0) {
             data_even->Fill();
@@ -264,18 +259,47 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     return true;
 }
 
+std::map<unsigned, std::string> FileLooper::build_dataset_id_map(TFile* in_file) {
+    TTreeReader aux_reader("aux", in_file);
+    TTreeReaderValue<std::vector<std::string>> rv_dataset_names(aux_reader, "dataset_names");
+    TTreeReaderValue<std::vector<unsigned>> rv_dataset_hashes(aux_reader, "dataset_hashes");
+    
+    std::vector<unsigned> ids;
+    std::vector<std::string> names;
+    while (aux_reader.Next()) {
+        ids   = *rv_dataset_hashes;
+        names = *rv_dataset_names;
+    }
+    std::map<unsigned long, std::string> id2name;
+    for (unsigned int i = 0; i < ids.size(); i++) id2name[ids[i]] = names[i];
+    return id2name;
+}
+
+std::map<unsigned, std::string> FileLooper::build_region_id_map(TFile* in_file) {
+    TTreeReader aux_reader("aux", in_file);
+    TTreeReaderValue<std::vector<std::string>> rv_region_names(aux_reader, "region_names");
+    TTreeReaderValue<std::vector<unsigned>> rv_region_hashes(aux_reader, "region_hashes");
+    
+    std::vector<unsigned> ids;
+    std::vector<std::string> names;
+    while (aux_reader.Next()) {
+        ids   = *rv_region_hashes;
+        names = *rv_region_names;
+    }
+    std::map<unsigned long, std::string> id2name;
+    for (unsigned int i = 0; i < ids.size(); i++) id2name[ids[i]] = names[i];
+    return id2name;
+}
+
 void FileLooper::_prep_file(TTree* tree, const std::vector<std::unique_ptr<float>>& feat_vals, double* weight, int* sample, int* region, int* jet_cat,
-                            bool* scale, bool* central_unc, int* class_id, unsigned long long int* strat_key, float* mva_score) {
+                            int* class_id, unsigned long long int* strat_key) {
     /* Add branches to tree and set addresses for values */
 
     for (unsigned int i = 0; i < _n_feats; i++) tree->Branch(_feat_names[i].c_str(), feat_vals[i].get());
     tree->Branch("weight",      weight);
-    tree->Branch("mva_score",   mva_score);
     tree->Branch("sample",      sample);
     tree->Branch("region",      region);
     tree->Branch("jet_cat",     jet_cat);
-    tree->Branch("scale",       scale);
-    tree->Branch("central_unc", central_unc);
     tree->Branch("class_id",    class_id);
     tree->Branch("strat_key",   strat_key);
 }
@@ -308,80 +332,6 @@ Year FileLooper::_get_year(std::string year) {
     return Year(y16);
 }
 
-std::vector<std::string> FileLooper::_get_evt_names(const std::map<unsigned long, std::string>& id2name, const std::vector<unsigned long>& ids) {
-    /* Match data IDs to aux names */
-    
-    std::vector<std::string> names(ids.size());
-    for (unsigned int i = 0; i < ids.size(); i++) names[i] = id2name.at(ids[i]);
-    return names;
-}
-
-void FileLooper::_extract_flags(const std::vector<std::string>& names, int& sample, int& region, bool& central_unc, bool& scale,
-                                int& jet_cat, bool& cut_pass, int& class_id, Spin& spin, float& klambda, float& res_mass,
-                                bool& is_boosted, bool& accept, std::vector<unsigned int>& idxs , float& cv, float& c2v, float& c3) {
-    /*
-    Extract event flags from name 
-    Example: "2j/NoCuts/SS_AntiIsolated/None/Central/DY_MC_M-10-50"
-    */
-
-    std::string val;
-    bool tmp_cut_pass;
-    std::vector<int> tmp_jet_cats;
-    std::vector<bool> tmp_cut_passes;
-    int tmp_jet_cat;
-    idxs.clear();
-    float tmp_klambda, tmp_cv, tmp_c2v, tmp_c3;
-    for (unsigned int n = 0; n < names.size(); n++) {
-        if (names[n].find("MVA0") == std::string::npos) continue;
-        std::istringstream iss(names[n]);
-        int i = 0;
-        while (std::getline(iss, val, '/')) {   
-            if (i == 0) {
-                tmp_jet_cat = FileLooper::_jet_cat_lookup(val);
-            } else if (i == 1) {
-                tmp_cut_pass = (val == "mh_MVA0");
-            } else if (i == 2) {
-                region = FileLooper::_region_lookup(val);
-            } else if (i == 3) {
-                central_unc = (val == "None");
-            } else if (i == 4) {
-                scale = (val == "Central");
-            } else if (i == 5) {
-                FileLooper::_sample_lookup(val, sample, spin, tmp_klambda, res_mass, tmp_cv, tmp_c2v, tmp_c3);
-                class_id = FileLooper::_sample2class_lookup(sample);
-            }
-            i++;
-        }
-        if (FileLooper::_accept_evt(region, central_unc, tmp_jet_cat, tmp_cut_pass, class_id, tmp_klambda, tmp_cv, tmp_c2v, tmp_c3)) {
-            tmp_jet_cats.push_back(tmp_jet_cat);
-            tmp_cut_passes.push_back(tmp_cut_pass);
-            idxs.push_back(n);
-        }
-    }
-    if (idxs.size() == 0) {
-        accept = false;
-    } else {
-        accept = true;
-        jet_cat = -1;
-        is_boosted = false;
-        cut_pass = false;
-        for (unsigned int i = 0; i < idxs.size(); i++) {
-            if (tmp_jet_cats[i] == 4) is_boosted = true;
-            if (tmp_jet_cats[i] > jet_cat) jet_cat = tmp_jet_cats[i];
-            if (tmp_cut_passes[i]) cut_pass = true;
-        }
-        if (jet_cat != 0) {  // Filter names to remove 2j weights
-            std::vector<unsigned int> new_idxs;
-            for (unsigned int i = 0; i < idxs.size(); i++) if (tmp_jet_cats[i] != 0) new_idxs.push_back(idxs[i]);
-            idxs = new_idxs;
-        }
-        klambda = use_kl;
-        cv = 1;
-        c2v = 1;
-        c3 = 1;
-    }
-}
-
 int FileLooper::_jet_cat_lookup(const std::string& jet_cat) {
     /* Ensure n_vbf definition is updated */
     if (jet_cat == "2j")            return 0;
@@ -406,7 +356,7 @@ int FileLooper::_region_lookup(const std::string& region) {
     return -1;
 }
 
-void FileLooper::_sample_lookup(const std::string& sample, int& sample_id, Spin& spin, float& klambda, float& res_mass, float& cv, float& c2v, float& c3) {
+void FileLooper::_sample_lookup(std::string& sample, int& sample_id, Spin& spin, float& klambda, float& res_mass, float& cv, float& c2v, float& c3) {
     spin = nonres;
     res_mass = 125;
     klambda = use_kl;
@@ -554,15 +504,11 @@ int FileLooper::_sample2class_lookup(const int& sample) {
     return 0;                          // Background
 }
 
-bool FileLooper::_accept_evt(const int& region, const bool& central_unc, const int& jet_cat, const bool& cut_pass, const int& class_id, const float& klambda,
+bool FileLooper::_accept_evt(const int& region, const int& jet_cat, const int& class_id, const float& klambda,
                              const float& cv, const float& c2v, const float& c3) {
     if (_only_kl1 && klambda != use_kl) {
         // std::cout << "Rejecting due to klambda = " << klambda << "\n";
         return false; // Only consider klambda at SM point
-    }
-    if (_apply_cut && !cut_pass) {
-        // std::cout << "Rejecting due to mass cut = " << cut_pass << "\n";
-        return false;  // Require mass cut and cut failed
     }
     if (!_inc_data && class_id == -1) {
         // std::cout << "Rejecting due to class ID = " << class_id << "\n";
@@ -571,10 +517,6 @@ bool FileLooper::_accept_evt(const int& region, const bool& central_unc, const i
     if (!_inc_other_regions && region != 0) {
         // std::cout << "Rejecting due to region = " << region << "\n";
         return false;  //Don't include other regions and event is not SS Iso
-    }
-    if (!_inc_unc && !central_unc) {
-        // std::cout << "Rejecting due to central = " << central_unc << "\n";
-        return false;  //Don't systematics and event is a systematic
     }
     if (!_inc_all_jets && jet_cat == 0) {
         // std::cout << "Rejecting due to jet_cat = " << jet_cat << "\n";
@@ -595,82 +537,16 @@ bool FileLooper::_accept_evt(const int& region, const bool& central_unc, const i
     return true;
 }
 
-unsigned long long int FileLooper::_get_strat_key(const int& sample, const int& jet_cat, const Channel& channel, const Year& year, const int& region,
-                                                  const int& central_unc, const int& cut_pass) {
+unsigned long long int FileLooper::_get_strat_key(const int& sample, const int& jet_cat, const Channel& channel, const Year& year, const int& region) {
     unsigned long long int strat_key = std::pow(2,  std::abs(sample))*
                                        std::pow(3,  jet_cat)*
                                        std::pow(5,  (float)channel)*
                                        std::pow(7,  (float)year)*
-                                       std::pow(11, region)*
-                                       std::pow(13, cut_pass)*
-                                       std::pow(17, central_unc);
+                                       std::pow(11, region);
     if (strat_key == 0) {
         std::cout << "sample " << sample << " jet_cat " << jet_cat << " channel " << channel << " year " << year << " region " << region << 
-                     " cut_pass " << cut_pass << " central_unc " << central_unc << "\n";
+                      << "\n";
         throw std::overflow_error("Strat key overflow\n");  
     }  
     return strat_key;
-}
-
-std::map<unsigned long, std::string> FileLooper::build_id_map(TFile* in_file) {
-    TTreeReader aux_reader("aux", in_file);
-    TTreeReaderValue<std::vector<unsigned long>> rv_aux_id(aux_reader, "dataIds");
-    TTreeReaderValue<std::vector<std::string>> rv_aux_name(aux_reader, "dataId_names");
-    std::vector<unsigned long> ids;
-    std::vector<std::string> names;
-    while (aux_reader.Next()) {
-        ids   = *rv_aux_id;
-        names = *rv_aux_name;
-    }
-    std::map<unsigned long, std::string> id2name;
-    for (unsigned int i = 0; i < ids.size(); i++) id2name[ids[i]] = names[i];
-    return id2name;
-}
-
-double FileLooper::_get_weight(TTreeReaderValue<std::vector<double>>& rv_weight, const std::vector<unsigned int>& idxs,
-                               const std::vector<std::string>& names) {
-    double del, weight = (*rv_weight)[idxs[0]];
-    for (unsigned int i = 1; i < idxs.size(); i++) {
-        del = std::abs((*rv_weight)[idxs[i]]-weight)/weight;
-        if (del > 1e-5) {
-            std::cout << "Multiple weights found. " << (*rv_weight)[idxs[i]] << " : " << weight << " Del = " << del << "\n";
-            std::cout << "Names and weights:\n_________________________________\n";
-            float klambda;
-            for (unsigned int j = 1; j < names.size(); j++) {
-                if (names[j].find("NonRes") != std::string::npos) {
-                    klambda = std::stof(names[j].substr(names[j].find("_klScan_kl")+10));
-                    if (klambda != use_kl) continue;
-                }
-                if (std::find(idxs.begin(), idxs.end(), j) != idxs.end()) std::cout << " --> ";
-                std::cout << names[j] << " = " << (*rv_weight)[j] << "\n";
-            }
-            std::cout << "_________________________________\n";
-            assert(false);
-        }
-    }
-    return weight;
-}
-
-float FileLooper::_get_mva_score(TTreeReaderValue<std::vector<float>>& rv_mva_score, const std::vector<unsigned int>& idxs,
-                                 const std::vector<std::string>& names) {
-    double del, mva_score = (*rv_mva_score)[idxs[0]];
-    for (unsigned int i = 1; i < idxs.size(); i++) {
-        del = std::abs((*rv_mva_score)[idxs[i]]-mva_score)/mva_score;
-        if (del > 1e-5) {
-            std::cout << "Multiple mva_score found. " << (*rv_mva_score)[idxs[i]] << " : " << mva_score << " Del = " << del << "\n";
-            std::cout << "Names and mva_score:\n_________________________________\n";
-            float klambda;
-            for (unsigned int j = 1; j < names.size(); j++) {
-                if (names[j].find("NonRes") != std::string::npos) {
-                    klambda = std::stof(names[j].substr(names[j].find("_klScan_kl")+10));
-                    if (klambda != use_kl) continue;
-                }
-                if (std::find(idxs.begin(), idxs.end(), j) != idxs.end()) std::cout << " --> ";
-                std::cout << names[j] << " = " << (*rv_mva_score)[j] << "\n";
-            }
-            std::cout << "_________________________________\n";
-            assert(false);
-        }
-    }
-    return mva_score;
 }

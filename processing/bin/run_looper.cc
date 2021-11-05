@@ -14,7 +14,6 @@ void show_help() {
     std::cout << "-n : # events, default = -1 (all)\n";
     std::cout << "-i : input dir, default " << root_dir << "data/set\n";
     std::cout << "-o : out dir, default = " << out_dir << "\n";
-    std::cout << "-t : Tagger order ["", deepflavour, hhbtag], default = ""\n";
 }
 
 std::map<std::string, std::string> get_options(int argc, char* argv[]) {
