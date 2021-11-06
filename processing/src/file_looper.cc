@@ -357,6 +357,8 @@ int FileLooper::_region_lookup(const std::string& region) {
 }
 
 void FileLooper::_sample_lookup(std::string& sample, int& sample_id, Spin& spin, float& klambda, float& res_mass, float& cv, float& c2v, float& c3) {
+    // TODO Update this
+    
     spin = nonres;
     res_mass = 125;
     klambda = use_kl;
