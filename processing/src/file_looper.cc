@@ -65,9 +65,12 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TTreeReaderValue<float> rv_b_1_csv(reader, "b1_DeepFlavour");
     TTreeReaderValue<float> rv_b_2_csv(reader, "b2_DeepFlavour");
     TTreeReaderValue<bool> rv_is_boosted(reader, "is_boosted");
-    TTreeReaderValue<bool> rv_has_vbf_pair(reader, "has_vbf_pair");
+    TTreeReaderValue<bool> rv_has_vbf_pair(reader, "has_VBF_pair");
+    TTreeReaderValue<int> rv_num_btag_loose(reader, "num_btag_Loose");
+    TTreeReaderValue<int> rv_num_btag_medium(reader, "num_btag_Medium");
     float b_1_csv, b_2_csv;
-    bool is_boosted, has_vbf_pair;
+    bool is_boosted, has_vbf_pair, has_b_pair;
+    int num_btag_loose, num_btag_medium;
 
     // SVFit feats
     TTreeReaderValue<float> rv_svfit_pT(reader, "SVfit_pt");
@@ -170,12 +173,19 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         // Load meta
         weight = *rv_weight;
         evt    = *rv_evt;
+        
         FileLooper::_sample_lookup(id2dataset[*rv_dataset_id], sample, spin, klambda, res_mass, cv, c2v, c3)
         class_id = FileLooper::_sample2class_lookup(sample)
+        
         region = FileLooper::_region_lookup(id2dataset[*rv_region_id])
-        jet_cat = FileLooper::_jet_cat_lookup(/*Add jetcat stuff*/);
+        
         is_boosted = *rv_is_boosted;
         has_vbf_pair = *rv_has_vbf_pair;
+        has_b_pair = *rv_has_b_pair;
+        num_btag_loose = *rv_num_btag_loose;
+        num_btag_medium = *rv_num_btag_medium;
+
+        jet_cat = FileLooper::_jet_cat_lookup(has_b_pair, has_vbf_pair, is_boosted, num_btag_loose, num_btag_medium);
         
         if (!FileLooper::_accept_evt(region, jet_cat, class_id, klambda, cv, c2v, c3)) continue;
         strat_key = FileLooper::_get_strat_key(sample, jet_cat, e_channel, e_year, region);
@@ -332,18 +342,14 @@ Year FileLooper::_get_year(std::string year) {
     return Year(y16);
 }
 
-int FileLooper::_jet_cat_lookup(const std::string& jet_cat) {
-    /* Ensure n_vbf definition is updated */
-    if (jet_cat == "2j")            return 0;
-    if (jet_cat == "2j0bR_noVBF")   return 1;
-    if (jet_cat == "2j1bR_noVBF")   return 2;
-    if (jet_cat == "2j2b+R_noVBF")  return 3;
-    if (jet_cat == "2j2Lb+B_noVBF") return 4;
-    if (jet_cat == "2j1b+_VBFL" || jet_cat == "2j1b+_VBF" || jet_cat == "2j1b+_VBFT") return 5;
-    if (jet_cat == "2j2Lb+" || jet_cat == "2j2b+"  || jet_cat == "2j0b"   || jet_cat == "2j0Tb" || jet_cat == "2j1Tb+" || jet_cat == "2j1Tb" || 
-        jet_cat == "2j0Lb"  || jet_cat == "2j1Lb"  || jet_cat == "2j2Tb+" || jet_cat == "2j1b") return -1;
-    throw std::invalid_argument("Unrecognised jet category: " + jet_cat);
-    return -1;
+int FileLooper::_jet_cat_lookup(const bool has_b_pair, const bool has_vbf_pair, const bool is_boosted, const int num_btag_Loose, const int num_btag_Medium) {
+    if (!has_b_pair)  return -1;
+    if (has_vbf_pair && num_btag_Loose >= 1) return 5;  // 2j1b+_VBFL, 2j1b+_VBF, 2j1b+_VBFT
+    if (!has_vbf_pair && is_boosted && num_btag_Loose >= 2)   return 4;  // 2j2Lb+B_noVBF
+    if (!has_vbf_pair && num_btag_Medium >= 2) return 3;  // 2j2b+R_noVBF
+    if (!has_vbf_pair && num_btag_Loose >= 1)  return 2;  // 2j1bR_noVBF
+    if (!has_vbf_pair && num_btag_Loose == 0)  return 1;  // 2j0bR_noVBF
+    return 0;  // 2j 
 }
 
 int FileLooper::_region_lookup(const std::string& region) {

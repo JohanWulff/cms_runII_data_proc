@@ -49,7 +49,7 @@ private:
     Year _get_year(std::string);
     unsigned long long int _get_strat_key(const int& sample, const int& jet_cat, const Channel& channel, const Year& year, const int& region);
     std::vector<std::string> _get_evt_names(const std::map<unsigned long, std::string>&, const std::vector<unsigned long>&);
-    int _jet_cat_lookup(const std::string&);
+    int _jet_cat_lookup(const bool has_b_pair, const bool has_vbf_pair, const bool is_boosted, const int num_btag_loose, const int num_btag_medium);
     int _region_lookup(const std::string&);
     void _sample_lookup(std::string& sample, int& sample_id, Spin& spin, float& klambda, float& res_mass, float& cv, float& c2v, float& c3);
     int _sample2class_lookup(const int&);
