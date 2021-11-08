@@ -43,7 +43,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     std::cout << "Extracting auxiliary data...";
 
     TTreeReaderValue<unsigned long long> rv_evt(reader, "evt");
-    TTreeReaderValue<float> rv_weight(reader, "weights");
+    TTreeReaderValue<float> rv_weight(reader, "weight");
     TTreeReaderValue<UInt_t> rv_dataset_id(reader, "dataset");
     TTreeReaderValue<UInt_t> rv_region_id(reader, "event_region");
     std::map<unsigned, std::string> id2dataset = FileLooper::build_dataset_id_map(in_file);
