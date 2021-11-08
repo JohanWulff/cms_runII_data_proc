@@ -192,7 +192,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         FileLooper::_sample_lookup(id2dataset[*rv_dataset_id], sample, spin, klambda, res_mass, cv, c2v, c3);
         class_id = FileLooper::_sample2class_lookup(sample);
         
-        region = FileLooper::_region_lookup(id2dataset[*rv_region_id]);
+        region = FileLooper::_region_lookup(id2region[*rv_region_id]);
         
         is_boosted = *rv_is_boosted;
         has_vbf_pair = *rv_has_vbf_pair;
