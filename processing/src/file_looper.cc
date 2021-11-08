@@ -55,11 +55,21 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     unsigned long long int strat_key, evt;
     bool svfit_conv, hh_kinfit_conv, accept;
 
+    // Gen Info
+    TTreeReaderValue<int> rv_tau1_gen_match(reader, "tau1_gen_match");
+    TTreeReaderValue<int> rv_tau2_gen_match(reader, "tau2_gen_match");
+    TTreeReaderValue<int> rv_b1_hadronFlavour(reader, "b1_hadronFlavour");
+    TTreeReaderValue<int> rv_b2_hadronFlavour(reader, "b2_hadronFlavour");
+    int tau1_gen_match, tau2_gen_match, b1_hadronFlavour, b2_hadronFlavour;
+
     // HL feats
     TTreeReaderValue<float> rv_kinfit_mass(reader, "kinFit_m");
     TTreeReaderValue<float> rv_kinfit_chi2(reader, "kinFit_chi2");
     TTreeReaderValue<float> rv_mt2(reader, "MT2");
     float kinfit_mass, kinfit_chi2, mt2;
+
+    // ZZ &ZH KinFit;
+    float kinfit_mass_ZZ, kinfit_chi2_ZZ, kinfit_mass_ZH, kinfit_chi2_ZH;
 
     // Tagging
     TTreeReaderValue<float> rv_b_1_csv(reader, "b1_DeepFlavour");
@@ -161,8 +171,12 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TFile* out_file  = new TFile(oname.c_str(), "recreate");
     TTree* data_even = new TTree("data_0", "Even id data");
     TTree* data_odd  = new TTree("data_1", "Odd id data");
-    FileLooper::_prep_file(data_even, feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key);
-    FileLooper::_prep_file(data_odd,  feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key);
+    FileLooper::_prep_file(data_even, feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key,
+                           &kinfit_mass_ZZ, &kinfit_chi2_ZZ, &kinfit_mass_ZH, &kinfit_chi2_ZH,
+                           &tau1_gen_match, &tau2_gen_match, &b1_hadronFlavour, &b2_hadronFlavour);
+    FileLooper::_prep_file(data_odd,  feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key,
+                           &kinfit_mass_ZZ, &kinfit_chi2_ZZ, &kinfit_mass_ZH, &kinfit_chi2_ZH,
+                           &tau1_gen_match, &tau2_gen_match, &b1_hadronFlavour, &b2_hadronFlavour);
     std::cout << "\tprepared.\nBeginning loop.\n";
 
     long int c_event(0), n_tot_events(reader.GetEntries(true));
@@ -189,6 +203,12 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         
         if (!FileLooper::_accept_evt(region, jet_cat, class_id, klambda, cv, c2v, c3)) continue;
         strat_key = FileLooper::_get_strat_key(sample, jet_cat, e_channel, e_year, region);
+
+        // Gen info
+        tau1_gen_match = *rv_tau1_gen_match;
+        tau2_gen_match = *rv_tau2_gen_match;
+        b1_hadronFlavour = *rv_b1_hadronFlavour;
+        b2_hadronFlavour = *rv_b2_hadronFlavour;
 
         // Load HL feats
         kinfit_mass   = *rv_kinfit_mass;
@@ -302,7 +322,9 @@ std::map<unsigned, std::string> FileLooper::build_region_id_map(TFile* in_file) 
 }
 
 void FileLooper::_prep_file(TTree* tree, const std::vector<std::unique_ptr<float>>& feat_vals, double* weight, int* sample, int* region, int* jet_cat,
-                            int* class_id, unsigned long long int* strat_key) {
+                            int* class_id, unsigned long long int* strat_key,
+                            float* kinfit_mass_ZZ, float* kinfit_chi2_ZZ, float* kinfit_mass_ZH, float* kinfit_chi2_ZH,
+                            int* tau1_gen_match, int* tau2_gen_match, int* b1_hadronFlavour, int* b2_hadronFlavour) {
     /* Add branches to tree and set addresses for values */
 
     for (unsigned int i = 0; i < _n_feats; i++) tree->Branch(_feat_names[i].c_str(), feat_vals[i].get());
@@ -310,8 +332,14 @@ void FileLooper::_prep_file(TTree* tree, const std::vector<std::unique_ptr<float
     tree->Branch("sample",      sample);
     tree->Branch("region",      region);
     tree->Branch("jet_cat",     jet_cat);
-    tree->Branch("class_id",    class_id);
-    tree->Branch("strat_key",   strat_key);
+    tree->Branch("kinfit_mass_ZZ", kinfit_mass_ZZ);
+    tree->Branch("kinfit_chi2_ZZ", kinfit_chi2_ZZ);
+    tree->Branch("kinfit_mass_ZH", kinfit_mass_ZH);
+    tree->Branch("kinfit_chi2_ZH", kinfit_chi2_ZH);
+    tree->Branch("tau1_gen_match", tau1_gen_match);
+    tree->Branch("tau2_gen_match", tau2_gen_match);
+    tree->Branch("b1_hadronFlavour", b1_hadronFlavour);
+    tree->Branch("b2_hadronFlavour", b2_hadronFlavour);
 }
 
 Channel FileLooper::_get_channel(std::string channel) {
@@ -478,28 +506,40 @@ void FileLooper::_sample_lookup(std::string& sample, int& sample_id, Spin& spin,
         sample_id = 4;
     } else if (sample.find("GluGluH") != std::string::npos || sample.find("VBFH") != std::string::npos) {
         sample_id = 5;
-    } else if (sample.find("ZH") != std::string::npos) {
+    } else if (sample.find("ZHToTauTau_M125") != std::string::npos) {
         sample_id = 6;
-    } else if (sample.find("WminusH") != std::string::npos || sample.find("WplusH") != std::string::npos) {
+    } else if (sample.find("ZH_HToBB_ZToLL_M125") != std::string::npos) {
         sample_id = 7;
-    } else if (sample.find("WWW") != std::string::npos) {
+    } else if (sample.find("ZH_HToBB_ZToQQ_M125") != std::string::npos) {
         sample_id = 8;
-    } else if (sample.find("WWZ") != std::string::npos) {
+    } else if (sample.find("WminusH") != std::string::npos || sample.find("WplusH") != std::string::npos) {
         sample_id = 9;
-    } else if (sample.find("WZZ") != std::string::npos) {
+    } else if (sample.find("WWW") != std::string::npos) {
         sample_id = 10;
-    } else if (sample.find("ZZZ") != std::string::npos) {
+    } else if (sample.find("WWZ") != std::string::npos) {
         sample_id = 11;
-    } else if (sample.find("EWK") != std::string::npos) {
+    } else if (sample.find("WZZ") != std::string::npos) {
         sample_id = 12;
-    } else if (sample.find("WW") != std::string::npos) {
+    } else if (sample.find("ZZZ") != std::string::npos) {
         sample_id = 13;
-    } else if (sample.find("WZ") != std::string::npos) {
+    } else if (sample.find("EWK") != std::string::npos) {
         sample_id = 14;
-    } else if (sample.find("ZZ") != std::string::npos) {
+    } else if (sample.find("WW") != std::string::npos) {
         sample_id = 15;
-    } else if (sample.find("ST") != std::string::npos) {
+    } else if (sample.find("WZ") != std::string::npos) {
         sample_id = 16;
+    } else if (sample.find("ZZTo2L2Nu") != std::string::npos) {
+        sample_id = 17;
+    } else if (sample.find("ZZTo2L2Q") != std::string::npos) {
+        sample_id = 18;
+    } else if (sample.find("ZZTo2Q2Nu") != std::string::npos) {
+        sample_id = 19;
+    } else if (sample.find("ZZTo4L") != std::string::npos) {
+        sample_id = 20;
+    } else if (sample.find("ZZTo4Q") != std::string::npos) {
+        sample_id = 21;
+    } else if (sample.find("ST") != std::string::npos) {
+        sample_id = 22;
     } else{
         throw std::invalid_argument("Unrecognised sample: " + sample);
     }

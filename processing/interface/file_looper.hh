@@ -44,7 +44,9 @@ private:
 	// Methods
     inline int _get_split(const unsigned long int&);
     void _prep_file(TTree* tree, const std::vector<std::unique_ptr<float>>& feat_vals, double* weight, int* sample, int* region, int* jet_cat,
-                    int* class_id, unsigned long long int* strat_key);
+                    int* class_id, unsigned long long int* strat_key,
+                    float* kinfit_mass_ZZ, float* kinfit_chi2_ZZ, float* kinfit_mass_ZH, float* kinfit_chi2_ZH,
+                    int* tau1_gen_match, int* tau2_gen_match, int* b1_hadronFlavour, int* b2_hadronFlavour);
     Channel _get_channel(std::string);
     Year _get_year(std::string);
     unsigned long long int _get_strat_key(const int& sample, const int& jet_cat, const Channel& channel, const Year& year, const int& region);
