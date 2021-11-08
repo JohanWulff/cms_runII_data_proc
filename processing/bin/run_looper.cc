@@ -3,7 +3,7 @@
 #include <string>
 
 std::string root_dir = "/eos/home-k/kandroso/cms-it-hh-bbtautau/anaTuples/2020-12-01";
-std::string out_dir = "/eos/user/g/gstrong/cms_runII_dnn/data";
+std::string out_dir = "/eos/user/g/gstrong/cms_runII_data_proc/data";
 
 
 void show_help() {

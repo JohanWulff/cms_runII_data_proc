@@ -180,7 +180,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
                            &tau1_gen_match, &tau2_gen_match, &b1_hadronFlavour, &b2_hadronFlavour);
     std::cout << "\tprepared.\nBeginning loop.\n";
 
-    long int c_event(0), n_tot_events(reader.GetEntries(true));
+    long int c_event(0), long int n_saved_events(0), n_tot_events(reader.GetEntries(true));
     while (reader.Next()) {
         c_event++;
         if (c_event%1000 == 0) std::cout << c_event << " / " << n_tot_events << "\n";
@@ -203,6 +203,8 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         jet_cat = FileLooper::_jet_cat_lookup(has_b_pair, has_vbf_pair, is_boosted, num_btag_loose, num_btag_medium);
         
         if (!FileLooper::_accept_evt(region, jet_cat, class_id, klambda, cv, c2v, c3)) continue;
+        n_saved_events++;
+
         strat_key = FileLooper::_get_strat_key(sample, jet_cat, e_channel, e_year, region);
 
         // Gen info
@@ -274,8 +276,8 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         } else {
             data_odd->Fill();
         }        
-        if (n_events > 0 && c_event >= n_events) {
-            std::cout << "Exiting after " << c_event << " events.\n";
+        if (n_events > 0 && n_saved_events >= n_events) {
+            std::cout << "Exiting after " << n_saved_events << " events.\n";
             break;
         }
     }
