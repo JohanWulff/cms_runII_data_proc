@@ -43,7 +43,7 @@ private:
 
 	// Methods
     inline int _get_split(const unsigned long int&);
-    void _prep_file(TTree* tree, const std::vector<std::unique_ptr<float>>& feat_vals, double* weight, int* sample, int* region, int* jet_cat,
+    void _prep_file(TTree* tree, const std::vector<std::unique_ptr<float>>& feat_vals, float* weight, int* sample, int* region, int* jet_cat,
                     int* class_id, unsigned long long int* strat_key,
                     float* kinfit_mass_ZZ, float* kinfit_chi2_ZZ, float* kinfit_mass_ZH, float* kinfit_chi2_ZH,
                     int* tau1_gen_match, int* tau2_gen_match, int* b1_hadronFlavour, int* b2_hadronFlavour);
@@ -65,8 +65,8 @@ public:
                bool only_kl1=true, bool only_sm_vbf=true);
 	~FileLooper();
 	bool loop_file(const std::string&, const std::string&, const std::string&, const std::string&, const long int&);
-    std::map<unsigned, std::string> FileLooper::build_dataset_id_map(TFile* in_file);
-    std::map<unsigned, std::string> FileLooper::build_region_id_map(TFile* in_file);
+    std::map<unsigned, std::string> build_dataset_id_map(TFile* in_file);
+    std::map<unsigned, std::string> build_region_id_map(TFile* in_file);
 };
 
 #endif /* FILE_LOOPER_HH_ */

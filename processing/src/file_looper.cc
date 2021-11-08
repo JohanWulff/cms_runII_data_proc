@@ -51,9 +51,9 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     std::cout << " Extracted\n";
     
     float weight, res_mass;
-    int sample, region, jet_cat, n_vbf, class_id, dataset_id, region_id;
+    int sample, region, jet_cat, n_vbf, class_id;
     unsigned long long int strat_key, evt;
-    bool svfit_conv, hh_kinfit_conv, accept;
+    bool svfit_conv, hh_kinfit_conv;
 
     // Gen Info
     TTreeReaderValue<int> rv_tau1_gen_match(reader, "tau1_gen_match");
@@ -75,6 +75,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TTreeReaderValue<float> rv_b_1_csv(reader, "b1_DeepFlavour");
     TTreeReaderValue<float> rv_b_2_csv(reader, "b2_DeepFlavour");
     TTreeReaderValue<bool> rv_is_boosted(reader, "is_boosted");
+    TTreeReaderValue<bool> rv_has_b_pair(reader, "has_b_pair");
     TTreeReaderValue<bool> rv_has_vbf_pair(reader, "has_VBF_pair");
     TTreeReaderValue<int> rv_num_btag_loose(reader, "num_btag_Loose");
     TTreeReaderValue<int> rv_num_btag_medium(reader, "num_btag_Medium");
@@ -188,10 +189,10 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         weight = *rv_weight;
         evt    = *rv_evt;
         
-        FileLooper::_sample_lookup(id2dataset[*rv_dataset_id], sample, spin, klambda, res_mass, cv, c2v, c3)
-        class_id = FileLooper::_sample2class_lookup(sample)
+        FileLooper::_sample_lookup(id2dataset[*rv_dataset_id], sample, spin, klambda, res_mass, cv, c2v, c3);
+        class_id = FileLooper::_sample2class_lookup(sample);
         
-        region = FileLooper::_region_lookup(id2dataset[*rv_region_id])
+        region = FileLooper::_region_lookup(id2dataset[*rv_region_id]);
         
         is_boosted = *rv_is_boosted;
         has_vbf_pair = *rv_has_vbf_pair;
@@ -300,7 +301,7 @@ std::map<unsigned, std::string> FileLooper::build_dataset_id_map(TFile* in_file)
         ids   = *rv_dataset_hashes;
         names = *rv_dataset_names;
     }
-    std::map<unsigned long, std::string> id2name;
+    std::map<unsigned, std::string> id2name;
     for (unsigned int i = 0; i < ids.size(); i++) id2name[ids[i]] = names[i];
     return id2name;
 }
@@ -316,12 +317,12 @@ std::map<unsigned, std::string> FileLooper::build_region_id_map(TFile* in_file) 
         ids   = *rv_region_hashes;
         names = *rv_region_names;
     }
-    std::map<unsigned long, std::string> id2name;
+    std::map<unsigned, std::string> id2name;
     for (unsigned int i = 0; i < ids.size(); i++) id2name[ids[i]] = names[i];
     return id2name;
 }
 
-void FileLooper::_prep_file(TTree* tree, const std::vector<std::unique_ptr<float>>& feat_vals, double* weight, int* sample, int* region, int* jet_cat,
+void FileLooper::_prep_file(TTree* tree, const std::vector<std::unique_ptr<float>>& feat_vals, float* weight, int* sample, int* region, int* jet_cat,
                             int* class_id, unsigned long long int* strat_key,
                             float* kinfit_mass_ZZ, float* kinfit_chi2_ZZ, float* kinfit_mass_ZH, float* kinfit_chi2_ZH,
                             int* tau1_gen_match, int* tau2_gen_match, int* b1_hadronFlavour, int* b2_hadronFlavour) {
@@ -592,8 +593,7 @@ unsigned long long int FileLooper::_get_strat_key(const int& sample, const int& 
                                        std::pow(7,  (float)year)*
                                        std::pow(11, region);
     if (strat_key == 0) {
-        std::cout << "sample " << sample << " jet_cat " << jet_cat << " channel " << channel << " year " << year << " region " << region << 
-                      << "\n";
+        std::cout << "sample " << sample << " jet_cat " << jet_cat << " channel " << channel << " year " << year << " region " << region << "\n";
         throw std::overflow_error("Strat key overflow\n");  
     }  
     return strat_key;
