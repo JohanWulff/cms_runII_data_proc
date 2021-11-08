@@ -51,9 +51,16 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     std::cout << " Extracted\n";
     
     float weight, res_mass;
-    int sample, region, jet_cat, n_vbf, class_id, dataset_id, region_id;
+    int sample, region, jet_cat, n_vbf, class_id;
     unsigned long long int strat_key, evt;
-    bool svfit_conv, hh_kinfit_conv, accept;
+    bool svfit_conv, hh_kinfit_conv;
+
+    // Gen Info
+    TTreeReaderValue<int> rv_tau1_gen_match(reader, "tau1_gen_match");
+    TTreeReaderValue<int> rv_tau2_gen_match(reader, "tau2_gen_match");
+    TTreeReaderValue<int> rv_b1_hadronFlavour(reader, "b1_hadronFlavour");
+    TTreeReaderValue<int> rv_b2_hadronFlavour(reader, "b2_hadronFlavour");
+    int tau1_gen_match, tau2_gen_match, b1_hadronFlavour, b2_hadronFlavour;
 
     // HL feats
     TTreeReaderValue<float> rv_kinfit_mass(reader, "kinFit_m");
@@ -61,13 +68,20 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TTreeReaderValue<float> rv_mt2(reader, "MT2");
     float kinfit_mass, kinfit_chi2, mt2;
 
+    // ZZ &ZH KinFit;
+    float kinfit_mass_ZZ, kinfit_chi2_ZZ, kinfit_mass_ZH, kinfit_chi2_ZH;
+
     // Tagging
     TTreeReaderValue<float> rv_b_1_csv(reader, "b1_DeepFlavour");
     TTreeReaderValue<float> rv_b_2_csv(reader, "b2_DeepFlavour");
     TTreeReaderValue<bool> rv_is_boosted(reader, "is_boosted");
-    TTreeReaderValue<bool> rv_has_vbf_pair(reader, "has_vbf_pair");
+    TTreeReaderValue<bool> rv_has_b_pair(reader, "has_b_pair");
+    TTreeReaderValue<bool> rv_has_vbf_pair(reader, "has_VBF_pair");
+    TTreeReaderValue<int> rv_num_btag_loose(reader, "num_btag_Loose");
+    TTreeReaderValue<int> rv_num_btag_medium(reader, "num_btag_Medium");
     float b_1_csv, b_2_csv;
-    bool is_boosted, has_vbf_pair;
+    bool is_boosted, has_vbf_pair, has_b_pair;
+    int num_btag_loose, num_btag_medium;
 
     // SVFit feats
     TTreeReaderValue<float> rv_svfit_pT(reader, "SVfit_pt");
@@ -158,8 +172,12 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TFile* out_file  = new TFile(oname.c_str(), "recreate");
     TTree* data_even = new TTree("data_0", "Even id data");
     TTree* data_odd  = new TTree("data_1", "Odd id data");
-    FileLooper::_prep_file(data_even, feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key);
-    FileLooper::_prep_file(data_odd,  feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key);
+    FileLooper::_prep_file(data_even, feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key,
+                           &kinfit_mass_ZZ, &kinfit_chi2_ZZ, &kinfit_mass_ZH, &kinfit_chi2_ZH,
+                           &tau1_gen_match, &tau2_gen_match, &b1_hadronFlavour, &b2_hadronFlavour);
+    FileLooper::_prep_file(data_odd,  feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key,
+                           &kinfit_mass_ZZ, &kinfit_chi2_ZZ, &kinfit_mass_ZH, &kinfit_chi2_ZH,
+                           &tau1_gen_match, &tau2_gen_match, &b1_hadronFlavour, &b2_hadronFlavour);
     std::cout << "\tprepared.\nBeginning loop.\n";
 
     long int c_event(0), n_tot_events(reader.GetEntries(true));
@@ -170,15 +188,28 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         // Load meta
         weight = *rv_weight;
         evt    = *rv_evt;
-        FileLooper::_sample_lookup(id2dataset[*rv_dataset_id], sample, spin, klambda, res_mass, cv, c2v, c3)
-        class_id = FileLooper::_sample2class_lookup(sample)
-        region = FileLooper::_region_lookup(id2dataset[*rv_region_id])
-        jet_cat = FileLooper::_jet_cat_lookup(/*Add jetcat stuff*/);
+        
+        FileLooper::_sample_lookup(id2dataset[*rv_dataset_id], sample, spin, klambda, res_mass, cv, c2v, c3);
+        class_id = FileLooper::_sample2class_lookup(sample);
+        
+        region = FileLooper::_region_lookup(id2dataset[*rv_region_id]);
+        
         is_boosted = *rv_is_boosted;
         has_vbf_pair = *rv_has_vbf_pair;
+        has_b_pair = *rv_has_b_pair;
+        num_btag_loose = *rv_num_btag_loose;
+        num_btag_medium = *rv_num_btag_medium;
+
+        jet_cat = FileLooper::_jet_cat_lookup(has_b_pair, has_vbf_pair, is_boosted, num_btag_loose, num_btag_medium);
         
         if (!FileLooper::_accept_evt(region, jet_cat, class_id, klambda, cv, c2v, c3)) continue;
         strat_key = FileLooper::_get_strat_key(sample, jet_cat, e_channel, e_year, region);
+
+        // Gen info
+        tau1_gen_match = *rv_tau1_gen_match;
+        tau2_gen_match = *rv_tau2_gen_match;
+        b1_hadronFlavour = *rv_b1_hadronFlavour;
+        b2_hadronFlavour = *rv_b2_hadronFlavour;
 
         // Load HL feats
         kinfit_mass   = *rv_kinfit_mass;
@@ -236,7 +267,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
 
         _evt_proc->process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit, vbf_1, vbf_2, kinfit_mass, kinfit_chi2, mt2, is_boosted, b_1_csv, b_2_csv,
                                   e_channel, e_year, res_mass, spin, klambda, n_vbf, svfit_conv, hh_kinfit_conv, b_1_hhbtag, b_2_hhbtag, vbf_1_hhbtag,
-                                  vbf_2_hhbtag, b_1_cvsl, b_2_cvsl, vbf_1_cvsl, vbf_2_cvsl, b_1_cvsb, b_2_cvsb, vbf_1_cvsb, vbf_2_cvsb, cv, c2v, c3);
+                                  vbf_2_hhbtag, b_1_cvsl, b_2_cvsl, vbf_1_cvsl, vbf_2_cvsl, b_1_cvsb, b_2_cvsb, vbf_1_cvsb, vbf_2_cvsb, cv, c2v, c3, true);
 
         if (evt%2 == 0) {
             data_even->Fill();
@@ -270,7 +301,7 @@ std::map<unsigned, std::string> FileLooper::build_dataset_id_map(TFile* in_file)
         ids   = *rv_dataset_hashes;
         names = *rv_dataset_names;
     }
-    std::map<unsigned long, std::string> id2name;
+    std::map<unsigned, std::string> id2name;
     for (unsigned int i = 0; i < ids.size(); i++) id2name[ids[i]] = names[i];
     return id2name;
 }
@@ -286,13 +317,15 @@ std::map<unsigned, std::string> FileLooper::build_region_id_map(TFile* in_file) 
         ids   = *rv_region_hashes;
         names = *rv_region_names;
     }
-    std::map<unsigned long, std::string> id2name;
+    std::map<unsigned, std::string> id2name;
     for (unsigned int i = 0; i < ids.size(); i++) id2name[ids[i]] = names[i];
     return id2name;
 }
 
-void FileLooper::_prep_file(TTree* tree, const std::vector<std::unique_ptr<float>>& feat_vals, double* weight, int* sample, int* region, int* jet_cat,
-                            int* class_id, unsigned long long int* strat_key) {
+void FileLooper::_prep_file(TTree* tree, const std::vector<std::unique_ptr<float>>& feat_vals, float* weight, int* sample, int* region, int* jet_cat,
+                            int* class_id, unsigned long long int* strat_key,
+                            float* kinfit_mass_ZZ, float* kinfit_chi2_ZZ, float* kinfit_mass_ZH, float* kinfit_chi2_ZH,
+                            int* tau1_gen_match, int* tau2_gen_match, int* b1_hadronFlavour, int* b2_hadronFlavour) {
     /* Add branches to tree and set addresses for values */
 
     for (unsigned int i = 0; i < _n_feats; i++) tree->Branch(_feat_names[i].c_str(), feat_vals[i].get());
@@ -300,8 +333,14 @@ void FileLooper::_prep_file(TTree* tree, const std::vector<std::unique_ptr<float
     tree->Branch("sample",      sample);
     tree->Branch("region",      region);
     tree->Branch("jet_cat",     jet_cat);
-    tree->Branch("class_id",    class_id);
-    tree->Branch("strat_key",   strat_key);
+    tree->Branch("kinfit_mass_ZZ", kinfit_mass_ZZ);
+    tree->Branch("kinfit_chi2_ZZ", kinfit_chi2_ZZ);
+    tree->Branch("kinfit_mass_ZH", kinfit_mass_ZH);
+    tree->Branch("kinfit_chi2_ZH", kinfit_chi2_ZH);
+    tree->Branch("tau1_gen_match", tau1_gen_match);
+    tree->Branch("tau2_gen_match", tau2_gen_match);
+    tree->Branch("b1_hadronFlavour", b1_hadronFlavour);
+    tree->Branch("b2_hadronFlavour", b2_hadronFlavour);
 }
 
 Channel FileLooper::_get_channel(std::string channel) {
@@ -332,18 +371,14 @@ Year FileLooper::_get_year(std::string year) {
     return Year(y16);
 }
 
-int FileLooper::_jet_cat_lookup(const std::string& jet_cat) {
-    /* Ensure n_vbf definition is updated */
-    if (jet_cat == "2j")            return 0;
-    if (jet_cat == "2j0bR_noVBF")   return 1;
-    if (jet_cat == "2j1bR_noVBF")   return 2;
-    if (jet_cat == "2j2b+R_noVBF")  return 3;
-    if (jet_cat == "2j2Lb+B_noVBF") return 4;
-    if (jet_cat == "2j1b+_VBFL" || jet_cat == "2j1b+_VBF" || jet_cat == "2j1b+_VBFT") return 5;
-    if (jet_cat == "2j2Lb+" || jet_cat == "2j2b+"  || jet_cat == "2j0b"   || jet_cat == "2j0Tb" || jet_cat == "2j1Tb+" || jet_cat == "2j1Tb" || 
-        jet_cat == "2j0Lb"  || jet_cat == "2j1Lb"  || jet_cat == "2j2Tb+" || jet_cat == "2j1b") return -1;
-    throw std::invalid_argument("Unrecognised jet category: " + jet_cat);
-    return -1;
+int FileLooper::_jet_cat_lookup(const bool has_b_pair, const bool has_vbf_pair, const bool is_boosted, const int num_btag_Loose, const int num_btag_Medium) {
+    if (!has_b_pair)  return -1;
+    if (has_vbf_pair && num_btag_Loose >= 1) return 5;  // 2j1b+_VBFL, 2j1b+_VBF, 2j1b+_VBFT
+    if (!has_vbf_pair && is_boosted && num_btag_Loose >= 2)   return 4;  // 2j2Lb+B_noVBF
+    if (!has_vbf_pair && num_btag_Medium >= 2) return 3;  // 2j2b+R_noVBF
+    if (!has_vbf_pair && num_btag_Loose >= 1)  return 2;  // 2j1bR_noVBF
+    if (!has_vbf_pair && num_btag_Loose == 0)  return 1;  // 2j0bR_noVBF
+    return 0;  // 2j 
 }
 
 int FileLooper::_region_lookup(const std::string& region) {
@@ -472,28 +507,40 @@ void FileLooper::_sample_lookup(std::string& sample, int& sample_id, Spin& spin,
         sample_id = 4;
     } else if (sample.find("GluGluH") != std::string::npos || sample.find("VBFH") != std::string::npos) {
         sample_id = 5;
-    } else if (sample.find("ZH") != std::string::npos) {
+    } else if (sample.find("ZHToTauTau_M125") != std::string::npos) {
         sample_id = 6;
-    } else if (sample.find("WminusH") != std::string::npos || sample.find("WplusH") != std::string::npos) {
+    } else if (sample.find("ZH_HToBB_ZToLL_M125") != std::string::npos) {
         sample_id = 7;
-    } else if (sample.find("WWW") != std::string::npos) {
+    } else if (sample.find("ZH_HToBB_ZToQQ_M125") != std::string::npos) {
         sample_id = 8;
-    } else if (sample.find("WWZ") != std::string::npos) {
+    } else if (sample.find("WminusH") != std::string::npos || sample.find("WplusH") != std::string::npos) {
         sample_id = 9;
-    } else if (sample.find("WZZ") != std::string::npos) {
+    } else if (sample.find("WWW") != std::string::npos) {
         sample_id = 10;
-    } else if (sample.find("ZZZ") != std::string::npos) {
+    } else if (sample.find("WWZ") != std::string::npos) {
         sample_id = 11;
-    } else if (sample.find("EWK") != std::string::npos) {
+    } else if (sample.find("WZZ") != std::string::npos) {
         sample_id = 12;
-    } else if (sample.find("WW") != std::string::npos) {
+    } else if (sample.find("ZZZ") != std::string::npos) {
         sample_id = 13;
-    } else if (sample.find("WZ") != std::string::npos) {
+    } else if (sample.find("EWK") != std::string::npos) {
         sample_id = 14;
-    } else if (sample.find("ZZ") != std::string::npos) {
+    } else if (sample.find("WW") != std::string::npos) {
         sample_id = 15;
-    } else if (sample.find("ST") != std::string::npos) {
+    } else if (sample.find("WZ") != std::string::npos) {
         sample_id = 16;
+    } else if (sample.find("ZZTo2L2Nu") != std::string::npos) {
+        sample_id = 17;
+    } else if (sample.find("ZZTo2L2Q") != std::string::npos) {
+        sample_id = 18;
+    } else if (sample.find("ZZTo2Q2Nu") != std::string::npos) {
+        sample_id = 19;
+    } else if (sample.find("ZZTo4L") != std::string::npos) {
+        sample_id = 20;
+    } else if (sample.find("ZZTo4Q") != std::string::npos) {
+        sample_id = 21;
+    } else if (sample.find("ST") != std::string::npos) {
+        sample_id = 22;
     } else{
         throw std::invalid_argument("Unrecognised sample: " + sample);
     }
@@ -546,8 +593,7 @@ unsigned long long int FileLooper::_get_strat_key(const int& sample, const int& 
                                        std::pow(7,  (float)year)*
                                        std::pow(11, region);
     if (strat_key == 0) {
-        std::cout << "sample " << sample << " jet_cat " << jet_cat << " channel " << channel << " year " << year << " region " << region << 
-                      << "\n";
+        std::cout << "sample " << sample << " jet_cat " << jet_cat << " channel " << channel << " year " << year << " region " << region << "\n";
         throw std::overflow_error("Strat key overflow\n");  
     }  
     return strat_key;
