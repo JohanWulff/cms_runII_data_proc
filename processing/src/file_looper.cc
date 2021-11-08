@@ -180,7 +180,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
                            &tau1_gen_match, &tau2_gen_match, &b1_hadronFlavour, &b2_hadronFlavour);
     std::cout << "\tprepared.\nBeginning loop.\n";
 
-    long int c_event(0), long int n_saved_events(0), n_tot_events(reader.GetEntries(true));
+    long int c_event(0), n_saved_events(0), n_tot_events(reader.GetEntries(true));
     while (reader.Next()) {
         c_event++;
         if (c_event%1000 == 0) std::cout << c_event << " / " << n_tot_events << "\n";
