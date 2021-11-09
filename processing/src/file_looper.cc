@@ -1,5 +1,5 @@
 #include "cms_runII_data_proc/processing/interface/file_looper.hh"
-
+#include "cms_runII_data_proc/processing/interface/kinfitter.hh"
 
 int use_kl = 1;
 
@@ -68,8 +68,10 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TTreeReaderValue<float> rv_mt2(reader, "MT2");
     float kinfit_mass, kinfit_chi2, mt2;
 
-    // ZZ &ZH KinFit;
-    float kinfit_mass_ZZ, kinfit_chi2_ZZ, kinfit_mass_ZH, kinfit_chi2_ZH;
+    // ZZ & ZH KinFit;
+    // float kinfit_mass_ZZ, kinfit_chi2_ZZ, kinfit_mass_ZH, kinfit_chi2_ZH;
+    std::pair<float,float> kinfit_ZZ, kinfit_ZH;
+    std::vector<float> kinINinfo;
 
     // Tagging
     TTreeReaderValue<float> rv_b_1_csv(reader, "b1_DeepFlavour");
@@ -111,6 +113,9 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     // MET feats
     TTreeReaderValue<float> rv_met_pT(reader, "MET_pt");
     TTreeReaderValue<float> rv_met_phi(reader, "MET_phi");
+    TTreeReaderValue<float> rv_met_cov_00(reader, "MET_cov_00");
+    TTreeReaderValue<float> rv_met_cov_01(reader, "MET_cov_01");
+    TTreeReaderValue<float> rv_met_cov_11(reader, "MET_cov_11");
     LorentzVectorPEP pep_met;
     LorentzVector met;
 
@@ -173,10 +178,10 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TTree* data_even = new TTree("data_0", "Even id data");
     TTree* data_odd  = new TTree("data_1", "Odd id data");
     FileLooper::_prep_file(data_even, feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key,
-                           &kinfit_mass_ZZ, &kinfit_chi2_ZZ, &kinfit_mass_ZH, &kinfit_chi2_ZH,
+                           &kinfit_ZZ.first, &kinfit_ZZ.second, &kinfit_ZH.first, &kinfit_ZH.second,
                            &tau1_gen_match, &tau2_gen_match, &b1_hadronFlavour, &b2_hadronFlavour);
     FileLooper::_prep_file(data_odd,  feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key,
-                           &kinfit_mass_ZZ, &kinfit_chi2_ZZ, &kinfit_mass_ZH, &kinfit_chi2_ZH,
+                           &kinfit_ZZ.first, &kinfit_ZZ.second, &kinfit_ZH.first, &kinfit_ZH.second,
                            &tau1_gen_match, &tau2_gen_match, &b1_hadronFlavour, &b2_hadronFlavour);
     std::cout << "\tprepared.\nBeginning loop.\n";
 
@@ -266,6 +271,15 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         // Convergence
         svfit_conv     = *rv_svfit_mass > 0;
         hh_kinfit_conv = kinfit_chi2    > 0;
+
+        // KinFit for ZZ/ZH
+        // create a single object with all the needed info to give kinfit { 4 lep1 coords, 4 lep2 coords, 4 bjet1 coords, 4 bjet2 coords, 2 MET coors, 3 MET cov entries }
+        kinINinfo = { *rv_l_1_pT, *rv_l_1_eta, *rv_l_1_phi, l_1_mass, *rv_l_2_pT, *rv_l_2_eta, *rv_l_2_phi, *rv_l_2_mass ,*rv_b_1_pT, *rv_b_1_eta, *rv_b_1_phi, *rv_b_1_mass ,*rv_b_2_pT, *rv_b_2_eta, *rv_b_2_phi, *rv_b_2_mass ,*rv_met_pT, *rv_met_phi, *rv_met_cov_00, *rv_met_cov_01, *rv_met_cov_11 };
+        // compute KinFit 
+        KinFitter fitter(kinINinfo);
+        kinfit_ZZ = fitter.fit("HH");
+        //kinfit_ZH = fitter.fit("ZH");
+        kinINinfo.clear();
 
         _evt_proc->process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit, vbf_1, vbf_2, kinfit_mass, kinfit_chi2, mt2, is_boosted, b_1_csv, b_2_csv,
                                   e_channel, e_year, res_mass, spin, klambda, n_vbf, svfit_conv, hh_kinfit_conv, b_1_hhbtag, b_2_hhbtag, vbf_1_hhbtag,
