@@ -69,7 +69,6 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     float kinfit_mass, kinfit_chi2, mt2;
 
     // ZZ & ZH KinFit;
-    // float kinfit_mass_ZZ, kinfit_chi2_ZZ, kinfit_mass_ZH, kinfit_chi2_ZH;
     std::pair<float,float> kinfit_ZZ, kinfit_ZH;
     std::vector<float> kinINinfo;
 
@@ -277,8 +276,8 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         kinINinfo = { *rv_l_1_pT, *rv_l_1_eta, *rv_l_1_phi, l_1_mass, *rv_l_2_pT, *rv_l_2_eta, *rv_l_2_phi, *rv_l_2_mass ,*rv_b_1_pT, *rv_b_1_eta, *rv_b_1_phi, *rv_b_1_mass ,*rv_b_2_pT, *rv_b_2_eta, *rv_b_2_phi, *rv_b_2_mass ,*rv_met_pT, *rv_met_phi, *rv_met_cov_00, *rv_met_cov_01, *rv_met_cov_11 };
         // compute KinFit 
         KinFitter fitter(kinINinfo);
-        kinfit_ZZ = fitter.fit("HH");
-        //kinfit_ZH = fitter.fit("ZH");
+        kinfit_ZZ = fitter.fit("ZZ");
+        kinfit_ZH = fitter.fit("ZH");
         kinINinfo.clear();
 
         _evt_proc->process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit, vbf_1, vbf_2, kinfit_mass, kinfit_chi2, mt2, is_boosted, b_1_csv, b_2_csv,
