@@ -8,5 +8,5 @@ Data processor for CMS HH->bbtautau RunII
 1. cmsenv
 1. git clone git@github.com:GilesStrong/cms_hh_proc_interface.git
 1. git clone git@github.com:GilesStrong/cms_runII_data_proc.git
-1. git clone git@github.com:jonamotta/HHKinFit2.git -b bbtautau_Run2DNNtraining
+1. mkdir HHKinFit2 ; cd HHKinFit2 ; git clone git@github.com:jonamotta/HHKinFit2.git -b bbtautau_Run2DNNtraining ; cd ..
 1. scram b -j 12
