@@ -35,3 +35,7 @@
 
 # Dev
 check/*
+
+# Mac useless files
+*._*
+*.DS_Store
