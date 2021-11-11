@@ -159,6 +159,7 @@ std::pair<float,float> KinFitter::fit(std::string sgnHp) {
         }
         else {
             std::cout << "Neither the  mh1_hp,mh2_hp=" << mh1_hp << "," << mh2_hp << " fit nor the mh1_hp,mh2_hp=" << mh2_hp << "," << mh1_hp << " fit converged!!" << std::endl;
+            result = std::pair(-333,-333);
         }
     }
 
