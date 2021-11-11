@@ -43,7 +43,6 @@ public:
     KinFitter(std::vector<float> kinINinfo);
     ~KinFitter();
     std::pair<float,float> fit(std::string sgnHp);
-
 };
 
 #endif /* KINFITTER_H_ */
