@@ -118,8 +118,8 @@ std::pair<float,float> KinFitter::_fit(int mh1_hp, int mh2_hp) {
       HHKChi2 = KinFit.getChi2(mh1_hp, mh2_hp);
     }
     else {
-      HHKmass = -333;
-      HHKChi2 = -333;
+      HHKmass = std::nanf("1");
+      HHKChi2 = std::nanf("1");
     }
     std::pair<float,float> local_result = std::pair(HHKmass, HHKChi2);
 
@@ -149,17 +149,17 @@ std::pair<float,float> KinFitter::fit(std::string sgnHp) {
         std::pair<float,float> right_fit = _fit(mh1_hp, mh2_hp);
         std::pair<float,float> left_fit  = _fit(mh2_hp, mh1_hp);
 
-        if (right_fit.second != -333 && left_fit.second != -333) {
+        if (right_fit.second != std::nanf("1") && left_fit.second != std::nanf("1")) {
             if (right_fit.second < left_fit.second) { result = right_fit; }
             else { result = left_fit; }
         }
-        else if (right_fit.second != -333 || left_fit.second != -333) {
-            if (right_fit.second != -333) { result = right_fit; }
+        else if (right_fit.second != std::nanf("1") || left_fit.second != std::nanf("1")) {
+            if (right_fit.second != std::nanf("1")) { result = right_fit; }
             else { result = left_fit; }
         }
         else {
             std::cout << "Neither the  mh1_hp,mh2_hp=" << mh1_hp << "," << mh2_hp << " fit nor the mh1_hp,mh2_hp=" << mh2_hp << "," << mh1_hp << " fit converged!!" << std::endl;
-            result = std::pair(-333,-333);
+            result = std::pair(std::nanf("1"),std::nanf("1"));
         }
     }
 
