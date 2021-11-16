@@ -20,10 +20,11 @@ FileLooper::~FileLooper() {
     delete _evt_proc;
 }
 
-bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir, const std::string& channel, const std::string& year, const long int& n_events) {
+bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir, const std::string& channel,
+                           const std::string& year, const long int& n_events, const long int& start_evt, const long int& end_evt) {
     /*
     Loop though file {in_dir}/{year}_{channel}.root processing {n_events} (all events if n_events < 0).
-    Processed events will be saved to one of two trees inside {out_dir}/{year}_{channel}_{tagger}.root:
+    Processed events will be saved to one of two trees inside {out_dir}/{year}_{channel}_{evt_range}.root:
     Even event IDs will be saved to data_0 and odd to data_1.
     */
 
@@ -171,7 +172,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     for (unsigned int i = 0; i < _n_feats; i++) feat_vals.emplace_back(new float(0));
     
     // Outfiles
-    std::string oname = out_dir+"/"+year+"_"+channel+".root";
+    std::string oname = out_dir+"/"+year+"_"+channel+"_"+std::to_string(start_evt)+"-"+std::to_string(end_evt)+".root";
     std::cout << "Preparing output file: " << oname << " ...";
     TFile* out_file  = new TFile(oname.c_str(), "recreate");
     TTree* data_even = new TTree("data_0", "Even id data");
@@ -187,6 +188,8 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     long int c_event(0), n_saved_events(0), n_tot_events(reader.GetEntries(true));
     while (reader.Next()) {
         c_event++;
+        if (c_event < start_evt) continue;
+        if (end_evt > 0 && c_event >= end_evt) break;
         if (c_event%1000 == 0) std::cout << c_event << " / " << n_tot_events << "\n";
 
         // Load meta
