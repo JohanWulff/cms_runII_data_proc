@@ -172,7 +172,7 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     for (unsigned int i = 0; i < _n_feats; i++) feat_vals.emplace_back(new float(0));
     
     // Outfiles
-    std::string oname = out_dir+"/"+year+"_"+channel+"_"+std::itos(start_evt)+"-"+std::itos(end_evt)+".root";
+    std::string oname = out_dir+"/"+year+"_"+channel+"_"+std::to_string(start_evt)+"-"+std::to_string(end_evt)+".root";
     std::cout << "Preparing output file: " << oname << " ...";
     TFile* out_file  = new TFile(oname.c_str(), "recreate");
     TTree* data_even = new TTree("data_0", "Even id data");
