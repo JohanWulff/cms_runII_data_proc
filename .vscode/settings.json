@@ -79,5 +79,6 @@
         "list": "cpp",
         "span": "cpp",
         "unordered_set": "cpp"
-    }
+    },
+    "cmake.configureOnOpen": false
 }
