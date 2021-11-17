@@ -149,12 +149,12 @@ std::pair<float,float> KinFitter::fit(std::string sgnHp) {
         std::pair<float,float> right_fit = _fit(mh1_hp, mh2_hp);
         std::pair<float,float> left_fit  = _fit(mh2_hp, mh1_hp);
 
-        if (right_fit.second != std::nanf("1") && left_fit.second != std::nanf("1")) {
+        if (!std::isnan(right_fit.second) && !std::isnan(left_fit.second )) {
             if (right_fit.second < left_fit.second) { result = right_fit; }
             else { result = left_fit; }
         }
-        else if (right_fit.second != std::nanf("1") || left_fit.second != std::nanf("1")) {
-            if (right_fit.second != std::nanf("1")) { result = right_fit; }
+        else if (std::isnan(right_fit.second) || std::isnan(left_fit.second)) {
+            if (std::isnan(right_fit.second)) { result = right_fit; }
             else { result = left_fit; }
         }
         else {
