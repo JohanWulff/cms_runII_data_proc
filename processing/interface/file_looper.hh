@@ -63,7 +63,7 @@ public:
                bool inc_all_jets=true, bool inc_other_regions=false, bool inc_data=false,
                bool only_kl1=true, bool only_sm_vbf=true);
 	~FileLooper();
-	bool loop_file(const std::string& in_dir, const std::string& out_dir, const std::string& channel, const bool add_zz_zh_feats;
+	bool loop_file(const std::string& in_dir, const std::string& out_dir, const std::string& channel, const bool add_zz_zh_feats,
                    const std::string& year, const long int& n_events, const long int& start_evt, const long int& end_evt);
     std::map<unsigned, std::string> build_dataset_id_map(TFile* in_file);
     std::map<unsigned, std::string> build_region_id_map(TFile* in_file);
