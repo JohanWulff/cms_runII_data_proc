@@ -116,6 +116,10 @@ std::pair<float,float> KinFitter::_fit(int mh1_hp, int mh2_hp) {
     if(!wrongHHK) {
       HHKmass = KinFit.getMH(mh1_hp, mh2_hp);
       HHKChi2 = KinFit.getChi2(mh1_hp, mh2_hp);
+      if (HHKChi2 < 0 || std::isnan(HHKChi2)) {
+          HHKmass = 0;
+          HHKChi2 = std::nanf("1");
+      }
     }
     else {
       HHKmass = 0.0;
@@ -161,6 +165,11 @@ std::pair<float,float> KinFitter::fit(std::string sgnHp) {
             std::cout << "Neither the  mh1_hp,mh2_hp=" << mh1_hp << "," << mh2_hp << " fit nor the mh1_hp,mh2_hp=" << mh2_hp << "," << mh1_hp << " fit converged!!" << std::endl;
             result = std::pair(0.0,std::nanf("1"));
         }
+    }
+
+    if (result.second < 0 || std::isnan(result.second)) {  // Just in case
+          result.first = 0;
+          result.second = std::nanf("1");
     }
 
     return result;
