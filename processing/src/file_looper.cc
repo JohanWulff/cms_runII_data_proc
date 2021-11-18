@@ -20,7 +20,7 @@ FileLooper::~FileLooper() {
     delete _evt_proc;
 }
 
-bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir, const std::string& channel,
+bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir, const std::string& channel, const bool add_zz_zh_feats,
                            const std::string& year, const long int& n_events, const long int& start_evt, const long int& end_evt) {
     /*
     Loop though file {in_dir}/{year}_{channel}.root processing {n_events} (all events if n_events < 0).
@@ -178,11 +178,33 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     TTree* data_even = new TTree("data_0", "Even id data");
     TTree* data_odd  = new TTree("data_1", "Odd id data");
     FileLooper::_prep_file(data_even, feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key,
-                           &kinfit_ZZ.first, &kinfit_ZZ.second, &kinfit_ZH.first, &kinfit_ZH.second,
                            &tau1_gen_match, &tau2_gen_match, &b1_hadronFlavour, &b2_hadronFlavour);
     FileLooper::_prep_file(data_odd,  feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key,
-                           &kinfit_ZZ.first, &kinfit_ZZ.second, &kinfit_ZH.first, &kinfit_ZH.second,
                            &tau1_gen_match, &tau2_gen_match, &b1_hadronFlavour, &b2_hadronFlavour);
+
+    if (add_zz_zh_feats) {
+        std::cout << "\tIncluding extra features for ZZ and ZH searches...";
+
+        std::vector<std::unique_ptr<float>> zz_feat_vals;
+        zz_feat_vals.reserve(_n_feats);
+        for (unsigned int i = 0; i < _n_feats; i++) zz_feat_vals.emplace_back(new float(0));
+        TTree* data_zz_even = new TTree("data_ZZ_0", "Even id ZZ data");
+        TTree* data_zz_odd  = new TTree("data_ZZ_1", "Odd id ZZ data");
+        FileLooper::_prep_file(data_zz_even, zz_feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key,
+                               &tau1_gen_match, &tau2_gen_match, &b1_hadronFlavour, &b2_hadronFlavour);
+        FileLooper::_prep_file(data_zz_odd,  zz_feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key,
+                               &tau1_gen_match, &tau2_gen_match, &b1_hadronFlavour, &b2_hadronFlavour);
+
+        std::vector<std::unique_ptr<float>> zh_feat_vals;
+        zh_feat_vals.reserve(_n_feats);
+        for (unsigned int i = 0; i < _n_feats; i++) zh_feat_vals.emplace_back(new float(0));
+        TTree* data_zh_even = new TTree("data_ZH_0", "Even id ZH data");
+        TTree* data_zh_odd  = new TTree("data_ZH_1", "Odd id ZH data");
+        FileLooper::_prep_file(data_zh_even, zh_feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key,
+                               &tau1_gen_match, &tau2_gen_match, &b1_hadronFlavour, &b2_hadronFlavour);
+        FileLooper::_prep_file(data_zh_odd,  zh_feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key,
+                               &tau1_gen_match, &tau2_gen_match, &b1_hadronFlavour, &b2_hadronFlavour);
+    }
     std::cout << "\tprepared.\nBeginning loop.\n";
 
     long int c_event(0), n_saved_events(0), n_tot_events(reader.GetEntries(true));
@@ -274,24 +296,45 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
         svfit_conv     = *rv_svfit_mass > 0;
         hh_kinfit_conv = kinfit_chi2    > 0;
 
-        // KinFit for ZZ/ZH
-        // create a single object with all the needed info to give kinfit { 4 lep1 coords, 4 lep2 coords, 4 bjet1 coords, 4 bjet2 coords, 2 MET coors, 3 MET cov entries }
-        kinINinfo = { *rv_l_1_pT, *rv_l_1_eta, *rv_l_1_phi, l_1_mass, *rv_l_2_pT, *rv_l_2_eta, *rv_l_2_phi, *rv_l_2_mass ,*rv_b_1_pT, *rv_b_1_eta, *rv_b_1_phi, *rv_b_1_mass ,*rv_b_2_pT, *rv_b_2_eta, *rv_b_2_phi, *rv_b_2_mass ,*rv_met_pT, *rv_met_phi, *rv_met_cov_00, *rv_met_cov_01, *rv_met_cov_11 };
-        // compute KinFit 
-        KinFitter fitter(kinINinfo);
-        kinfit_ZZ = fitter.fit("ZZ");
-        kinfit_ZH = fitter.fit("ZH");
-        kinINinfo.clear();
-
         _evt_proc->process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit, vbf_1, vbf_2, kinfit_mass, kinfit_chi2, mt2, is_boosted, b_1_csv, b_2_csv,
                                   e_channel, e_year, res_mass, spin, klambda, n_vbf, svfit_conv, hh_kinfit_conv, b_1_hhbtag, b_2_hhbtag, vbf_1_hhbtag,
                                   vbf_2_hhbtag, b_1_cvsl, b_2_cvsl, vbf_1_cvsl, vbf_2_cvsl, b_1_cvsb, b_2_cvsb, vbf_1_cvsb, vbf_2_cvsb, cv, c2v, c3, true);
-
+        
         if (evt%2 == 0) {
             data_even->Fill();
         } else {
             data_odd->Fill();
-        }        
+        }
+
+        if (add_zz_zh_feats) {
+            // KinFit for ZZ/ZH
+            // create a single object with all the needed info to give kinfit { 4 lep1 coords, 4 lep2 coords, 4 bjet1 coords, 4 bjet2 coords, 2 MET coors, 3 MET cov entries }
+            kinINinfo = { *rv_l_1_pT, *rv_l_1_eta, *rv_l_1_phi, l_1_mass, *rv_l_2_pT, *rv_l_2_eta, *rv_l_2_phi, *rv_l_2_mass ,*rv_b_1_pT, *rv_b_1_eta, *rv_b_1_phi,
+                         *rv_b_1_mass ,*rv_b_2_pT, *rv_b_2_eta, *rv_b_2_phi, *rv_b_2_mass ,*rv_met_pT, *rv_met_phi, *rv_met_cov_00, *rv_met_cov_01, *rv_met_cov_11 };
+            // compute KinFit 
+            KinFitter fitter(kinINinfo);
+            kinfit_ZZ = fitter.fit("ZZ");
+            kinfit_ZH = fitter.fit("ZH");
+            kinINinfo.clear();
+
+            _evt_proc->process_to_vec(zz_feat_vals, b_1, b_2, l_1, l_2, met, svfit, vbf_1, vbf_2, kinfit_ZZ.first, kinfit_ZZ.second, mt2, is_boosted, b_1_csv, b_2_csv,
+                                      e_channel, e_year, res_mass, spin, klambda, n_vbf, svfit_conv, kinfit_ZZ.second > 0, b_1_hhbtag, b_2_hhbtag, vbf_1_hhbtag,
+                                      vbf_2_hhbtag, b_1_cvsl, b_2_cvsl, vbf_1_cvsl, vbf_2_cvsl, b_1_cvsb, b_2_cvsb, vbf_1_cvsb, vbf_2_cvsb, cv, c2v, c3, true);
+            
+            _evt_proc->process_to_vec(zh_feat_vals, b_1, b_2, l_1, l_2, met, svfit, vbf_1, vbf_2, kinfit_ZH.first, kinfit_ZH.second, mt2, is_boosted, b_1_csv, b_2_csv,
+                                      e_channel, e_year, res_mass, spin, klambda, n_vbf, svfit_conv, kinfit_ZH.second > 0, b_1_hhbtag, b_2_hhbtag, vbf_1_hhbtag,
+                                      vbf_2_hhbtag, b_1_cvsl, b_2_cvsl, vbf_1_cvsl, vbf_2_cvsl, b_1_cvsb, b_2_cvsb, vbf_1_cvsb, vbf_2_cvsb, cv, c2v, c3, true);
+
+            if (evt%2 == 0) {
+                data_zz_even->Fill();
+                data_zh_even->Fill();
+            } else {
+                data_zz_odd->Fill();
+                data_zh_odd->Fill();
+            }
+
+        }
+
         if (n_events > 0 && n_saved_events >= n_events) {
             std::cout << "Exiting after " << n_saved_events << " events.\n";
             break;
@@ -301,6 +344,16 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     std::cout << "Loop complete, saving results.\n";
     data_even->Write();
     data_odd->Write();
+    if (add_zz_zh_feats) {
+        data_zz_even->Write();
+        data_zz_odd->Write();
+        data_zh_even->Write();
+        data_zh_odd->Write();
+        delete data_zz_even;
+        delete data_zz_odd;
+        delete data_zh_even;
+        delete data_zh_odd;
+    }
     delete data_even;
     delete data_odd;
     in_file->Close();
@@ -342,7 +395,6 @@ std::map<unsigned, std::string> FileLooper::build_region_id_map(TFile* in_file) 
 
 void FileLooper::_prep_file(TTree* tree, const std::vector<std::unique_ptr<float>>& feat_vals, float* weight, int* sample, int* region, int* jet_cat,
                             int* class_id, unsigned long long int* strat_key,
-                            float* kinfit_mass_ZZ, float* kinfit_chi2_ZZ, float* kinfit_mass_ZH, float* kinfit_chi2_ZH,
                             int* tau1_gen_match, int* tau2_gen_match, int* b1_hadronFlavour, int* b2_hadronFlavour) {
     /* Add branches to tree and set addresses for values */
 
@@ -351,10 +403,6 @@ void FileLooper::_prep_file(TTree* tree, const std::vector<std::unique_ptr<float
     tree->Branch("sample",      sample);
     tree->Branch("region",      region);
     tree->Branch("jet_cat",     jet_cat);
-    tree->Branch("kinfit_mass_ZZ", kinfit_mass_ZZ);
-    tree->Branch("kinfit_chi2_ZZ", kinfit_chi2_ZZ);
-    tree->Branch("kinfit_mass_ZH", kinfit_mass_ZH);
-    tree->Branch("kinfit_chi2_ZH", kinfit_chi2_ZH);
     tree->Branch("tau1_gen_match", tau1_gen_match);
     tree->Branch("tau2_gen_match", tau2_gen_match);
     tree->Branch("b1_hadronFlavour", b1_hadronFlavour);
