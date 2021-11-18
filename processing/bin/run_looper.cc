@@ -11,6 +11,7 @@ void show_help() {
 
     std::cout << "-y : Year\n";
     std::cout << "-c : Channel\n";
+    std::cout << "-x : Include extra ZZ and ZH search features, default = 1 (Yes)\n";
     std::cout << "-n : # events, default = -1 (all)\n";
     std::cout << "-s : start event number, default = 0\n";
     std::cout << "-e : end event number, default = -1 (last event)\n";
@@ -24,6 +25,7 @@ std::map<std::string, std::string> get_options(int argc, char* argv[]) {
     std::map<std::string, std::string> options;
     options.insert(std::make_pair("-y", "")); // Year
     options.insert(std::make_pair("-c", "")); // Channel
+    options.insert(std::make_pair("-x", "1")); // Extra ZZ and ZH search features
     options.insert(std::make_pair("-n", "-1")); // # events
     options.insert(std::make_pair("-s", "0")); // start event number
     options.insert(std::make_pair("-e", "-1")); // end event number
@@ -57,7 +59,7 @@ int main(int argc, char *argv[]) {
     if (options.size() == 0) return 1;
 
     FileLooper file_looper;
-    bool ok = file_looper.loop_file(options["-i"], options["-o"], options["-c"], options["-y"],
+    bool ok = file_looper.loop_file(options["-i"], options["-o"], options["-c"], options["-y"], std::stoi(options["-x"]),
                                     std::stoi(options["-n"]), std::stoi(options["-s"]), std::stoi(options["-e"]));
     if (ok) std::cout << "File loop ran ok!\n";
     return 0;

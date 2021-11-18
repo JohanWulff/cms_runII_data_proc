@@ -45,7 +45,6 @@ private:
     inline int _get_split(const unsigned long int&);
     void _prep_file(TTree* tree, const std::vector<std::unique_ptr<float>>& feat_vals, float* weight, int* sample, int* region, int* jet_cat,
                     int* class_id, unsigned long long int* strat_key,
-                    float* kinfit_mass_ZZ, float* kinfit_chi2_ZZ, float* kinfit_mass_ZH, float* kinfit_chi2_ZH,
                     int* tau1_gen_match, int* tau2_gen_match, int* b1_hadronFlavour, int* b2_hadronFlavour);
     Channel _get_channel(std::string);
     Year _get_year(std::string);
@@ -64,8 +63,8 @@ public:
                bool inc_all_jets=true, bool inc_other_regions=false, bool inc_data=false,
                bool only_kl1=true, bool only_sm_vbf=true);
 	~FileLooper();
-	bool loop_file(const std::string& in_dir, const std::string& out_dir, const std::string& channel,
-                   const std::string& year, const long int& n_events, const long int& start_evt, const long int& end_evt);
+	bool loop_file(const std::string& in_dir, const std::string& out_dir, const std::string& channel, const std::string& year, const bool& add_zz_zh_feats,
+                   const long int& n_events, const long int& start_evt, const long int& end_evt);
     std::map<unsigned, std::string> build_dataset_id_map(TFile* in_file);
     std::map<unsigned, std::string> build_region_id_map(TFile* in_file);
 };
