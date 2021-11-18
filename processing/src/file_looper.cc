@@ -20,8 +20,8 @@ FileLooper::~FileLooper() {
     delete _evt_proc;
 }
 
-bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir, const std::string& channel, const long int& extra_feats,
-                           const std::string& year, const long int& n_events, const long int& start_evt, const long int& end_evt) {
+bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir, const std::string& channel, const std::string& year, const bool& add_zz_zh_feats,
+                           const long int& n_events, const long int& start_evt, const long int& end_evt) {
     /*
     Loop though file {in_dir}/{year}_{channel}.root processing {n_events} (all events if n_events < 0).
     Processed events will be saved to one of two trees inside {out_dir}/{year}_{channel}_{evt_range}.root:
@@ -182,7 +182,6 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     FileLooper::_prep_file(data_odd,  feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key,
                            &tau1_gen_match, &tau2_gen_match, &b1_hadronFlavour, &b2_hadronFlavour);
 
-    bool add_zz_zh_feats = extra_feats > 0;
     std::vector<std::unique_ptr<float>> zz_feat_vals;
     TTree* data_zz_even;
     TTree* data_zz_odd;
