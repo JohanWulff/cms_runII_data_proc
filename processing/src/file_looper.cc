@@ -182,24 +182,28 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
     FileLooper::_prep_file(data_odd,  feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key,
                            &tau1_gen_match, &tau2_gen_match, &b1_hadronFlavour, &b2_hadronFlavour);
 
+    
+    std::vector<std::unique_ptr<float>> zz_feat_vals;
+    TTree* data_zz_even;
+    TTree* data_zz_odd;
+    std::vector<std::unique_ptr<float>> zh_feat_vals;
+    TTree* data_zh_even;
+    TTree* data_zh_odd;
     if (add_zz_zh_feats) {
         std::cout << "\tIncluding extra features for ZZ and ZH searches...";
-
-        std::vector<std::unique_ptr<float>> zz_feat_vals;
         zz_feat_vals.reserve(_n_feats);
         for (unsigned int i = 0; i < _n_feats; i++) zz_feat_vals.emplace_back(new float(0));
-        TTree* data_zz_even = new TTree("data_ZZ_0", "Even id ZZ data");
-        TTree* data_zz_odd  = new TTree("data_ZZ_1", "Odd id ZZ data");
+        data_zz_even = new TTree("data_ZZ_0", "Even id ZZ data");
+        data_zz_odd  = new TTree("data_ZZ_1", "Odd id ZZ data");
         FileLooper::_prep_file(data_zz_even, zz_feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key,
                                &tau1_gen_match, &tau2_gen_match, &b1_hadronFlavour, &b2_hadronFlavour);
         FileLooper::_prep_file(data_zz_odd,  zz_feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key,
                                &tau1_gen_match, &tau2_gen_match, &b1_hadronFlavour, &b2_hadronFlavour);
 
-        std::vector<std::unique_ptr<float>> zh_feat_vals;
         zh_feat_vals.reserve(_n_feats);
         for (unsigned int i = 0; i < _n_feats; i++) zh_feat_vals.emplace_back(new float(0));
-        TTree* data_zh_even = new TTree("data_ZH_0", "Even id ZH data");
-        TTree* data_zh_odd  = new TTree("data_ZH_1", "Odd id ZH data");
+        data_zh_even = new TTree("data_ZH_0", "Even id ZH data");
+        data_zh_odd  = new TTree("data_ZH_1", "Odd id ZH data");
         FileLooper::_prep_file(data_zh_even, zh_feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key,
                                &tau1_gen_match, &tau2_gen_match, &b1_hadronFlavour, &b2_hadronFlavour);
         FileLooper::_prep_file(data_zh_odd,  zh_feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key,
@@ -332,7 +336,6 @@ bool FileLooper::loop_file(const std::string& in_dir, const std::string& out_dir
                 data_zz_odd->Fill();
                 data_zh_odd->Fill();
             }
-
         }
 
         if (n_events > 0 && n_saved_events >= n_events) {
