@@ -405,6 +405,7 @@ void FileLooper::_prep_file(TTree* tree, const std::vector<std::unique_ptr<float
     tree->Branch("sample",      sample);
     tree->Branch("region",      region);
     tree->Branch("jet_cat",     jet_cat);
+    tree->Branch("strat_key",   strat_key);
     tree->Branch("tau1_gen_match", tau1_gen_match);
     tree->Branch("tau2_gen_match", tau2_gen_match);
     tree->Branch("b1_hadronFlavour", b1_hadronFlavour);
