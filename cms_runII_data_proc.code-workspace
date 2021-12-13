@@ -89,7 +89,9 @@
 			"complex": "cpp",
 			"compare": "cpp",
 			"concepts": "cpp",
-			"numbers": "cpp"
+			"numbers": "cpp",
+			"semaphore": "cpp",
+			"stop_token": "cpp"
 		}
 	}
 }
