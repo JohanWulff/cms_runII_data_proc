@@ -1,4 +1,4 @@
-#!/eos/home-j/jowulff/mambaforge/bin/python
+#!/eos/home-j/jowulff/mamba_condaforge/bin/python
 from argparse import ArgumentParser
 from subprocess import Popen, PIPE
 

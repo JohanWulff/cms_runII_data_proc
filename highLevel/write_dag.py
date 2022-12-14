@@ -78,9 +78,9 @@ CMSSW_10_2_15/src/cms_runII_data_proc/highLevel/executable.sh"
     for i, sample in enumerate(d):
         print(f"Creating submission dir and writing dag \
 files for sample ({i+1}/{len(d)})\r", end="")
-        # skip mc samples for now
-        if d[sample]["sample_id"] != 0:
-            continue
+        # skip data samples for now
+        #if d[sample]["sample_id"] == 0:
+        #    continue
         if not os.path.exists(outdir.rstrip("/")+f"/{sample}"):
             os.mkdir(outdir.rstrip("/")+f"/{sample}")
         submit_dir = submit_base_dir.rstrip("/")+f"/{sample}"

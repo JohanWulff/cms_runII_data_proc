@@ -44,44 +44,19 @@ bool FileLooper::loop_file(const std::string& fname, const std::string& oname, c
 
     TTreeReaderValue<unsigned long long> rv_evt(reader, "EventNumber");
 
-    //TTreeReaderValue<float> rv_weight(reader, "weight");
     TTreeReaderValue<float> rv_MC_weight(reader, "MC_weight");
-    TTreeReaderValue<float> rv_totalWeight(reader, "totalWeight");
     TTreeReaderValue<float> rv_prescaleWeight(reader, "prescaleWeight");    
     TTreeReaderValue<float> rv_L1pref_weight(reader, "L1pref_weight");    
     TTreeReaderValue<float> rv_PUjetID_SF(reader, "PUjetID_SF");    
     TTreeReaderValue<float> rv_PUReweight(reader, "PUReweight");    
     TTreeReaderValue<float> rv_bTagweightReshape(reader, "bTagweightReshape");    
-
-    //TTreeReaderValue<float> rv_bTagweightL(reader, "bTagweightL");    
-    //TTreeReaderValue<float> rv_bTagweightM(reader, "bTagweightM");    
-    //TTreeReaderValue<float> rv_bTagWeightT(reader, "bTagWeightT");    
-    TTreeReaderValue<float> rv_TTtopPtreweight(reader, "TTtopPtreweight");    
     TTreeReaderValue<float> rv_trigSF(reader, "trigSF");    
-    TTreeReaderValue<float> rv_trigSF_single(reader, "trigSF_single");    
-    TTreeReaderValue<float> rv_trigSf_cross(reader, "trigSF_cross");    
-    TTreeReaderValue<float> rv_VBFtrigSF(reader, "VBFtrigSF");    
-    TTreeReaderValue<float> rv_FakeRateSF(reader, "FakeRateSF");    
-    TTreeReaderValue<float> rv_jetFakeSF(reader, "jetFakeSF");    
-    TTreeReaderValue<float> rv_IdAndIsoSF_MVA(reader, "IdAndIsoSF_MVA");    
-    TTreeReaderValue<float> rv_IdAndIsoSF_deep(reader, "IdAndIsoSF_deep");    
-    TTreeReaderValue<float> rv_IdAndIsoSF_deep_pt(reader, "IdAndIsoSF_deep_pt");    
-    TTreeReaderValue<float> rv_IdAndIsoAndFakeSF_MVA(reader, "IdAndIsoAndFakeSF_MVA");    
-    TTreeReaderValue<float> rv_IdAndIsoAndFakeSF_deep(reader, "IdAndIsoAndFakeSF_deep");    
     TTreeReaderValue<float> rv_IdAndIsoAndFakeSF_deep_pt(reader, "IdAndIsoAndFakeSF_deep_pt");    
-    TTreeReaderValue<float> rv_FakeRateSF_MVA(reader, "FakeRateSF_MVA");    
-    TTreeReaderValue<float> rv_FakeRateSF_deep(reader, "FakeRateSF_deep");    
-    TTreeReaderValue<float> rv_customTauIdSF(reader, "customTauIdSF");    
+    TTreeReaderValue<float> rv_DYscale_MTT(reader, "DYscale_MTT");    
 
     double weight;
-    float bTagweightReshape,PUReweight,PUjetID_SF,L1pref_weight,prescaleWeight,totalWeight,MC_weight;
-    float TTtopPtreweight,trigSF,trigSF_single,trigSf_cross,VBFtrigSF,FakeRateSF,jetFakeSF,IdAndIsoSF_MVA;
-    float IdAndIsoSF_deep,IdAndIsoSF_deep_pt,IdAndIsoAndFakeSF_MVA,IdAndIsoAndFakeSF_deep,IdAndIsoAndFakeSF_deep_pt;
-    float FakeRateSF_MVA,FakeRateSF_deep,customTauIdSF;
-    //TTreeReaderValue<UInt_t> rv_dataset_id(reader, "dataset");
-    //TTreeReaderValue<UInt_t> rv_region_id(reader, "event_region");
-    //std::map<unsigned, std::string> id2dataset = FileLooper::build_dataset_id_map(in_file);
-    //std::map<unsigned, std::string> id2region = FileLooper::build_region_id_map(in_file);
+    float bTagweightReshape,PUReweight,PUjetID_SF,L1pref_weight,prescaleWeight,MC_weight;
+    float trigSF, DYscale_MTT, IdAndIsoAndFakeSF_deep_pt; 
 
     std::cout << " Extracted\n";
     
@@ -273,31 +248,15 @@ bool FileLooper::loop_file(const std::string& fname, const std::string& oname, c
         PUjetID_SF = *rv_PUjetID_SF;
         L1pref_weight = *rv_L1pref_weight;
         prescaleWeight = *rv_prescaleWeight;
-        totalWeight = *rv_totalWeight;
         MC_weight = *rv_MC_weight;
-        TTtopPtreweight = *rv_TTtopPtreweight;
         trigSF = *rv_trigSF;    
-        trigSF_single = *rv_trigSF_single;    
-        trigSf_cross = *rv_trigSf_cross;    
-        VBFtrigSF = *rv_VBFtrigSF;    
-        FakeRateSF = *rv_FakeRateSF;    
-        jetFakeSF = *rv_jetFakeSF;    
-        IdAndIsoSF_MVA = *rv_IdAndIsoSF_MVA;    
-        IdAndIsoSF_deep = *rv_IdAndIsoSF_deep;    
-        IdAndIsoSF_deep_pt = *rv_IdAndIsoSF_deep_pt;    
-        IdAndIsoAndFakeSF_MVA = *rv_IdAndIsoAndFakeSF_MVA;    
-        IdAndIsoAndFakeSF_deep = *rv_IdAndIsoAndFakeSF_deep;    
+        DYscale_MTT = *rv_DYscale_MTT;
         IdAndIsoAndFakeSF_deep_pt = *rv_IdAndIsoAndFakeSF_deep_pt;    
-        FakeRateSF_MVA = *rv_FakeRateSF_MVA;    
-        FakeRateSF_deep = *rv_FakeRateSF_deep;    
-        customTauIdSF = *rv_customTauIdSF;    
         // calc weight
         weight = 1.0;
         if (sample_id != 0){
-            weight *= bTagweightReshape*PUReweight*PUjetID_SF*L1pref_weight*prescaleWeight*totalWeight;
-            weight *= MC_weight*TTtopPtreweight*trigSF*trigSF_single*trigSf_cross*VBFtrigSF*FakeRateSF;
-            weight *= jetFakeSF*IdAndIsoSF_MVA*IdAndIsoSF_deep*IdAndIsoSF_deep_pt*IdAndIsoAndFakeSF_MVA;
-            weight *= IdAndIsoAndFakeSF_deep*IdAndIsoAndFakeSF_deep_pt*FakeRateSF_MVA*FakeRateSF_deep*customTauIdSF;
+            weight *= bTagweightReshape*PUReweight*PUjetID_SF*L1pref_weight*prescaleWeight;
+            weight *= MC_weight*trigSF*IdAndIsoAndFakeSF_deep_pt*DYscale_MTT;
         }
 
         // baseline selection
