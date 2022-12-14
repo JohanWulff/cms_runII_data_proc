@@ -2,21 +2,18 @@
 #include <iostream>
 #include <string>
 
-std::string root_dir = "/eos/home-k/kandroso/cms-it-hh-bbtautau/anaTuples/2020-12-01";
-std::string out_dir = "/eos/user/g/gstrong/cms_runII_data_proc/data";
-
 
 void show_help() {
     /* Show help for input arguments */
 
     std::cout << "-y : Year\n";
     std::cout << "-c : Channel\n";
-    std::cout << "-x : Include extra ZZ and ZH search features, default = 1 (Yes)\n";
+    std::cout << "--sample : sample name\n";
     std::cout << "-n : # events, default = -1 (all)\n";
     std::cout << "-s : start event number, default = 0\n";
     std::cout << "-e : end event number, default = -1 (last event)\n";
-    std::cout << "-i : input dir, default " << root_dir << "data/set\n";
-    std::cout << "-o : out dir, default = " << out_dir << "\n";
+    std::cout << "-i : input file";
+    std::cout << "-o : output file";
 }
 
 std::map<std::string, std::string> get_options(int argc, char* argv[]) {
@@ -25,12 +22,12 @@ std::map<std::string, std::string> get_options(int argc, char* argv[]) {
     std::map<std::string, std::string> options;
     options.insert(std::make_pair("-y", "")); // Year
     options.insert(std::make_pair("-c", "")); // Channel
-    options.insert(std::make_pair("-x", "1")); // Extra ZZ and ZH search features
+    options.insert(std::make_pair("--sample", "")); // sample str. 
     options.insert(std::make_pair("-n", "-1")); // # events
     options.insert(std::make_pair("-s", "0")); // start event number
     options.insert(std::make_pair("-e", "-1")); // end event number
-    options.insert(std::make_pair("-i", root_dir)); // input dir name
-    options.insert(std::make_pair("-o", out_dir)); // output name
+    options.insert(std::make_pair("-i", "")); // input file name
+    options.insert(std::make_pair("-o", "")); // output file name
 
     if (argc >= 2) { //Check if help was requested
         std::string option(argv[1]);
@@ -59,8 +56,8 @@ int main(int argc, char *argv[]) {
     if (options.size() == 0) return 1;
 
     FileLooper file_looper;
-    bool ok = file_looper.loop_file(options["-i"], options["-o"], options["-c"], options["-y"], std::stoi(options["-x"]),
-                                    std::stoi(options["-n"]), std::stoi(options["-s"]), std::stoi(options["-e"]));
+    bool ok = file_looper.loop_file(options["-i"], options["-o"], options["-c"], options["-y"],
+                                    options["--sample"], std::stoi(options["-n"]), std::stoi(options["-s"]), std::stoi(options["-e"]));
     if (ok) std::cout << "File loop ran ok!\n";
     return 0;
 }
