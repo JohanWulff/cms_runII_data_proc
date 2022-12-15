@@ -14,6 +14,8 @@ Samples")
                         help="Dir to write output files to")
     parser.add_argument("-c", "--channel", type=str,
                         help="Channel. Can be either tauTau, muTau, or eTau.")
+    parser.add_argument("-y", "--year", type=int, 
+                        help="2016, 2017 or 2018")
     parser.add_argument("-j", "--json", type=str,
                         help="JSON File containing paths to samples")
     return parser
@@ -33,7 +35,7 @@ def checkmake_dir(path):
 
 def return_subfile(base_dir, executable):
     arguments = f"-i $(INFILES) -o $(OUTDIR) -e $(EXE) -s $(SAMPLE) \
--y $(YEAR) -c $(CHANNEL)"
+--sum_w $(SUM_W) -y $(YEAR) -c $(CHANNEL)"
     file_str = f"executable={executable}\n\
 should_transfer_files = YES\n\
 when_to_transfer_output = ON_EXIT\n\
@@ -48,7 +50,7 @@ queue"
     return file_str
 
 
-def main(submit_base_dir: str, outdir: str, channel: str, sample_json: str):
+def main(submit_base_dir: str, outdir: str, channel: str, year: int, sample_json: str):
     executable = "/eos/user/j/jowulff/res_HH/giles_data_proc/\
 CMSSW_10_2_15/src/cms_runII_data_proc/highLevel/executable.py"
     shellscript = "/eos/user/j/jowulff/res_HH/giles_data_proc/\
@@ -73,6 +75,8 @@ CMSSW_10_2_15/src/cms_runII_data_proc/highLevel/executable.sh"
 
     with open(sample_json) as f:
         d = json.load(f)
+        # select the year
+        d = d[str(year)]
 
     n_files = 0
     for i, sample in enumerate(d):
@@ -91,12 +95,12 @@ files for sample ({i+1}/{len(d)})\r", end="")
             os.mkdir(submit_dir+"/out")
         dagfile = submit_dir+f"/{sample}.dag"
         submitfile = submit_dir+f"/{sample}.submit"
-        path = d[sample]["path"]
+        path = d[sample]["Path"]
+        sum_w = d[sample]["Sum_w"]
         goodfile = path+"/goodfiles.txt"
         if not os.path.exists(goodfile):
             raise ValueError(f"{sample} does not have a goodfile.txt at \
 {path}")
-        year = d[sample]["year"]
         with open(goodfile) as gfile:
             gfiles = sorted([line.rstrip() for line in gfile])
             if len(gfiles) == 0:
@@ -109,7 +113,7 @@ files for sample ({i+1}/{len(d)})\r", end="")
                 print(f"JOB {chunk[0]} {submitfile}", file=dfile)
                 print(f'VARS {chunk[0]} INFILES="{" ".join(chunk)}" \
 OUTDIR="{outdir.rstrip("/")+f"/{sample}"}" EXE="{afs_shscript}" SAMPLE="{sample}" \
-YEAR="{year}" CHANNEL="{channel}"', file=dfile)
+SUM_W="{sum_w}" YEAR="{year}" CHANNEL="{channel}"', file=dfile)
         submit_string = return_subfile(base_dir=submit_dir, 
                                        executable=afs_exe)
         with open(submitfile, "x") as subfile:
@@ -123,4 +127,5 @@ if __name__ == "__main__":
     main(submit_base_dir=args.submit_base,
          outdir=args.output_dir,
          channel=args.channel,
+         year=args.year,
          sample_json=args.json)

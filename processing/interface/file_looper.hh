@@ -64,7 +64,7 @@ public:
                bool only_kl1=true, bool only_sm_vbf=true);
 	~FileLooper();
     bool loop_file(const std::string& fname, const std::string& out_dir, const std::string& channel,
-                   const std::string& year, std::string &sample_str, const long int& n_events,
+                   const std::string& year, std::string &sample_str, double sum_w, const long int& n_events,
                    const long int& start_evt, const long int& end_evt);
     std::map<unsigned, std::string> build_dataset_id_map(TFile* in_file);
     std::map<unsigned, std::string> build_region_id_map(TFile* in_file);

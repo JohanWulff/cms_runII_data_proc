@@ -22,6 +22,8 @@ def main(paths: list, year: int, jsonfile:str = ""):
         jsonfile = f"{year}.json"
         d = defaultdict(lambda: defaultdict(dict))
     paths = [i for i in paths if os.path.isdir(i)]
+    # remove data samples
+    paths = [i for i in paths if not f"Run{year}" in i]
     for i, path in enumerate(paths):
         # remove trailing / if present
         path = path.rstrip("/")

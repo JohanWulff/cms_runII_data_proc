@@ -23,6 +23,7 @@ std::map<std::string, std::string> get_options(int argc, char* argv[]) {
     options.insert(std::make_pair("-y", "")); // Year
     options.insert(std::make_pair("-c", "")); // Channel
     options.insert(std::make_pair("--sample", "")); // sample str. 
+    options.insert(std::make_pair("--sum_w", "1.0")); // sample sum_w. 
     options.insert(std::make_pair("-n", "-1")); // # events
     options.insert(std::make_pair("-s", "0")); // start event number
     options.insert(std::make_pair("-e", "-1")); // end event number
@@ -56,8 +57,10 @@ int main(int argc, char *argv[]) {
     if (options.size() == 0) return 1;
 
     FileLooper file_looper;
+    std::cout << "Using sumw of " << std::stof(options["--sum_w"]) << std::endl;
     bool ok = file_looper.loop_file(options["-i"], options["-o"], options["-c"], options["-y"],
-                                    options["--sample"], std::stoi(options["-n"]), std::stoi(options["-s"]), std::stoi(options["-e"]));
+                                    options["--sample"], std::stof(options["--sum_w"]),
+                                    std::stoi(options["-n"]), std::stoi(options["-s"]), std::stoi(options["-e"]));
     if (ok) std::cout << "File loop ran ok!\n";
     return 0;
 }

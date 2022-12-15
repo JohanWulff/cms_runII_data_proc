@@ -9,6 +9,8 @@ def make_parser():
     parser.add_argument('-o', '--outpath', type=str, default=None)
     parser.add_argument('-s', '--sample', type=str, default=None,
                         help="Sample Name. Used to create dir to store at.")
+    parser.add_argument('--sum_w', type=float, default=None,
+                        help="Sum of Weights for given sample.")
     parser.add_argument('-y', '--year', type=str, default=None,
                         help="2016, 2017 or 2018")
     parser.add_argument('-c', '--channel', type=str, default=None,
@@ -18,11 +20,13 @@ def make_parser():
     return parser
 
 
-def main(exe, infiles, outpath, sample, year, channel):
+def main(exe, infiles, outpath, sample, sum_w, year, channel):
     for file in infiles:
         outfile = outpath.rstrip('/')+"/"+file.split('/')[-1]
-        command = f"{exe} -i {file} -o {outfile} -s {sample} -y {year} -c\
+        command = f"{exe} -i {file} -o {outfile} -s {sample} -w {sum_w} -y {year} -c\
  {channel}"
+        print("Running:")
+        print(command)
         prcs = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, encoding="utf-8")
         out, err = prcs.communicate()
         if err:
@@ -38,5 +42,6 @@ if __name__ == "__main__":
          infiles=args.infiles,
          outpath=args.outpath,
          sample=args.sample,
+         sum_w=args.sum_w,
          year=args.year,
          channel=args.channel)

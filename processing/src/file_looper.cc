@@ -21,8 +21,8 @@ FileLooper::~FileLooper() {
 }
 
 bool FileLooper::loop_file(const std::string& fname, const std::string& oname, const std::string& channel,
-                           const std::string& year, std::string &sample_str, const long int& n_events,
-                           const long int& start_evt, const long int& end_evt) {
+                           const std::string& year, std::string &sample_str, double sum_w,
+                           const long int& n_events, const long int& start_evt, const long int& end_evt) {
     /*
     Loop though file {in_dir}/{year}_{channel}.root processing {n_events} (all events if n_events < 0).
     Processed events will be saved to one of two trees inside {out_dir}/{year}_{channel}_{evt_range}.root:
@@ -257,6 +257,7 @@ bool FileLooper::loop_file(const std::string& fname, const std::string& oname, c
         if (sample_id != 0){
             weight *= bTagweightReshape*PUReweight*PUjetID_SF*L1pref_weight*prescaleWeight;
             weight *= MC_weight*trigSF*IdAndIsoAndFakeSF_deep_pt*DYscale_MTT;
+            weight /= sum_w;
         }
 
         // baseline selection
