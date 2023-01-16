@@ -1,5 +1,6 @@
 #include "cms_runII_data_proc/processing/interface/file_looper.hh"
 #include "cms_runII_data_proc/processing/interface/kinfitter.hh"
+#include "TH1D.h"
 
 int use_kl = 1;
 
@@ -38,6 +39,23 @@ bool FileLooper::loop_file(const std::string& fname, const std::string& oname, c
     Year e_year = FileLooper::_get_year(year);
     Spin spin(nonres);
     float klambda, cv, c2v, c3;
+
+    // define histos
+    TH1D* h_bjet1_pt = new TH1D("h_bjet1_pt","h_bjet1_pt",100,0,200);
+    TH1D* h_bjet1_pt_SR = new TH1D("h_bjet1_pt_SR","h_bjet1_pt_SR",100,0,200);
+    TH1D* h_bjet1_pt_SStight = new TH1D("h_bjet1_pt_SStight","h_bjet1_pt_SStight",100,0,200);
+    TH1D* h_bjet1_pt_OSrlx = new TH1D("h_bjet1_pt_OSrlx","h_bjet1_pt_OSrlx",100,0,200);
+    TH1D* h_bjet1_pt_SSrlx = new TH1D("h_bjet1_pt_SSrlx","h_bjet1_pt_SSrlx",100,0,200);
+    TH1D* h_bjet1_pt_OSinviso = new TH1D("h_bjet1_pt_OSinviso","h_bjet1_pt_OSinviso",100,0,200);
+    TH1D* h_bjet1_pt_SSinviso = new TH1D("h_bjet1_pt_SSinviso","h_bjet1_pt_SSinviso",100,0,200);
+
+    TH1D* h_HH_mass = new TH1D("h_HH_mass","h_HH_mass",30,100,700);
+    TH1D* h_HH_mass_SR = new TH1D("h_HH_mass_SR","h_HH_mass_SR",30,100,700);
+    TH1D* h_HH_mass_SStight = new TH1D("h_HH_mass_SStight","h_HH_mass_SStight",30,100,700);
+    TH1D* h_HH_mass_OSrlx = new TH1D("h_HH_mass_OSrlx","h_HH_mass_OSrlx",30,100,700);
+    TH1D* h_HH_mass_SSrlx = new TH1D("h_HH_mass_SSrlx","h_HH_mass_SSrlx",30,100,700);
+    TH1D* h_HH_mass_OSinviso = new TH1D("h_HH_mass_OSinviso","h_HH_mass_OSinviso",30,100,700);
+    TH1D* h_HH_mass_SSinviso = new TH1D("h_HH_mass_SSinviso","h_HH_mass_SSinviso",30,100,700);
 
     // Meta info
     std::cout << "Extracting auxiliary data...";
@@ -287,11 +305,20 @@ bool FileLooper::loop_file(const std::string& fname, const std::string& oname, c
         dau1_iso = *rv_l_1_iso;
         dau1_eleMVAiso = *rv_l_1_eleMVAiso;
         region = FileLooper::_get_region(region, channel, isOS, dau1_deepTauVsJet, dau2_deepTauVsJet, dau1_iso, dau1_eleMVAiso);
+
         //if (selection == "SR"){
         if (region.length() == 0) continue;
         //}
         region_id = FileLooper::_region_lookup(region);
-        
+
+        h_bjet1_pt->Fill(*rv_b_1_pT, weight);
+        if (region == "SR") h_bjet1_pt_SR->Fill(*rv_b_1_pT, weight);
+        else if (region == "SStight") h_bjet1_pt_SStight->Fill(*rv_b_1_pT, weight);
+        else if (region == "OSrlx") h_bjet1_pt_OSrlx->Fill(*rv_b_1_pT, weight);
+        else if (region == "SSrlx") h_bjet1_pt_SSrlx->Fill(*rv_b_1_pT, weight);
+        else if (region == "OSinviso") h_bjet1_pt_OSinviso->Fill(*rv_b_1_pT, weight);
+        else if (region == "SSinviso") h_bjet1_pt_SSinviso->Fill(*rv_b_1_pT, weight);
+
         is_boosted = *rv_is_boosted;
         bool boosted = is_boosted != 0;
         //has_vbf_pair = *rv_has_vbf_pair;
@@ -413,6 +440,13 @@ bool FileLooper::loop_file(const std::string& fname, const std::string& oname, c
         //        data_zh_odd->Fill();
         //    }
         //}
+        h_bjet1_pt->Write();
+        h_bjet1_pt_SR->Write();
+        h_bjet1_pt_SStight->Write();
+        h_bjet1_pt_OSrlx->Write();
+        h_bjet1_pt_SSrlx->Write();
+        h_bjet1_pt_OSinviso->Write();
+        h_bjet1_pt_SSinviso->Write();
 
         if (n_events > 0 && n_saved_events >= n_events) {
             std::cout << "Exiting after " << n_saved_events << " events.\n";

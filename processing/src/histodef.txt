@@ -1,0 +1,40 @@
+    TH1D* h_dau1_dxy = new TH1D("h_dau1_dxy", "h_dau1_dxy", 100, -0.01, 0.01);
+    TH1D* h_dau1_iso = new TH1D("h_dau1_iso", "h_dau1_iso", 24, 0, 8);
+    TH1D* h_dau1_dz = new TH1D("h_dau1_dz", "h_dau1_dz", 100, -0.1, 0.1);
+    TH1D* h_dau2_dxy = new TH1D("h_dau2_dxy", "h_dau2_dxy", 100, -0.01, 0.01);
+    TH1D* h_dau2_dz = new TH1D("h_dau2_dz", "h_dau2_dz", 100, -0.1, 0.1);
+    TH1D* h_met_et = new TH1D("h_met_et", "h_met_et", 35, 0, 350);
+    TH1D* h_met_phi = new TH1D("h_met_phi", "h_met_phi", 25, -0.2, 6.3);
+    TH1D* h_met_er_et = new TH1D("h_met_er_et", "h_met_er_et", 30, 0, 600);
+    TH1D* h_met_er_phi = new TH1D("h_met_er_phi", "h_met_er_phi", 25, -3.14159, 3.14159);
+    TH1D* h_bjet1_eta = new TH1D("h_bjet1_eta", "h_bjet1_eta", 25, -2.5, 2.5);
+    TH1D* h_bjet1_phi = new TH1D("h_bjet1_phi", "h_bjet1_phi", 25, -3.14159, 3.14159);
+    TH1D* h_bjet1_bID_deepFlavor = new TH1D("h_bjet1_bID_deepFlavor", "h_bjet1_bID_deepFlavor", 15, 0, 1);
+    TH1D* h_bjet2_eta = new TH1D("h_bjet2_eta", "h_bjet2_eta", 25, -2.5, 2.5);
+    TH1D* h_bjet2_phi = new TH1D("h_bjet2_phi", "h_bjet2_phi", 25, -3.14159, 3.14159);
+    TH1D* h_bjet2_bID_deepFlavor = new TH1D("h_bjet2_bID_deepFlavor", "h_bjet2_bID_deepFlavor", 15, 0, 1);
+
+    TH1D* h_dau1_eta = new TH1D("h_dau1_eta", "h_dau1_eta", 21, -2.1, 2.1);
+    TH1D* h_dau1_phi = new TH1D("h_dau1_phi", "h_dau1_phi", 25, -3.14159, 3.14159);
+    TH1D* h_dau1_iso = new TH1D("h_dau1_iso", "h_dau1_iso", 24, 0, 8);
+    TH1D* h_dau2_pt = new TH1D("h_dau2_pt", "h_dau2_pt", 20, 0, 200);
+    TH1D* h_dau2_eta = new TH1D("h_dau2_eta", "h_dau2_eta", 21, -2.1, 2.1);
+    TH1D* h_dau2_phi = new TH1D("h_dau2_phi", "h_dau2_phi", 25, -3.14159, 3.14159);
+
+    TH1D* h_bjet1_pt = new TH1D("h_bjet1_pt", "h_bjet1_pt", 30, 20, 200);
+    TH1D* h_bjet2_pt = new TH1D("h_bjet2_pt", "h_bjet2_pt", 30, 20, 200);
+
+    TH1D* h_bH_mass = new TH1D("h_bH_mass", "h_bH_mass", 30, 0, 300);
+    TH1D* h_bH_mass_raw = new TH1D("h_bH_mass_raw", "h_bH_mass_raw", 30, 0, 300);
+    TH1D* h_bH_pt = new TH1D("h_bH_pt", "h_bH_pt", 30, 0, 300);
+    TH1D* h_dib_deltaR = new TH1D("h_dib_deltaR", "h_dib_deltaR", 25, 0, 5);
+    TH1D* h_dib_deltaPhi = new TH1D("h_dib_deltaPhi", "h_dib_deltaPhi", 15, 0., 3.14159);
+    TH1D* h_dib_deltaEta = new TH1D("h_dib_deltaEta", "h_dib_deltaEta", 20, 0, 10);
+
+    TH1D* h_tauH_mass = new TH1D("h_tauH_mass", "h_tauH_mass", 30, 0, 300);
+    TH1D* h_tauH_pt = new TH1D("h_tauH_pt", "h_tauH_pt", 30, 0, 300);
+    TH1D* h_tauH_SVFIT_mass = new TH1D("h_tauH_SVFIT_mass", "h_tauH_SVFIT_mass", 30, 0, 300);
+    TH1D* h_tauH_SVFIT_pt = new TH1D("h_tauH_SVFIT_pt", "h_tauH_SVFIT_pt", 30, 0, 300);
+    TH1D* h_ditau_deltaR = new TH1D("h_ditau_deltaR", "h_ditau_deltaR", 25, 0, 5);
+    TH1D* h_ditau_deltaPhi = new TH1D("h_ditau_deltaPhi", "h_ditau_deltaPhi", 15, 0., 3.14159);
+    TH1D* h_ditau_deltaEta = new TH1D("h_ditau_deltaEta", "h_ditau_deltaEta", 20, 0, 10);
