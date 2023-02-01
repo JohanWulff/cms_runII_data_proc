@@ -27,5 +27,5 @@ EXE="/eos/user/j/jowulff/res_HH/giles_data_proc/CMSSW_10_2_15/bin/slc7_amd64_gcc
 cd $CMSSW_SRC || exit 1
 cmsenv
 echo "${EXE} -i $INFILE -o $OUTFILE --sample $SAMPLE --sum_w $SUM_W -y $YEAR -c $CHANNEL"
-${EXE} -i $INFILE -o $OUTFILE --sample $SAMPLE --sum_w $SUM_W -y $YEAR -c $CHANNEL
+${EXE} -i $INFILE -o $OUTFILE --sample $SAMPLE --sum_w $SUM_W -y $YEAR -c $CHANNEL || rm {$OUTFILE}
 exit 0

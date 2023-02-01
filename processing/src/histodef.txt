@@ -1,3 +1,19 @@
+    TH1D* h_bjet1_pt = new TH1D("h_bjet1_pt","h_bjet1_pt",100,0,200);
+    TH1D* h_bjet1_pt_SR = new TH1D("h_bjet1_pt_SR","h_bjet1_pt_SR",100,0,200);
+    TH1D* h_bjet1_pt_SStight = new TH1D("h_bjet1_pt_SStight","h_bjet1_pt_SStight",100,0,200);
+    TH1D* h_bjet1_pt_OSrlx = new TH1D("h_bjet1_pt_OSrlx","h_bjet1_pt_OSrlx",100,0,200);
+    TH1D* h_bjet1_pt_SSrlx = new TH1D("h_bjet1_pt_SSrlx","h_bjet1_pt_SSrlx",100,0,200);
+    TH1D* h_bjet1_pt_OSinviso = new TH1D("h_bjet1_pt_OSinviso","h_bjet1_pt_OSinviso",100,0,200);
+    TH1D* h_bjet1_pt_SSinviso = new TH1D("h_bjet1_pt_SSinviso","h_bjet1_pt_SSinviso",100,0,200);
+
+    TH1D* h_HH_mass = new TH1D("h_HH_mass","h_HH_mass",30,100,700);
+    TH1D* h_HH_mass_SR = new TH1D("h_HH_mass_SR","h_HH_mass_SR",30,100,700);
+    TH1D* h_HH_mass_SStight = new TH1D("h_HH_mass_SStight","h_HH_mass_SStight",30,100,700);
+    TH1D* h_HH_mass_OSrlx = new TH1D("h_HH_mass_OSrlx","h_HH_mass_OSrlx",30,100,700);
+    TH1D* h_HH_mass_SSrlx = new TH1D("h_HH_mass_SSrlx","h_HH_mass_SSrlx",30,100,700);
+    TH1D* h_HH_mass_OSinviso = new TH1D("h_HH_mass_OSinviso","h_HH_mass_OSinviso",30,100,700);
+    TH1D* h_HH_mass_SSinviso = new TH1D("h_HH_mass_SSinviso","h_HH_mass_SSinviso",30,100,700);
+
     TH1D* h_dau1_dxy = new TH1D("h_dau1_dxy", "h_dau1_dxy", 100, -0.01, 0.01);
     TH1D* h_dau1_iso = new TH1D("h_dau1_iso", "h_dau1_iso", 24, 0, 8);
     TH1D* h_dau1_dz = new TH1D("h_dau1_dz", "h_dau1_dz", 100, -0.1, 0.1);

@@ -1,4 +1,4 @@
-#!/eos/home-j/jowulff/mamba_condaforge/bin/python
+#!/afs/cern.ch/user/j/jowulff/mambaforge/bin/python
 from argparse import ArgumentParser
 from subprocess import Popen, PIPE
 
@@ -23,8 +23,7 @@ def make_parser():
 def main(exe, infiles, outpath, sample, sum_w, year, channel):
     for file in infiles:
         outfile = outpath.rstrip('/')+"/"+file.split('/')[-1]
-        command = f"{exe} -i {file} -o {outfile} -s {sample} -w {sum_w} -y {year} -c\
- {channel}"
+        command = f"{exe} -i {file} -o {outfile} -c {channel} -y {year} -w {sum_w} -s {sample}"
         print("Running:")
         print(command)
         prcs = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, encoding="utf-8")

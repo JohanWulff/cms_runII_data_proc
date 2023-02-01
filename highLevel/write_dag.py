@@ -4,6 +4,18 @@ import os
 from argparse import ArgumentParser
 from subprocess import Popen, PIPE
 
+data_samples = {"tauTau": ["SKIM_Tau_Run2018A",
+                           "SKIM_Tau_Run2018B",
+                           "SKIM_Tau_Run2018C",
+                           "SKIM_Tau_Run2018D",],
+                "muTau": ["SKIM_SingleMuon_Run2018A",
+                          "SKIM_SingleMuon_Run2018B",
+                          "SKIM_SingleMuon_Run2018C",
+                          "SKIM_SingleMuon_Run2018D",],
+                "eTau": ["SKIM_EGamma_Run2018A",
+                        "SKIM_EGamma_Run2018B",
+                        "SKIM_EGamma_Run2018C",
+                        "SKIM_EGamma_Run2018D",]}
 
 def make_parser():
     parser = ArgumentParser(description="Submit processing of LLR \
@@ -82,9 +94,12 @@ CMSSW_10_2_15/src/cms_runII_data_proc/highLevel/executable.sh"
     for i, sample in enumerate(d):
         print(f"Creating submission dir and writing dag \
 files for sample ({i+1}/{len(d)})\r", end="")
-        # skip data samples for now
-        #if d[sample]["sample_id"] == 0:
-        #    continue
+        # data samples are channel-dependant
+        if "Run" in sample:
+            if not sample in data_samples[channel]:
+                continue
+            else:
+                print(f"Using Data skims: {sample}")
         if not os.path.exists(outdir.rstrip("/")+f"/{sample}"):
             os.mkdir(outdir.rstrip("/")+f"/{sample}")
         submit_dir = submit_base_dir.rstrip("/")+f"/{sample}"
@@ -107,7 +122,7 @@ files for sample ({i+1}/{len(d)})\r", end="")
                 print(f"Found {len(gfiles)} files in {goodfile}")
                 continue
             n_files+=len(gfiles)
-            filechunks = [gfiles[i:i+500] for i in range(0, len(gfiles), 500)]
+            filechunks = [gfiles[i:i+100] for i in range(0, len(gfiles), 100)]
         with open(dagfile, "x") as dfile:
             for chunk in filechunks:
                 print(f"JOB {chunk[0]} {submitfile}", file=dfile)
