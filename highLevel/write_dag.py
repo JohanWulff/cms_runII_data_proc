@@ -99,7 +99,7 @@ files for sample ({i+1}/{len(d)})\r", end="")
             if not sample in data_samples[channel]:
                 continue
             else:
-                print(f"Using Data skims: {sample}")
+                print(f"\nUsing Data skims: {sample}\n")
         if not os.path.exists(outdir.rstrip("/")+f"/{sample}"):
             os.mkdir(outdir.rstrip("/")+f"/{sample}")
         submit_dir = submit_base_dir.rstrip("/")+f"/{sample}"

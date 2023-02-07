@@ -42,23 +42,6 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     Spin spin(nonres);
     float klambda, cv, c2v, c3;
 
-    // define histos
-    // TH1D* h_bjet1_pt = new TH1D("h_bjet1_pt","h_bjet1_pt",100,0,200);
-    // TH1D* h_bjet1_pt_SR = new TH1D("h_bjet1_pt_SR","h_bjet1_pt_SR",100,0,200);
-    // TH1D* h_bjet1_pt_SStight = new TH1D("h_bjet1_pt_SStight","h_bjet1_pt_SStight",100,0,200);
-    // TH1D* h_bjet1_pt_OSrlx = new TH1D("h_bjet1_pt_OSrlx","h_bjet1_pt_OSrlx",100,0,200);
-    // TH1D* h_bjet1_pt_SSrlx = new TH1D("h_bjet1_pt_SSrlx","h_bjet1_pt_SSrlx",100,0,200);
-    // TH1D* h_bjet1_pt_OSinviso = new TH1D("h_bjet1_pt_OSinviso","h_bjet1_pt_OSinviso",100,0,200);
-    // TH1D* h_bjet1_pt_SSinviso = new TH1D("h_bjet1_pt_SSinviso","h_bjet1_pt_SSinviso",100,0,200);
-
-    // TH1D* h_HH_mass = new TH1D("h_HH_mass","h_HH_mass",30,100,700);
-    // TH1D* h_HH_mass_SR = new TH1D("h_HH_mass_SR","h_HH_mass_SR",30,100,700);
-    // TH1D* h_HH_mass_SStight = new TH1D("h_HH_mass_SStight","h_HH_mass_SStight",30,100,700);
-    // TH1D* h_HH_mass_OSrlx = new TH1D("h_HH_mass_OSrlx","h_HH_mass_OSrlx",30,100,700);
-    // TH1D* h_HH_mass_SSrlx = new TH1D("h_HH_mass_SSrlx","h_HH_mass_SSrlx",30,100,700);
-    // TH1D* h_HH_mass_OSinviso = new TH1D("h_HH_mass_OSinviso","h_HH_mass_OSinviso",30,100,700);
-    // TH1D* h_HH_mass_SSinviso = new TH1D("h_HH_mass_SSinviso","h_HH_mass_SSinviso",30,100,700);
-
     // Meta info
     std::cout << "Extracting auxiliary data...";
 
@@ -84,22 +67,33 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     unsigned long long int strat_key, evt;
     bool svfit_conv, hh_kinfit_conv;
 
-    // Gen Info
-    // TTreeReaderValue<int> rv_tau1_gen_match(reader, "tau1_gen_match");
-    // TTreeReaderValue<int> rv_tau2_gen_match(reader, "tau2_gen_match");
-    // TTreeReaderValue<int> rv_b1_hadronFlavour(reader, "b1_hadronFlavour");
-    // TTreeReaderValue<int> rv_b2_hadronFlavour(reader, "b2_hadronFlavour");
-    // int tau1_gen_match, tau2_gen_match, b1_hadronFlavour, b2_hadronFlavour;
-
     // HL feats
+    TTreeReaderValue<float> rv_tauH_mass(reader, "tauH_mass");
+    TTreeReaderValue<float> rv_tauH_pt(reader, "tauH_pt");
+    TTreeReaderValue<float> rv_tauH_eta(reader, "tauH_eta");
+    TTreeReaderValue<float> rv_tauH_phi(reader, "tauH_phi");
+    TTreeReaderValue<float> rv_tauH_e(reader, "tauH_e");
+    float tauH_mass, tauH_pt, tauH_eta, tauH_phi, tauH_e;
+
+    TTreeReaderValue<float> rv_bH_mass(reader, "bH_mass");
+    TTreeReaderValue<float> rv_bH_pt(reader, "bH_pt");
+    TTreeReaderValue<float> rv_bH_eta(reader, "bH_eta");
+    TTreeReaderValue<float> rv_bH_phi(reader, "bH_phi");
+    TTreeReaderValue<float> rv_bH_e(reader, "bH_e");
+    float bH_mass, bH_pt, bH_eta, bH_phi, bH_e;
+
+    TTreeReaderValue<float> rv_HH_mass(reader, "HH_mass");
+    TTreeReaderValue<float> rv_HH_mass_raw(reader, "HH_mass_raw");
+    TTreeReaderValue<float> rv_HH_pt(reader, "HH_pt");
+    TTreeReaderValue<float> rv_HH_eta(reader, "HH_eta");
+    TTreeReaderValue<float> rv_HH_phi(reader, "HH_phi");
+    TTreeReaderValue<float> rv_HH_e(reader, "HH_e");
+    float HH_mass, H_mass_raw, HH_pt, HH_eta, HH_phi, HH_e;
+    
     TTreeReaderValue<float> rv_kinfit_mass(reader, "HHKin_mass_raw");
     TTreeReaderValue<float> rv_kinfit_chi2(reader, "HHKin_mass_raw_chi2");
     TTreeReaderValue<float> rv_mt2(reader, "MT2");
     float kinfit_mass, kinfit_chi2, mt2;
-
-    // ZZ & ZH KinFit;
-    // std::pair<float,float> kinfit_ZZ, kinfit_ZH;
-    // std::vector<float> kinINinfo;
 
     // Selection Stuff
     TTreeReaderValue<int> rv_pairType(reader, "pairType");
@@ -112,8 +106,6 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     TTreeReaderValue<float> rv_b_1_csv(reader, "bjet1_bID_deepFlavor");
     TTreeReaderValue<float> rv_b_2_csv(reader, "bjet2_bID_deepFlavor");
     TTreeReaderValue<int> rv_is_boosted(reader, "isBoosted");
-    // TTreeReaderValue<bool> rv_has_b_pair(reader, "has_b_pair"); // TODO
-    // TTreeReaderValue<bool> rv_has_vbf_pair(reader, "has_VBF_pair"); // TODO
     float b_1_csv, b_2_csv;
     int is_boosted;
 
@@ -228,34 +220,48 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     TTree *data_even = new TTree("data_0", "Even id data");
     TTree *data_odd = new TTree("data_1", "Odd id data");
     FileLooper::_prep_file(data_even, feat_vals, &weight, &sample_id, &region_id, &jet_cat, &class_id, &strat_key);
+
+    data_even->Branch("tauH_mass", &tauH_mass);
+    data_even->Branch("tauH_e", &tauH_e);
+    data_even->Branch("tauH_phi", &tauH_phi);
+    data_even->Branch("tauH_pt", &tauH_pt);
+    data_even->Branch("tauH_eta", &tauH_eta);
+
+    data_even->Branch("bH_mass", &bH_mass);
+    data_even->Branch("bH_e", &bH_e);
+    data_even->Branch("bH_phi", &bH_phi);
+    data_even->Branch("bH_pt", &bH_pt);
+    data_even->Branch("bH_eta", &bH_eta);
+
+    data_even->Branch("HH_mass", &HH_mass);
+    data_even->Branch("HH_e", &HH_e);
+    data_even->Branch("HH_phi", &HH_phi);
+    data_even->Branch("HH_pt", &HH_pt);
+    data_even->Branch("HH_eta", &HH_eta);
+
+    data_even->Branch("kinfit_mass", &kinfit_mass);
     FileLooper::_prep_file(data_odd, feat_vals, &weight, &sample_id, &region_id, &jet_cat, &class_id, &strat_key);
 
-    // std::vector<std::unique_ptr<float>> zz_feat_vals;
-    // TTree* data_zz_even;
-    // TTree* data_zz_odd;
-    // std::vector<std::unique_ptr<float>> zh_feat_vals;
-    // TTree* data_zh_even;
-    // TTree* data_zh_odd;
-    // if (add_zz_zh_feats) {
-    //     std::cout << "\tIncluding extra features for ZZ and ZH searches...";
-    //     zz_feat_vals.reserve(_n_feats);
-    //     for (unsigned int i = 0; i < _n_feats; i++) zz_feat_vals.emplace_back(new float(0));
-    //     data_zz_even = new TTree("data_ZZ_0", "Even id ZZ data");
-    //     data_zz_odd  = new TTree("data_ZZ_1", "Odd id ZZ data");
-    //     FileLooper::_prep_file(data_zz_even, zz_feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key,
-    //                            &tau1_gen_match, &tau2_gen_match, &b1_hadronFlavour, &b2_hadronFlavour);
-    //     FileLooper::_prep_file(data_zz_odd,  zz_feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key,
-    //                            &tau1_gen_match, &tau2_gen_match, &b1_hadronFlavour, &b2_hadronFlavour);
+    data_odd->Branch("tauH_mass", &tauH_mass);
+    data_odd->Branch("tauH_e", &tauH_e);
+    data_odd->Branch("tauH_phi", &tauH_phi);
+    data_odd->Branch("tauH_pt", &tauH_pt);
+    data_odd->Branch("tauH_eta", &tauH_eta);
 
-    //    zh_feat_vals.reserve(_n_feats);
-    //    for (unsigned int i = 0; i < _n_feats; i++) zh_feat_vals.emplace_back(new float(0));
-    //    data_zh_even = new TTree("data_ZH_0", "Even id ZH data");
-    //    data_zh_odd  = new TTree("data_ZH_1", "Odd id ZH data");
-    //    FileLooper::_prep_file(data_zh_even, zh_feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key,
-    //                           &tau1_gen_match, &tau2_gen_match, &b1_hadronFlavour, &b2_hadronFlavour);
-    //    FileLooper::_prep_file(data_zh_odd,  zh_feat_vals, &weight, &sample, &region, &jet_cat, &class_id, &strat_key,
-    //                           &tau1_gen_match, &tau2_gen_match, &b1_hadronFlavour, &b2_hadronFlavour);
-    //}
+    data_odd->Branch("bH_mass", &bH_mass);
+    data_odd->Branch("bH_e", &bH_e);
+    data_odd->Branch("bH_phi", &bH_phi);
+    data_odd->Branch("bH_pt", &bH_pt);
+    data_odd->Branch("bH_eta", &bH_eta);
+
+    data_odd->Branch("HH_mass", &HH_mass);
+    data_odd->Branch("HH_e", &HH_e);
+    data_odd->Branch("HH_phi", &HH_phi);
+    data_odd->Branch("HH_pt", &HH_pt);
+    data_odd->Branch("HH_eta", &HH_eta);
+
+    data_odd->Branch("kinfit_mass", &kinfit_mass);
+
     std::cout << "\tprepared.\nBeginning loop.\n";
 
     long int c_event(0), n_saved_events(0), n_tot_events(reader.GetEntries(true));
@@ -306,33 +312,19 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
         class_id = FileLooper::_sample2class_lookup(sample_id);
 
         // determine region depending on channel
-        std::string region;
         dau1_deepTauVsJet = *rv_dau1_deepTauVsJet;
         dau2_deepTauVsJet = *rv_dau2_deepTauVsJet;
         isOS = *rv_isOS;
         dau1_iso = *rv_l_1_iso;
         dau1_eleMVAiso = *rv_l_1_eleMVAiso;
-        region = FileLooper::_get_region(region, channel, isOS, dau1_deepTauVsJet, dau2_deepTauVsJet, dau1_iso, dau1_eleMVAiso);
+        region_id = FileLooper::_get_region(channel, isOS, dau1_deepTauVsJet, dau2_deepTauVsJet, dau1_iso, dau1_eleMVAiso);
 
-        //if (selection == "SR"){
-        if (region.length() == 0){
+        if (region_id == -1){
             continue;
         }
-        //}
-        region_id = FileLooper::_region_lookup(region);
-
-        // h_bjet1_pt->Fill(*rv_b_1_pT, weight);
-        // if (region == "SR") h_bjet1_pt_SR->Fill(*rv_b_1_pT, weight);
-        // else if (region == "SStight") h_bjet1_pt_SStight->Fill(*rv_b_1_pT, weight);
-        // else if (region == "OSrlx") h_bjet1_pt_OSrlx->Fill(*rv_b_1_pT, weight);
-        // else if (region == "SSrlx") h_bjet1_pt_SSrlx->Fill(*rv_b_1_pT, weight);
-        // else if (region == "OSinviso") h_bjet1_pt_OSinviso->Fill(*rv_b_1_pT, weight);
-        // else if (region == "SSinviso") h_bjet1_pt_SSinviso->Fill(*rv_b_1_pT, weight);
 
         is_boosted = *rv_is_boosted;
         bool boosted = is_boosted != 0;
-        // has_vbf_pair = *rv_has_vbf_pair;
-        // has_b_pair = *rv_has_b_pair;
 
         // Load tagging
         b_1_csv = *rv_b_1_csv;
@@ -385,15 +377,6 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
 
         // Load vectors
         pep_svfit.SetCoordinates(*rv_svfit_pT, *rv_svfit_eta, *rv_svfit_phi, *rv_svfit_mass);
-
-        // just tauTau for now
-        // if (channel == "muTau") {  // Fix mass for light leptons
-        //    l_1_mass = MU_MASS;
-        //} else if (channel == "eTau") {
-        //    l_1_mass = E_MASS;
-        //} else {
-        //    l_1_mass = *rv_l_1_mass;
-        //}
         pep_l_1.SetCoordinates(*rv_l_1_pT, *rv_l_1_eta, *rv_l_1_phi, *rv_l_1_e);
         pep_l_2.SetCoordinates(*rv_l_2_pT, *rv_l_2_eta, *rv_l_2_phi, *rv_l_2_e);
         pep_met.SetCoordinates(*rv_met_pT, 0, *rv_met_phi, 0);
@@ -418,7 +401,23 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
         _evt_proc->process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit, vbf_1, vbf_2, kinfit_mass, kinfit_chi2, mt2, boosted, b_1_csv, b_2_csv,
                                   e_channel, e_year, res_mass, spin, klambda, n_vbf, svfit_conv, hh_kinfit_conv, b_1_hhbtag, b_2_hhbtag, vbf_1_hhbtag,
                                   vbf_2_hhbtag, b_1_cvsl, b_2_cvsl, vbf_1_cvsl, vbf_2_cvsl, b_1_cvsb, b_2_cvsb, vbf_1_cvsb, vbf_2_cvsb, cv, c2v, c3, true);
+        tauH_mass = *rv_tauH_mass;
+        tauH_pt = *rv_tauH_pt;
+        tauH_eta = *rv_tauH_eta;
+        tauH_phi = *rv_tauH_phi;
+        tauH_e = *rv_tauH_e;
 
+        bH_mass = *rv_bH_mass;
+        bH_pt = *rv_bH_pt;
+        bH_eta = *rv_bH_eta;
+        bH_phi = *rv_bH_phi;
+        bH_e = *rv_bH_e;
+
+        HH_mass = *rv_HH_mass;
+        HH_pt = *rv_HH_pt;
+        HH_eta = *rv_HH_eta;
+        HH_phi = *rv_HH_phi;
+        HH_e = *rv_HH_e;
         if (evt % 2 == 0)
         {
             data_even->Fill();
@@ -427,41 +426,6 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
         {
             data_odd->Fill();
         }
-
-        // if (add_zz_zh_feats) {
-        //     // KinFit for ZZ/ZH
-        //     // create a single object with all the needed info to give kinfit { 4 lep1 coords, 4 lep2 coords, 4 bjet1 coords, 4 bjet2 coords, 2 MET coors, 3 MET cov entries }
-        //     kinINinfo = { *rv_l_1_pT, *rv_l_1_eta, *rv_l_1_phi, l_1_mass, *rv_l_2_pT, *rv_l_2_eta, *rv_l_2_phi, *rv_l_2_mass ,*rv_b_1_pT, *rv_b_1_eta, *rv_b_1_phi,
-        //                  *rv_b_1_mass ,*rv_b_2_pT, *rv_b_2_eta, *rv_b_2_phi, *rv_b_2_mass ,*rv_met_pT, *rv_met_phi, *rv_met_cov_00, *rv_met_cov_01, *rv_met_cov_11 };
-        //     // compute KinFit
-        //     KinFitter fitter(kinINinfo);
-        //     kinfit_ZZ = fitter.fit("ZZ");
-        //     kinfit_ZH = fitter.fit("ZH");
-        //     kinINinfo.clear();
-
-        //    _evt_proc->process_to_vec(zz_feat_vals, b_1, b_2, l_1, l_2, met, svfit, vbf_1, vbf_2, kinfit_ZZ.first, kinfit_ZZ.second, mt2, is_boosted, b_1_csv, b_2_csv,
-        //                              e_channel, e_year, res_mass, spin, klambda, n_vbf, svfit_conv, kinfit_ZZ.second > 0, b_1_hhbtag, b_2_hhbtag, vbf_1_hhbtag,
-        //                              vbf_2_hhbtag, b_1_cvsl, b_2_cvsl, vbf_1_cvsl, vbf_2_cvsl, b_1_cvsb, b_2_cvsb, vbf_1_cvsb, vbf_2_cvsb, cv, c2v, c3, true);
-        //
-        //    _evt_proc->process_to_vec(zh_feat_vals, b_1, b_2, l_1, l_2, met, svfit, vbf_1, vbf_2, kinfit_ZH.first, kinfit_ZH.second, mt2, is_boosted, b_1_csv, b_2_csv,
-        //                              e_channel, e_year, res_mass, spin, klambda, n_vbf, svfit_conv, kinfit_ZH.second > 0, b_1_hhbtag, b_2_hhbtag, vbf_1_hhbtag,
-        //                              vbf_2_hhbtag, b_1_cvsl, b_2_cvsl, vbf_1_cvsl, vbf_2_cvsl, b_1_cvsb, b_2_cvsb, vbf_1_cvsb, vbf_2_cvsb, cv, c2v, c3, true);
-
-        //    if (evt%2 == 0) {
-        //        data_zz_even->Fill();
-        //        data_zh_even->Fill();
-        //    } else {
-        //        data_zz_odd->Fill();
-        //        data_zh_odd->Fill();
-        //    }
-        //}
-        // h_bjet1_pt->Write();
-        // h_bjet1_pt_SR->Write();
-        // h_bjet1_pt_SStight->Write();
-        // h_bjet1_pt_OSrlx->Write();
-        // h_bjet1_pt_SSrlx->Write();
-        // h_bjet1_pt_OSinviso->Write();
-        // h_bjet1_pt_SSinviso->Write();
 
         if (n_events > 0 && n_saved_events >= n_events)
         {
@@ -473,16 +437,7 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     std::cout << "Loop complete, saving results.\n";
     data_even->Write();
     data_odd->Write();
-    // if (add_zz_zh_feats) {
-    //     data_zz_even->Write();
-    //     data_zz_odd->Write();
-    //     data_zh_even->Write();
-    //     data_zh_odd->Write();
-    //     delete data_zz_even;
-    //     delete data_zz_odd;
-    //     delete data_zh_even;
-    //     delete data_zh_odd;
-    // }
+
     delete data_even;
     delete data_odd;
     in_file->Close();
@@ -639,48 +594,82 @@ bool FileLooper::_apply_baseline(std::string channel, int c_event, int pairType,
     }
 }
 
-std::string FileLooper::_get_region(std::string region, std::string channel, int isOS, float dau1_deepTauVsJet, float dau2_deepTauVsJet, float dau1_iso, float dau1_eleMVAiso)
+int FileLooper::_get_region(std::string channel, int isOS, float dau1_deepTauVsJet, float dau2_deepTauVsJet, float dau1_iso, float dau1_eleMVAiso)
 {
     if (channel == "tauTau")
     {
-        if (isOS != 0 && dau1_deepTauVsJet >= 5 && dau2_deepTauVsJet >= 5)
-            region = "SR"; // signal region: opposite sign, isolated taus
-        else if (isOS == 0 && dau1_deepTauVsJet >= 5 && dau2_deepTauVsJet >= 5)
-            region = "SStight"; // B region
-        else if (isOS != 0 && dau1_deepTauVsJet >= 5 && dau2_deepTauVsJet >= 1 && dau2_deepTauVsJet < 5)
-            region = "OSinviso"; //  # C region
-        else if (isOS == 0 && dau1_deepTauVsJet >= 5 && dau2_deepTauVsJet >= 1 && dau2_deepTauVsJet < 5)
-            region = "SSinviso"; //  # D region
-        else
-            region = "";
+        if (isOS != 0 && dau1_deepTauVsJet >= 5 && dau2_deepTauVsJet >= 5){
+            //region = "SR"; // signal region: opposite sign, isolated taus
+            return 0;
+        }
+        else if (isOS == 1 && dau1_deepTauVsJet >= 5 && dau2_deepTauVsJet >= 5){
+            //region = "SStight"; // B region
+            return 2;
+        }
+        else if (isOS != 0 && dau1_deepTauVsJet >= 5 && dau2_deepTauVsJet >= 1 && dau2_deepTauVsJet < 5){
+            //region = "OSinviso"; //  # C region
+            return 1;
+        }
+        else if (isOS == 0 && dau1_deepTauVsJet >= 5 && dau2_deepTauVsJet >= 1 && dau2_deepTauVsJet < 5){
+            //region = "SSinviso"; //  # D region
+            return 3;
+        }
+        else{
+            //region = "";
+            return -1;
+        }
     }
     else if (channel == "muTau")
     {
-        if (isOS != 0 && dau1_iso < 0.15 && dau2_deepTauVsJet >= 5)
-            region = "SR"; // signal region: opposite sign, isolated taus
-        else if (isOS == 0 && dau1_iso < 0.15 && dau2_deepTauVsJet >= 5)
-            region = "SStight"; // B region
-        else if (isOS != 0 && dau1_iso < 0.15 && dau2_deepTauVsJet >= 1 && dau2_deepTauVsJet < 5)
-            region = "OSinviso"; //  # C region
-        else if (isOS == 0 && dau1_iso < 0.15 && dau2_deepTauVsJet >= 1 && dau2_deepTauVsJet < 5)
-            region = "SSinviso"; //  # D region
-        else
-            region = "";
+        if (isOS != 0 && dau1_iso < 0.15 && dau2_deepTauVsJet >= 5){
+            //region = "SR"; // signal region: opposite sign, isolated taus
+            return 0;
+        }
+        else if (isOS == 0 && dau1_iso < 0.15 && dau2_deepTauVsJet >= 5){
+            //region = "SStight"; // B region
+            return 2;
+        }
+        else if (isOS != 0 && dau1_iso < 0.15 && dau2_deepTauVsJet >= 1 && dau2_deepTauVsJet < 5){
+            //region = "OSinviso"; //  # C region
+            return 1;
+        }
+        else if (isOS == 0 && dau1_iso < 0.15 && dau2_deepTauVsJet >= 1 && dau2_deepTauVsJet < 5){
+            //region = "SSinviso"; //  # D region
+            return 3;
+        }
+        else{
+            //region = "";
+            return -1;
+        }
     }
     else if (channel == "eTau")
     {
-        if (isOS != 0 && dau1_eleMVAiso == 1 && dau2_deepTauVsJet >= 5)
-            region = "SR"; // signal region: opposite sign, isolated taus
-        else if (isOS == 0 && dau1_eleMVAiso == 1 && dau2_deepTauVsJet >= 5)
-            region = "SStight"; // B region
-        else if (isOS != 0 && dau1_eleMVAiso == 1 && dau2_deepTauVsJet >= 1 && dau2_deepTauVsJet < 5)
-            region = "OSinviso"; //  # C region
-        else if (isOS == 0 && dau1_eleMVAiso == 1 && dau2_deepTauVsJet >= 1 && dau2_deepTauVsJet < 5)
-            region = "SSinviso"; //  # D region
-        else
-            region = "";
+        if (isOS != 0 && dau1_eleMVAiso == 1 && dau2_deepTauVsJet >= 5){
+            //region = "SR"; // signal region: opposite sign, isolated taus
+            return 0;
+        }
+        else if (isOS == 0 && dau1_eleMVAiso == 1 && dau2_deepTauVsJet >= 5){
+            //region = "SStight"; // B region
+            return 2;
+        }
+        else if (isOS != 0 && dau1_eleMVAiso == 1 && dau2_deepTauVsJet >= 1 && dau2_deepTauVsJet < 5){
+            //region = "OSinviso"; //  # C region
+            return 1;
+        }
+        else if (isOS == 0 && dau1_eleMVAiso == 1 && dau2_deepTauVsJet >= 1 && dau2_deepTauVsJet < 5){
+            //region = "SSinviso"; //  # D region
+            return 3;
+        }
+        else{
+            //region = "";
+            return -1;
+        }
     }
-    return region;
+    else
+    {
+        std::cout << "Specified channel: " << channel << std::endl;
+        throw std::invalid_argument("Channel should either be tauTau, muTau or eTau!");
+    }
 }
 
 int FileLooper::_region_lookup(const std::string &region)

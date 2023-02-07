@@ -56,7 +56,7 @@ private:
     bool _accept_evt(const int& region, const int& jet_cat, const int& class_id, const float& klambda,
                      const float& cv, const float& c2v, const float& c3);
     bool _apply_baseline(std::string channel, int c_event, int pairType, int nleps, int nbjetscand, int isLeptrigger);
-    std::string _get_region(std::string region, std::string channel, int isOS, float dau1_deepTauVSJet, float dau2_deepTauVSJet, float dau1_iso, float dau1_eleMVAiso ); 
+    int _get_region(std::string channel, int isOS, float dau1_deepTauVSJet, float dau2_deepTauVSJet, float dau1_iso, float dau1_eleMVAiso ); 
 public:
     // Methods
 	FileLooper(bool return_all=true, std::vector<std::string> requested={}, bool use_deep_bjet_wps=true,
