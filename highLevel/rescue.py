@@ -11,12 +11,12 @@ This script checks if the number of files in the output dir matches the number\
 of files in the input_dir.")
     parser.add_argument('-o', '--output_base_dir',
                         type=str, help='output directory.')
-    parser.add_argument('-s', '--submit_base_dir', type=str,
-                        help='directory to submit from')
     parser.add_argument('-j', '--json', type=str, help='json to read the dasgoclient\
 datsets and the names of the subdirs from')
     parser.add_argument("-r", "--resubmit", action='store_true',
                         help="If set, resubmit datasets which aren't complete")
+    parser.add_argument('-s', '--submit_base_dir', type=str, required=False,
+                        help='directory to submit from')
     return parser
 
 
@@ -47,12 +47,30 @@ def n_rootfiles_in_dir(directory: str):
     else:
         return int(out)
 
+def clear_submit_dir(submit_dir):
+    if not os.path.exists(submit_dir):
+        raise ValueError(f"{submit_dir} does not exist.")
+    else:
+        cmd = f"cd {submit_dir} && rm err/* log/* out/* ./*.dag.*"
+        print(f"running: {cmd}")
+        proc = Popen(cmd, shell=True,
+                     stdout=PIPE,
+                     stderr=PIPE,
+                     encoding='utf-8')
+        out, err = proc.communicate()
+        if err:
+            print(err)
+        else:
+            print(out)
+
 
 def submit(dagfile: str):
     if not os.path.exists(dagfile):
         raise ValueError(f"{dagfile} does not exist.")
     else:
-        cmd = f"condor_submit_dag {dagfile}"
+        submit_dir = '/'.join(dagfile.split('/')[:-1])
+        clear_submit_dir(submit_dir=submit_dir)
+        cmd = f"cd {submit_dir} && condor_submit_dag {dagfile}"
         print(f"running: {cmd}")
         proc = Popen(cmd, shell=True,
                      stdout=PIPE,
@@ -73,6 +91,9 @@ def main():
     output_base_dir = args.output_base_dir
     submit_base_dir = args.submit_base_dir
     resubmit = args.resubmit
+    if resubmit and submit_base_dir == "":
+        raise ValueError(f"Resubmit option set but no\
+submission directory specified!")
     f = open(args.json)
     samples = json.load(f)["2018"]
     for sample in samples:

@@ -1,0 +1,27 @@
+(base) [jowulff@lxplus7113 highLevel]$ python getSumW.py -p $(find /eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/ -mindepth 1 -type d -name "[A-Z, t, _]*") -y 2018
+/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-100To250/output_242.root seems to be broken
+/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-100To250/output_407.root seems to be broken
+/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-250To400/output_459.root seems to be broken
+/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-250To400/output_478.root seems to be broken
+/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-400To650/output_136.root seems to be broken
+/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-50To100/output_364.root seems to be broken
+/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-50To100/output_455.root seems to be broken
+/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-50To100/output_571.root seems to be broken
+/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-650ToInf/output_103.root seems to be broken
+/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-650ToInf/output_181.root seems to be broken
+/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-650ToInf/output_186.root seems to be broken
+/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/TTToHadronic/output_71.root seems to be broken
+Found 0 files in /eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/TTWW/goodfiles.txt
+/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/VBFToBulkGravitonToHHTo2B2Tau_M-1500_ does not have a goodfile.txt
+/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/VBFToBulkGravitonToHHTo2B2Tau_M-1750_ does not have a goodfile.txt
+/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/VBFToBulkGravitonToHHTo2B2Tau_M-2000_ does not have a goodfile.txt
+/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/VBFToBulkGravitonToHHTo2B2Tau_M-2500_ does not have a goodfile.txt
+/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/VBFToBulkGravitonToHHTo2B2Tau_M-3000_ does not have a goodfile.txt
+Found 0 files in /eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/VBFToBulkGravitonToHHTo2B2Tau_M-350_/goodfiles.txt
+Found 0 files in /eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/VBFToBulkGravitonToHHTo2B2Tau_M-450_/goodfiles.txt
+Found 0 files in /eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/VBFToBulkGravitonToHHTo2B2Tau_M-700_/goodfiles.txt
+Found 0 files in /eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/VBFToRadionToHHTo2B2Tau_M-1000_/goodfiles.txt
+/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/WJetsToLNu_HT-200To400/output_12.root seems to be broken
+/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/WJetsToLNu_HT-600To800/output_49.root seems to be broken
+writing to ./2018.json. You may want to change the name.
+
