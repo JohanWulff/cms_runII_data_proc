@@ -72,7 +72,7 @@ def main(paths: list, year: int, jsonfile:str = ""):
     #paths = [i for i in paths if not f"Run{year}" in i]
     for i, path in enumerate(paths):
         print(f"\nWorking on sample {i+1}/{len(paths)}.\n")
-        path = Path(path) 
+        path = Path(path).absolute()
         sample = path.stem
         goodfile = path / 'goodfiles.txt'
         if not os.path.exists(goodfile):

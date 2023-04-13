@@ -844,7 +844,7 @@ void FileLooper::_sample_lookup(std::string &sample, int &sample_id, Spin &spin,
     {
         sample_id = 6;
     }
-    else if (sample.find("_ggH") != std::string::npos || sample.find("VBFH") != std::string::npos)
+    else if (sample.find("_ggH") != std::string::npos || sample.find("VBFH") != std::string::npos || sample.find("GGHH") != std::string::npos || sample.find("GluGluHToTauTau") != std::string::npos)
     {
         sample_id = 7;
     }
@@ -852,11 +852,11 @@ void FileLooper::_sample_lookup(std::string &sample, int &sample_id, Spin &spin,
     {
         sample_id = 8;
     }
-    else if (sample.find("_WminusHTauTau") != std::string::npos)
+    else if (sample.find("_WminusH") != std::string::npos)
     {
         sample_id = 9;
     }
-    else if (sample.find("_WplusHTauTau") != std::string::npos)
+    else if (sample.find("_WplusHT") != std::string::npos)
     {
         sample_id = 10;
     }
@@ -883,6 +883,10 @@ void FileLooper::_sample_lookup(std::string &sample, int &sample_id, Spin &spin,
     else if (sample.find("_ST_") != std::string::npos)
     {
         sample_id = 16;
+    }
+    else if (sample.find("WWW") != std::string::npos || sample.find("WWZ") != std::string::npos || sample.find("WZZ") != std::string::npos || sample.find("ZZZ") != std::string::npos )
+    {
+        sample_id = 17;
     }
     else
     {

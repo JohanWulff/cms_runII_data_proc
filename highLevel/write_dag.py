@@ -3,19 +3,12 @@ from glob import glob
 import os
 from argparse import ArgumentParser
 from subprocess import Popen, PIPE
+from pathlib2 import Path
 
-data_samples = {"tauTau": ["SKIM_Tau_Run2018A",
-                           "SKIM_Tau_Run2018B",
-                           "SKIM_Tau_Run2018C",
-                           "SKIM_Tau_Run2018D",],
-                "muTau": ["SKIM_SingleMuon_Run2018A",
-                          "SKIM_SingleMuon_Run2018B",
-                          "SKIM_SingleMuon_Run2018C",
-                          "SKIM_SingleMuon_Run2018D",],
-                "eTau": ["SKIM_EGamma_Run2018A",
-                        "SKIM_EGamma_Run2018B",
-                        "SKIM_EGamma_Run2018C",
-                        "SKIM_EGamma_Run2018D",]}
+from datasamples import data_samples
+
+
+
 
 def make_parser():
     parser = ArgumentParser(description="Submit processing of LLR \
@@ -62,6 +55,24 @@ queue"
     return file_str
 
 
+def parse_goodfile_txt(goodfile:Path,):
+    skims_dir = goodfile.absolute().parent
+    with open(goodfile) as gfile:
+        gfiles = sorted([Path(line.rstrip()) for line in gfile])
+        if len(gfiles) == 0:
+            print(f"Found 0 files in {goodfile}. Globbing all .root files in skim dir.")
+            # goodfiles.txt is empty: just glob all .root files in 
+            # skims dir and hope they're good
+            gfiles = sorted([i for i in skims_dir.glob("*.root")])
+        else:
+            # check if the paths have been updated
+            if gfiles[0].parent != skims_dir:
+                # if not stick the filename on the end of the provided path
+                # and hope for the best
+                gfiles = [skims_dir / i.name for i in gfiles]
+    return [str(gfile) for gfile in gfiles]
+
+
 def main(submit_base_dir: str, outdir: str, channel: str, year: int, sample_json: str):
     executable = "/eos/user/j/jowulff/res_HH/giles_data_proc/\
 CMSSW_10_2_15/src/cms_runII_data_proc/highLevel/executable.py"
@@ -90,13 +101,12 @@ CMSSW_10_2_15/src/cms_runII_data_proc/highLevel/executable.sh"
         # select the year
         d = d[str(year)]
 
-    n_files = 0
     for i, sample in enumerate(d):
         print(f"Creating submission dir and writing dag \
 files for sample ({i+1}/{len(d)})\r", end="")
         # data samples are channel-dependant
         if "Run" in sample:
-            if not sample in data_samples[channel]:
+            if not sample in data_samples[year][channel]:
                 continue
             else:
                 print(f"\nUsing Data skims: {sample}\n")
@@ -114,15 +124,12 @@ files for sample ({i+1}/{len(d)})\r", end="")
         sum_w = d[sample]["Sum_w"]
         goodfile = path+"/goodfiles.txt"
         if not os.path.exists(goodfile):
-            raise ValueError(f"{sample} does not have a goodfile.txt at \
+            print(f"{sample} does not have a goodfile.txt at \
 {path}")
-        with open(goodfile) as gfile:
-            gfiles = sorted([line.rstrip() for line in gfile])
-            if len(gfiles) == 0:
-                print(f"Found {len(gfiles)} files in {goodfile}")
-                continue
-            n_files+=len(gfiles)
-            filechunks = [gfiles[i:i+100] for i in range(0, len(gfiles), 100)]
+            gfiles = glob(d[sample]["Path"]+"/*.root")
+        else:
+            gfiles = parse_goodfile_txt(Path(goodfile))
+        filechunks = [gfiles[i:i+100] for i in range(0, len(gfiles), 100)]
         with open(dagfile, "x") as dfile:
             for chunk in filechunks:
                 print(f"JOB {chunk[0]} {submitfile}", file=dfile)
@@ -133,8 +140,6 @@ SUM_W="{sum_w}" YEAR="{year}" CHANNEL="{channel}"', file=dfile)
                                        executable=afs_exe)
         with open(submitfile, "x") as subfile:
             print(submit_string, file=subfile)
-    print(f"In total {n_files} .root files written to {len(d)} .dag files")
-
 
 if __name__ == "__main__":
     parser = make_parser()

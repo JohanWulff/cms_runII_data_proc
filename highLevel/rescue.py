@@ -15,6 +15,7 @@ of files in the input_dir.")
 datsets and the names of the subdirs from')
     parser.add_argument("-r", "--resubmit", action='store_true',
                         help="If set, resubmit datasets which aren't complete")
+    parser.add_argument("-y", "--year", type=str, help="201{6,7,8}")
     parser.add_argument('-s', '--submit_base_dir', type=str, required=False,
                         help='directory to submit from')
     return parser
@@ -90,12 +91,13 @@ def main():
     args = parser.parse_args()
     output_base_dir = args.output_base_dir
     submit_base_dir = args.submit_base_dir
+    year = args.year
     resubmit = args.resubmit
     if resubmit and submit_base_dir == "":
         raise ValueError(f"Resubmit option set but no\
 submission directory specified!")
     f = open(args.json)
-    samples = json.load(f)["2018"]
+    samples = json.load(f)[year]
     for sample in samples:
         n_root = n_rootfiles_in_dir(directory=output_base_dir+f'/{sample}')
         input_path = samples[sample]['Path']
