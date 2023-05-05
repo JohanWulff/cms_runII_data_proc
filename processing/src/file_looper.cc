@@ -705,20 +705,30 @@ void FileLooper::_sample_lookup(std::string &sample, int &sample_id, Spin &spin,
 
     spin = nonres;
     res_mass = 125;
+    // matches anything up to '_M-' or '_m-' or '_M' or '_m', then captures one or more digits in a group
+    std::regex mass_regex(".*_[Mm]-?([0-9]+)");
+    std::smatch match;
 
-    if (sample.find("_ggF_") != std::string::npos)
+    if (sample.find("_ggF_") != std::string::npos || sample.find("GluGluTo") != std::string::npos )
     {
         if (sample.find("Radion") != std::string::npos)
         {
             spin = radion;
-            try
+            if (std::regex_search(sample, match, mass_regex))
             {
-                res_mass = std::stof(sample.substr(sample.find("_m") + 2));
+                std::string number_str = match[1];
+                if (!number_str.empty())
+                {
+                    res_mass = std::stoi(number_str);
+                }
+                else
+                {
+                    throw std::runtime_error("No mass captured in the sample!");
+                }
             }
-            catch (...)
+            else
             {
-                std::cout << "Error in sample " << sample << " attempting to parse " << sample.substr(sample.find("_m") + 2) << "\n";
-                assert(false);
+                throw std::runtime_error("No '_M-' or '_m' found in sample!");
             }
             if (res_mass <= 400)
             {
@@ -736,14 +746,21 @@ void FileLooper::_sample_lookup(std::string &sample, int &sample_id, Spin &spin,
         else if (sample.find("Graviton") != std::string::npos)
         {
             spin = graviton;
-            try
+            if (std::regex_search(sample, match, mass_regex))
             {
-                res_mass = std::stof(sample.substr(sample.find("_m") + 2));
+                std::string number_str = match[1];
+                if (!number_str.empty())
+                {
+                    res_mass = std::stoi(number_str);
+                }
+                else
+                {
+                    throw std::runtime_error("No mass captured in the sample!");
+                }
             }
-            catch (...)
+            else
             {
-                std::cout << "Error in sample " << sample << " attempting to parse " << sample.substr(sample.find("_m") + 2) << "\n";
-                assert(false);
+                throw std::runtime_error("No '_M-' or '_m' found in sample!");
             }
             if (res_mass <= 400)
             {
@@ -763,19 +780,26 @@ void FileLooper::_sample_lookup(std::string &sample, int &sample_id, Spin &spin,
             sample_id = -999;
         }
     }
-    else if (sample.find("_VBF_") != std::string::npos)
+    else if (sample.find("_VBF_") != std::string::npos || sample.find("VBFTo") != std::string::npos)
     {
         if (sample.find("Radion") != std::string::npos)
         {
             spin = radion;
-            try
+            if (std::regex_search(sample, match, mass_regex))
             {
-                res_mass = std::stof(sample.substr(sample.find("_m") + 2));
+                std::string number_str = match[1];
+                if (!number_str.empty())
+                {
+                    res_mass = std::stoi(number_str);
+                }
+                else
+                {
+                    throw std::runtime_error("No mass captured in the sample!");
+                }
             }
-            catch (...)
+            else
             {
-                std::cout << "Error in sample " << sample << " attempting to parse " << sample.substr(sample.find("_M") + 2) << "\n";
-                assert(false);
+                throw std::runtime_error("No '_M-' or '_m' found in sample!");
             }
             if (res_mass <= 400)
             {
@@ -793,14 +817,21 @@ void FileLooper::_sample_lookup(std::string &sample, int &sample_id, Spin &spin,
         else if (sample.find("Graviton") != std::string::npos)
         {
             spin = graviton;
-            try
+            if (std::regex_search(sample, match, mass_regex))
             {
-                res_mass = std::stof(sample.substr(sample.find("_m") + 2));
+                std::string number_str = match[1];
+                if (!number_str.empty())
+                {
+                    res_mass = std::stoi(number_str);
+                }
+                else
+                {
+                    throw std::runtime_error("No mass captured in the sample!");
+                }
             }
-            catch (...)
+            else
             {
-                std::cout << "Error in sample " << sample << " attempting to parse " << sample.substr(sample.find("_M") + 2) << "\n";
-                assert(false);
+                throw std::runtime_error("No '_M-' or '_m' found in sample!");
             }
             if (res_mass <= 400)
             {
@@ -820,27 +851,27 @@ void FileLooper::_sample_lookup(std::string &sample, int &sample_id, Spin &spin,
     {
         sample_id = 0;
     }
-    else if (sample.find("_TT_fully") != std::string::npos || sample.find("_TT_semi") != std::string::npos)
+    else if (sample.find("_TT_fully") != std::string::npos || sample.find("_TT_semi") != std::string::npos || sample.find( "TTTo2L2Nu" ) != std::string::npos || sample.find( "TTToSemiLeptonic" ) != std::string::npos || sample.find( "TTToHadronic" ) != std::string::npos)
     {
         sample_id = 1;
     }
-    else if (sample.find("_TTWJets") != std::string::npos || sample.find("_TTZTo") != std::string::npos)
+    else if (sample.find("TTWJets") != std::string::npos || sample.find("TTZTo") != std::string::npos)
     {
         sample_id = 2;
     }
-    else if (sample.find("_TTWW") != std::string::npos || sample.find("_TTWZ") != std::string::npos || sample.find("_TTZZ") != std::string::npos)
+    else if (sample.find("TTWW") != std::string::npos || sample.find("TTWZ") != std::string::npos || sample.find("TTZZ") != std::string::npos)
     {
         sample_id = 3;
     }
-    else if (sample.find("_ttH") != std::string::npos)
+    else if (sample.find("ttH") != std::string::npos)
     {
         sample_id = 4;
     }
-    else if (sample.find("_DY") != std::string::npos)
+    else if (sample.find("DY") != std::string::npos)
     {
         sample_id = 5;
     }
-    else if (sample.find("_WJets_") != std::string::npos)
+    else if (sample.find("WJets") != std::string::npos)
     {
         sample_id = 6;
     }
@@ -848,19 +879,19 @@ void FileLooper::_sample_lookup(std::string &sample, int &sample_id, Spin &spin,
     {
         sample_id = 7;
     }
-    else if (sample.find("_ZH_") != std::string::npos)
+    else if (sample.find("ZH") != std::string::npos)
     {
         sample_id = 8;
     }
-    else if (sample.find("_WminusH") != std::string::npos)
+    else if (sample.find("WminusH") != std::string::npos)
     {
         sample_id = 9;
     }
-    else if (sample.find("_WplusHT") != std::string::npos)
+    else if (sample.find("WplusHT") != std::string::npos)
     {
         sample_id = 10;
     }
-    else if (sample.find("_EWK") != std::string::npos)
+    else if (sample.find("EWK") != std::string::npos)
     {
         sample_id = 11;
     }
@@ -880,7 +911,7 @@ void FileLooper::_sample_lookup(std::string &sample, int &sample_id, Spin &spin,
     {
         sample_id = 15;
     }
-    else if (sample.find("_ST_") != std::string::npos)
+    else if (sample.find("_ST_") != std::string::npos || sample.find("ST_") != std::string::npos)
     {
         sample_id = 16;
     }
