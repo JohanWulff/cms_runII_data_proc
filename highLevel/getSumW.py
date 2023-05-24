@@ -86,7 +86,7 @@ def main(paths: list, year: int, jsonfile:str = ""):
         else:
             gfiles = parse_goodfile_txt(goodfile) 
         n_files = len(gfiles) 
-        if f"Run{year}" in path.name:
+        if str(year) in path.name:
             # Data sample
             d[year][sample]["Path"] = str(path)
             d[year][sample]["Sum_w"] = 1
