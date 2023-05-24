@@ -19,10 +19,12 @@ Samples")
                         help="Dir to write output files to")
     parser.add_argument("-c", "--channel", type=str,
                         help="Channel. Can be either tauTau, muTau, or eTau.")
-    parser.add_argument("-y", "--year", type=int, 
+    parser.add_argument("-y", "--year", type=str, 
                         help="2016, 2017 or 2018")
     parser.add_argument("-j", "--json", type=str,
                         help="JSON File containing paths to samples")
+    parser.add_argument("-b", '--broken_json', type=str, default="", required=False,
+                        help=".json file with roken files per sample.")
     return parser
                             
 
@@ -73,7 +75,7 @@ def parse_goodfile_txt(goodfile:Path,):
     return [str(gfile) for gfile in gfiles]
 
 
-def main(submit_base_dir: str, outdir: str, channel: str, year: int, sample_json: str):
+def main(submit_base_dir: str, outdir: str, channel: str, year: str, sample_json: str, broken_files: str=""):
     executable = "/eos/user/j/jowulff/res_HH/giles_data_proc/\
 CMSSW_10_2_15/src/cms_runII_data_proc/highLevel/executable.py"
     shellscript = "/eos/user/j/jowulff/res_HH/giles_data_proc/\
@@ -99,8 +101,12 @@ CMSSW_10_2_15/src/cms_runII_data_proc/highLevel/executable.sh"
     with open(sample_json) as f:
         d = json.load(f)
         # select the year
-        d = d[str(year)]
+        d = d[year]
 
+    if not broken_files=="":
+        with open(broken_files) as f:
+            broken_dict = json.load(f)
+    
     for i, sample in enumerate(d):
         print(f"Creating submission dir and writing dag \
 files for sample ({i+1}/{len(d)})\r", end="")
@@ -129,17 +135,28 @@ files for sample ({i+1}/{len(d)})\r", end="")
             gfiles = glob(d[sample]["Path"]+"/*.root")
         else:
             gfiles = parse_goodfile_txt(Path(goodfile))
+        # filter files for broken files
+        if not broken_files == "":
+            if sample in broken_dict:
+                gfiles = [file for file in gfiles if file not in broken_dict[sample]["Broken"]]
         filechunks = [gfiles[i:i+100] for i in range(0, len(gfiles), 100)]
-        with open(dagfile, "x") as dfile:
-            for chunk in filechunks:
-                print(f"JOB {chunk[0]} {submitfile}", file=dfile)
-                print(f'VARS {chunk[0]} INFILES="{" ".join(chunk)}" \
-OUTDIR="{outdir.rstrip("/")+f"/{sample}"}" EXE="{afs_shscript}" SAMPLE="{sample}" \
-SUM_W="{sum_w}" YEAR="{year}" CHANNEL="{channel}"', file=dfile)
-        submit_string = return_subfile(base_dir=submit_dir, 
-                                       executable=afs_exe)
-        with open(submitfile, "x") as subfile:
-            print(submit_string, file=subfile)
+        if not os.path.exists(dagfile):
+            with open(dagfile, "x") as dfile:
+                for chunk in filechunks:
+                    print(f"JOB {chunk[0]} {submitfile}", file=dfile)
+                    print(f'VARS {chunk[0]} INFILES="{" ".join(chunk)}" \
+    OUTDIR="{outdir.rstrip("/")+f"/{sample}"}" EXE="{afs_shscript}" SAMPLE="{sample}" \
+    SUM_W="{sum_w}" YEAR="{year}" CHANNEL="{channel}"', file=dfile)
+            submit_string = return_subfile(base_dir=submit_dir, 
+                                        executable=afs_exe)
+        else:
+            print(f"\n {dagfile} already exists.. Not creating new one \n")
+
+        if not os.path.exists(submitfile):
+            with open(submitfile, "x") as subfile:
+                print(submit_string, file=subfile)
+        else:
+            print(f"\n {submitfile} already exists.. Not creating new one \n")
 
 if __name__ == "__main__":
     parser = make_parser()
@@ -148,4 +165,5 @@ if __name__ == "__main__":
          outdir=args.output_dir,
          channel=args.channel,
          year=args.year,
-         sample_json=args.json)
+         sample_json=args.json,
+         broken_files=args.broken_json)
