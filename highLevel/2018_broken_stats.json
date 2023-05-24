@@ -1,1 +1,48 @@
-{"DYJetsToLL_LHEFilterPtZ-100To250": {"Broken": ["/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-100To250/output_242.root", "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-100To250/output_407.root"]}, "DYJetsToLL_LHEFilterPtZ-250To400": {"Broken": ["/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-250To400/output_459.root", "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-250To400/output_478.root"]}, "DYJetsToLL_LHEFilterPtZ-400To650": {"Broken": ["/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-400To650/output_136.root"]}, "DYJetsToLL_LHEFilterPtZ-50To100": {"Broken": ["/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-50To100/output_364.root", "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-50To100/output_455.root", "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-50To100/output_571.root"]}, "DYJetsToLL_LHEFilterPtZ-650ToInf": {"Broken": ["/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-650ToInf/output_103.root", "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-650ToInf/output_181.root", "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-650ToInf/output_186.root"]}, "TTToHadronic": {"Broken": ["/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/TTToHadronic/output_71.root"]}, "WJetsToLNu_HT-200To400": {"Broken": ["/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/WJetsToLNu_HT-200To400/output_12.root"]}, "WJetsToLNu_HT-600To800": {"Broken": ["/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/WJetsToLNu_HT-600To800/output_49.root"]}}
+{
+    "DYJetsToLL_LHEFilterPtZ-100To250": {
+        "Broken": [
+            "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-100To250/output_242.root",
+            "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-100To250/output_407.root"
+        ]
+    },
+    "DYJetsToLL_LHEFilterPtZ-250To400": {
+        "Broken": [
+            "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-250To400/output_459.root",
+            "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-250To400/output_478.root"
+        ]
+    },
+    "DYJetsToLL_LHEFilterPtZ-400To650": {
+        "Broken": [
+            "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-400To650/output_136.root"
+        ]
+    },
+    "DYJetsToLL_LHEFilterPtZ-50To100": {
+        "Broken": [
+            "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-50To100/output_364.root",
+            "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-50To100/output_455.root",
+            "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-50To100/output_571.root"
+        ]
+    },
+    "DYJetsToLL_LHEFilterPtZ-650ToInf": {
+        "Broken": [
+            "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-650ToInf/output_103.root",
+            "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-650ToInf/output_181.root",
+            "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/DYJetsToLL_LHEFilterPtZ-650ToInf/output_186.root"
+        ]
+    },
+    "TTToHadronic": {
+        "Broken": [
+            "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/TTToHadronic/output_71.root"
+        ]
+    },
+    "WJetsToLNu_HT-200To400": {
+        "Broken": [
+            "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/WJetsToLNu_HT-200To400/output_12.root"
+        ]
+    },
+    "WJetsToLNu_HT-600To800": {
+        "Broken": [
+            "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL18/WJetsToLNu_HT-600To800/output_49.root"
+        ]
+    }
+}
