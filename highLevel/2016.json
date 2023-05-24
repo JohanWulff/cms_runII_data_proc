@@ -47,17 +47,17 @@
         },
         "SKIM_Ele_Run2016F": {
             "Path": "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL16/SKIM_Ele_2016F",
-            "Sum_w": 8835883.0,
+            "Sum_w": 1.0,
             "N_files": 91
         },
         "SKIM_Ele_Run2016G": {
             "Path": "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL16/SKIM_Ele_2016G",
-            "Sum_w": 152098617.0,
+            "Sum_w": 1.0,
             "N_files": 190
         },
         "SKIM_Ele_Run2016H": {
             "Path": "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL16/SKIM_Ele_2016H",
-            "Sum_w": 127093812.0,
+            "Sum_w": 1.0,
             "N_files": 196
         },
         "SKIM_EWKWMinus2Jets_WToLNu": {
@@ -202,32 +202,32 @@
         },
         "SKIM_MET_Run2016F": {
             "Path": "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL16/SKIM_MET_2016F",
-            "Sum_w": 1370777.0,
+            "Sum_w": 1.0,
             "N_files": 16
         },
         "SKIM_MET_Run2016G": {
             "Path": "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL16/SKIM_MET_2016G",
-            "Sum_w": 25495147.0,
+            "Sum_w": 1.0,
             "N_files": 251
         },
         "SKIM_MET_Run2016H": {
             "Path": "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL16/SKIM_MET_2016H",
-            "Sum_w": 37232881.0,
+            "Sum_w": 1.0,
             "N_files": 202
         },
         "SKIM_Mu_Run2016F": {
             "Path": "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL16/SKIM_Mu_2016F",
-            "Sum_w": 8003612.0,
+            "Sum_w": 1.0,
             "N_files": 61
         },
         "SKIM_Mu_Run2016G": {
             "Path": "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL16/SKIM_Mu_2016G",
-            "Sum_w": 147945745.0,
+            "Sum_w": 1.0,
             "N_files": 218
         },
         "SKIM_Mu_Run2016H": {
             "Path": "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL16/SKIM_Mu_2016H",
-            "Sum_w": 171137991.0,
+            "Sum_w": 1.0,
             "N_files": 194
         },
         "SKIM_ST_tchannel_antitop": {
@@ -252,17 +252,17 @@
         },
         "SKIM_Tau_Run2016F": {
             "Path": "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL16/SKIM_Tau_2016F",
-            "Sum_w": 4346847.0,
+            "Sum_w": 1.0,
             "N_files": 42
         },
         "SKIM_Tau_Run2016G": {
             "Path": "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL16/SKIM_Tau_2016G",
-            "Sum_w": 78733260.0,
+            "Sum_w": 1.0,
             "N_files": 229
         },
         "SKIM_Tau_Run2016H": {
             "Path": "/eos/user/l/lportale/hhbbtautau/skims/SKIMS_UL16/SKIM_Tau_2016H",
-            "Sum_w": 75409819.0,
+            "Sum_w": 1.0,
             "N_files": 233
         },
         "SKIM_TT_fullyHad": {
