@@ -37,7 +37,7 @@ data_samples = {"2018": {"tauTau":["Tau__Run2018A",
                                "SKIM_Ele_Run2016G",
                                "SKIM_Ele_Run2016H"]
                      },
-                "2016_APV":{"muTau": ["SKIM_Tau_2016B",
+                "2016APV":{"muTau": ["SKIM_Tau_2016B",
                                 "SKIM_Tau_2016C",
                                 "SKIM_Tau_2016D",
                                 "SKIM_Tau_2016E",
