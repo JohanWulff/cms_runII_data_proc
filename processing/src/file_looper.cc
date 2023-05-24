@@ -56,10 +56,11 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     TTreeReaderValue<float> rv_trigSF(reader, "trigSF");
     TTreeReaderValue<float> rv_IdAndIsoAndFakeSF_deep_pt(reader, "IdAndIsoAndFakeSF_deep_pt");
     TTreeReaderValue<float> rv_DYscale_MTT(reader, "DYscale_MTT");
+    TTreeReaderValue<float> rv_customTauIdSF(reader, "customTauIdSF");
 
     double weight;
     float bTagweightReshape, PUReweight, PUjetID_SF, L1pref_weight, prescaleWeight, MC_weight;
-    float trigSF, DYscale_MTT, IdAndIsoAndFakeSF_deep_pt;
+    float trigSF, DYscale_MTT, IdAndIsoAndFakeSF_deep_pt, customTauIdSF;
 
     std::cout << " Extracted\n";
 
@@ -277,15 +278,23 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
         prescaleWeight = *rv_prescaleWeight;
         MC_weight = *rv_MC_weight;
         trigSF = *rv_trigSF;
+        customTauIdSF = *rv_customTauIdSF;
         DYscale_MTT = *rv_DYscale_MTT;
         IdAndIsoAndFakeSF_deep_pt = *rv_IdAndIsoAndFakeSF_deep_pt;
         // calc weight
         weight = 1.0;
         if (sample_id != 0)
         {
-            weight *= bTagweightReshape * PUReweight * PUjetID_SF * L1pref_weight * prescaleWeight;
-            weight *= MC_weight * trigSF * IdAndIsoAndFakeSF_deep_pt * DYscale_MTT;
-            weight /= sum_w;
+            if (year == "2017"){
+                weight *= MC_weight * trigSF * IdAndIsoAndFakeSF_deep_pt * DYscale_MTT  ;
+                weight *= bTagweightReshape * PUReweight * PUjetID_SF * L1pref_weight * prescaleWeight *  customTauIdSF ;
+                weight /= sum_w;
+            }
+            else{
+                weight *= MC_weight * trigSF * IdAndIsoAndFakeSF_deep_pt * DYscale_MTT;
+                weight *= bTagweightReshape * PUReweight * PUjetID_SF * L1pref_weight * prescaleWeight;
+                weight /= sum_w;
+            }
         }
 
         // baseline selection
@@ -532,6 +541,10 @@ Year FileLooper::_get_year(std::string year)
     else if (year == "2018")
     {
         return Year(y18);
+    }
+    else if (year == "2016APV")
+    {
+        return Year(y17);
     }
     throw std::invalid_argument("Invalid year: options are 2016, 2017, 2018");
     return Year(y16);
@@ -847,7 +860,7 @@ void FileLooper::_sample_lookup(std::string &sample, int &sample_id, Spin &spin,
             }
         }
     }
-    else if (sample.find("_Run") != std::string::npos)
+    else if (sample.find("_Run") != std::string::npos || sample.find("2016") != std::string::npos || sample.find("2017") != std::string::npos || sample.find("2018") != std::string::npos)
     {
         sample_id = 0;
     }
