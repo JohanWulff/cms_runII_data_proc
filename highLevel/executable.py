@@ -20,7 +20,7 @@ def make_parser():
     return parser
 
 
-def main(exe, infiles, outpath, sample, sum_w, year, channel):
+def main(exe, infiles, outpath, sample, sum_w,  year, channel):
     for file in infiles:
         outfile = outpath.rstrip('/')+"/"+file.split('/')[-1]
         command = f"{exe} -i {file} -o {outfile} -c {channel} -y {year} -w {sum_w} -s {sample}"

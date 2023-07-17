@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
     FileLooper file_looper;
     std::cout << "Using sumw of " << std::stof(options["--sum_w"]) << std::endl;
     bool ok = file_looper.loop_file(options["-i"], options["-o"], options["-c"], options["-y"],
-                                    options["--sample"], std::stof(options["--sum_w"]),
+                                    options["--sample"], std::stof(options["--sum_w"]), 
                                     std::stoi(options["-n"]), std::stoi(options["-s"]), std::stoi(options["-e"]));
     if (ok) std::cout << "File loop ran ok!\n";
     return 0;

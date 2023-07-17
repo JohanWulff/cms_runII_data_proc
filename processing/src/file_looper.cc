@@ -46,6 +46,8 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     std::cout << "Extracting auxiliary data...";
 
     TTreeReaderValue<unsigned long long> rv_evt(reader, "EventNumber");
+    TTreeReaderValue<int> rv_run(reader, "RunNumber");
+    TTreeReaderValue<int> rv_lumi(reader, "lumi");
 
     TTreeReaderValue<float> rv_MC_weight(reader, "MC_weight");
     TTreeReaderValue<float> rv_prescaleWeight(reader, "prescaleWeight");
@@ -66,6 +68,7 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
 
     int sample_id, jet_cat, n_vbf, class_id;
     unsigned long long int strat_key, evt;
+    int lumi, run;
     bool svfit_conv, hh_kinfit_conv;
 
     // HL feats
@@ -89,7 +92,7 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     TTreeReaderValue<float> rv_HH_eta(reader, "HH_eta");
     TTreeReaderValue<float> rv_HH_phi(reader, "HH_phi");
     TTreeReaderValue<float> rv_HH_e(reader, "HH_e");
-    float HH_mass, H_mass_raw, HH_pt, HH_eta, HH_phi, HH_e;
+    float HH_mass, HH_pt, HH_eta, HH_phi, HH_e;
     
     TTreeReaderValue<float> rv_kinfit_mass(reader, "HHKin_mass_raw");
     TTreeReaderValue<float> rv_kinfit_chi2(reader, "HHKin_mass_raw_chi2");
@@ -208,7 +211,21 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     TTreeReaderValue<int> rv_dau1_deepTauVsJet(reader, "dau1_deepTauVsJet");
     TTreeReaderValue<int> rv_dau2_deepTauVsJet(reader, "dau2_deepTauVsJet");
     int dau1_deepTauVsJet, dau2_deepTauVsJet;
-    int region_id, sample, isOS;
+    int region_id, isOS;
+
+    // simone's regression vars
+    //TTreeReaderValue<float> rv_ML_MassHH_HIGH(reader, "ML_MassHH_HIGH");
+    //TTreeReaderValue<float> rv_ML_MassHH_LOW(reader, "ML_MassHH_LOW");
+    //TTreeReaderValue<float> rv_ML_MassTauTau_HIGH(reader, "ML_MassTauTau_HIGH");
+    //TTreeReaderValue<float> rv_ML_MassTauTau_LOW(reader, "ML_MassTauTau_LOW");
+    //TTreeReaderValue<float> rv_ML_classifier0_HIGH(reader, "ML_classifier0_HIGH");
+    //TTreeReaderValue<float> rv_ML_classifier0_LOW(reader, "ML_classifier0_LOW");
+    //TTreeReaderValue<float> rv_ML_classifier1_HIGH(reader, "ML_classifier1_HIGH");
+    //TTreeReaderValue<float> rv_ML_classifier1_LOW(reader, "ML_classifier1_LOW");
+    //TTreeReaderValue<float> rv_ML_classifier2_HIGH(reader, "ML_classifier2_HIGH");
+    //TTreeReaderValue<float> rv_ML_classifier2_LOW(reader, "ML_classifier2_LOW");
+    //float ML_MassHH_HIGH,ML_MassHH_LOW,ML_MassTauTau_HIGH,ML_MassTauTau_LOW;
+    //float ML_classifier0_HIGH, ML_classifier0_LOW, ML_classifier1_HIGH, ML_classifier1_LOW, ML_classifier2_HIGH, ML_classifier2_LOW;
 
     std::vector<std::unique_ptr<float>> feat_vals;
     feat_vals.reserve(_n_feats);
@@ -221,6 +238,10 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     TTree *data_even = new TTree("data_0", "Even id data");
     TTree *data_odd = new TTree("data_1", "Odd id data");
     FileLooper::_prep_file(data_even, feat_vals, &weight, &sample_id, &region_id, &jet_cat, &class_id, &strat_key);
+
+    data_even->Branch("EventID", &evt);
+    data_even->Branch("RunID", &run);
+    data_even->Branch("LuminosityBlock", &lumi);
 
     data_even->Branch("tauH_mass", &tauH_mass);
     data_even->Branch("tauH_e", &tauH_e);
@@ -240,8 +261,24 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     data_even->Branch("HH_pt", &HH_pt);
     data_even->Branch("HH_eta", &HH_eta);
 
+    // simone's vars
+    //data_even->Branch("ML_MassHH_HIGH", &ML_MassHH_HIGH);
+    //data_even->Branch("ML_MassHH_LOW", &ML_MassHH_LOW);
+    //data_even->Branch("ML_MassTauTau_HIGH", &ML_MassTauTau_HIGH);
+    //data_even->Branch("ML_MassTauTau_LOW", &ML_MassTauTau_LOW);
+    //data_even->Branch("ML_classifier0_HIGH",&ML_classifier0_HIGH);
+    //data_even->Branch("ML_classifier0_LOW",&ML_classifier0_LOW);
+    //data_even->Branch("ML_classifier1_HIGH",&ML_classifier1_HIGH);
+    //data_even->Branch("ML_classifier1_LOW",&ML_classifier1_LOW);
+    //data_even->Branch("ML_classifier2_HIGH",&ML_classifier2_HIGH);
+    //data_even->Branch("ML_classifier2_LOW",&ML_classifier2_LOW);
+
     data_even->Branch("kinfit_mass", &kinfit_mass);
     FileLooper::_prep_file(data_odd, feat_vals, &weight, &sample_id, &region_id, &jet_cat, &class_id, &strat_key);
+
+    data_odd->Branch("EventID", &evt);
+    data_odd->Branch("RunID", &run);
+    data_odd->Branch("LuminosityBlock", &lumi);
 
     data_odd->Branch("tauH_mass", &tauH_mass);
     data_odd->Branch("tauH_e", &tauH_e);
@@ -260,6 +297,17 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     data_odd->Branch("HH_phi", &HH_phi);
     data_odd->Branch("HH_pt", &HH_pt);
     data_odd->Branch("HH_eta", &HH_eta);
+
+    //data_odd->Branch("ML_MassHH_HIGH", &ML_MassHH_HIGH);
+    //data_odd->Branch("ML_MassHH_LOW", &ML_MassHH_LOW);
+    //data_odd->Branch("ML_MassTauTau_HIGH", &ML_MassTauTau_HIGH);
+    //data_odd->Branch("ML_MassTauTau_LOW", &ML_MassTauTau_LOW);
+    //data_odd->Branch("ML_classifier0_HIGH",&ML_classifier0_HIGH);
+    //data_odd->Branch("ML_classifier0_LOW",&ML_classifier0_LOW);
+    //data_odd->Branch("ML_classifier1_HIGH",&ML_classifier1_HIGH);
+    //data_odd->Branch("ML_classifier1_LOW",&ML_classifier1_LOW);
+    //data_odd->Branch("ML_classifier2_HIGH",&ML_classifier2_HIGH);
+    //data_odd->Branch("ML_classifier2_LOW",&ML_classifier2_LOW);
 
     data_odd->Branch("kinfit_mass", &kinfit_mass);
 
@@ -285,13 +333,18 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
         weight = 1.0;
         if (sample_id != 0)
         {
+            if (year == "2016" || year == "2016APV"){
+                weight *= MC_weight * trigSF * IdAndIsoAndFakeSF_deep_pt * DYscale_MTT;
+                weight *= bTagweightReshape * PUReweight * PUjetID_SF * L1pref_weight;
+                weight /= sum_w;
+            }
             if (year == "2017"){
                 weight *= MC_weight * trigSF * IdAndIsoAndFakeSF_deep_pt * DYscale_MTT  ;
                 weight *= bTagweightReshape * PUReweight * PUjetID_SF * L1pref_weight * prescaleWeight *  customTauIdSF ;
                 weight /= sum_w;
             }
-            else{
-                weight *= MC_weight * trigSF * IdAndIsoAndFakeSF_deep_pt * DYscale_MTT;
+            if (year == "2018"){
+                weight *= MC_weight * trigSF * IdAndIsoAndFakeSF_deep_pt;
                 weight *= bTagweightReshape * PUReweight * PUjetID_SF * L1pref_weight * prescaleWeight;
                 weight /= sum_w;
             }
@@ -317,6 +370,8 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
             std::cout << c_event << " / " << n_tot_events << "\n";
         // Load meta
         evt = *rv_evt;
+        run = *rv_run;
+        lumi = *rv_lumi;
 
         class_id = FileLooper::_sample2class_lookup(sample_id);
 
@@ -427,6 +482,20 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
         HH_eta = *rv_HH_eta;
         HH_phi = *rv_HH_phi;
         HH_e = *rv_HH_e;
+
+        // read simone's vars
+        //if (simone_vars == 1){
+            //ML_MassHH_HIGH = *rv_ML_MassHH_HIGH;
+            //ML_MassHH_LOW = *rv_ML_MassHH_LOW;
+            //ML_MassTauTau_HIGH = *rv_ML_MassTauTau_HIGH;
+            //ML_MassTauTau_LOW = *rv_ML_MassTauTau_LOW;
+            //ML_classifier0_HIGH = *rv_ML_classifier0_HIGH;
+            //ML_classifier0_LOW = *rv_ML_classifier0_LOW;
+            //ML_classifier1_HIGH = *rv_ML_classifier1_HIGH;
+            //ML_classifier1_LOW = *rv_ML_classifier1_LOW;
+            //ML_classifier2_HIGH = *rv_ML_classifier2_HIGH;
+            //ML_classifier2_LOW = *rv_ML_classifier2_LOW;
+        //}
         if (evt % 2 == 0)
         {
             data_even->Fill();

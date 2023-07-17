@@ -13,7 +13,7 @@ def make_parser():
     parser = ArgumentParser(description="Generate json for submission")
     parser.add_argument("-p", "--paths", type=str, nargs="*",
                         help="Paths containing .root files and goodfiles.txt")
-    parser.add_argument("-y", "--year", type=int, help="2016, 17, or 18")
+    parser.add_argument("-y", "--year", type=str, help="2016, 2016APV, 17, or 18")
     parser.add_argument("-j", "--json", type=str, required=False, default="",
                         help=".json file to append to. If none, new one will be written.")
     return parser
@@ -62,7 +62,7 @@ def read_sumw(gfiles:list,):
     return sum_w
     
 
-def main(paths: list, year: int, jsonfile:str = ""):
+def main(paths: list, year: str, jsonfile:str = ""):
     global broken_dict
     if jsonfile == "":
         jsonfile = f"./{year}.json"
@@ -86,7 +86,7 @@ def main(paths: list, year: int, jsonfile:str = ""):
         else:
             gfiles = parse_goodfile_txt(goodfile) 
         n_files = len(gfiles) 
-        if str(year) in path.name:
+        if year in path.name:
             # Data sample
             d[year][sample]["Path"] = str(path)
             d[year][sample]["Sum_w"] = 1
