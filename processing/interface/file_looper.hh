@@ -33,7 +33,7 @@ class FileLooper {
 private:
 	// Names
 	using LorentzVectorPEP = ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiE4D<float>>;
-	using LorentzVector    = ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float>>;
+	using LorentzVector    = ROOT::Math::LorentzVector<ROOT::Math::PxPyPzM4D<float>>;
 
 	// Variables
     bool _all, _use_deep_csv, _inc_other_regions, _inc_all_jets, _inc_data, _only_kl1, _only_sm_vbf;
