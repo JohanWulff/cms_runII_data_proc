@@ -118,7 +118,7 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     TTreeReaderValue<float> rv_svfit_eta(reader, "tauH_SVFIT_eta");
     TTreeReaderValue<float> rv_svfit_phi(reader, "tauH_SVFIT_phi");
     TTreeReaderValue<float> rv_svfit_mass(reader, "tauH_SVFIT_mass");
-    LorentzVectorPEP pep_svfit;
+    LorentzVectorPEPM pep_svfit;
     LorentzVector svfit;
 
     // l1 feats
