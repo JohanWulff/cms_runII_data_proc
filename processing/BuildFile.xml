@@ -2,7 +2,6 @@
 <use name="rootmath" />
 <use name="PhysicsTools/FWLite" />
 <use name="cms_hh_proc_interface/processing" />
-<use name="HHKinFit2/HHKinFit2" />
 
 <export>
     <lib name="1" />
