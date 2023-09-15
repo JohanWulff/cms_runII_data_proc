@@ -107,10 +107,22 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     int pairType, nleps, nbjetscand, isLeptrigger;
 
     // Tagging
+             "bjet1_pnet_bb", "bjet1_pnet_cc", "bjet1_pnet_b", "bjet1_pnet_c", "bjet1_pnet_g", "bjet1_pnet_uds", "bjet1_pnet_pu", "bjet1_pnet_undef", "bjet1_HHbtag",
+             "bjet2_pt", "bjet2_eta", "bjet2_phi", "bjet2_e", "bjet2_btag_deepFlavor", "bjet2_cID_deepFlavor", "bjet2_pnet_bb", "bjet2_pnet_cc", "bjet2_pnet_b", "bjet2_pnet_c", "bjet2_pnet_g", "bjet2_pnet_uds", "bjet2_pnet_pu", "bjet2_pnet_undef", "bjet2_HHbtag",
+             "pairType", "dau1_decayMode", "dau2_decayMode",
+             "genNu1_pt", "genNu1_eta", "genNu1_phi",  # "genNu1_e",
+             "genNu2_pt", "genNu2_eta", "genNu2_phi",  # "genNu2_e",
+             # "npu", "npv",
+             # "tauH_mass",
+             "DeepMET_ResponseTune_px", "DeepMET_ResponseTune_py", "DeepMET_ResolutionTune_px", "DeepMET_ResolutionTune_py",
+             "recoGenTauH_mass",
+             "EventNumber",
+    TTreeReaderValue<float> rv_b_1_btag(reader, "bjet1_btag_deepFlavor",);
     TTreeReaderValue<float> rv_b_1_csv(reader, "bjet1_bID_deepFlavor");
+    TTreeReaderValue<float> rv_b_1_cID(reader, "bjet1_cID_deepFlavor");
     TTreeReaderValue<float> rv_b_2_csv(reader, "bjet2_bID_deepFlavor");
     TTreeReaderValue<int> rv_is_boosted(reader, "isBoosted");
-    float b_1_csv, b_2_csv;
+    float b_1_csv, b_1_cID, rv_b_1_btag, b_2_csv,
     int is_boosted;
 
     // SVFit feats
@@ -127,19 +139,31 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     TTreeReaderValue<float> rv_l_1_phi(reader, "dau1_phi");
     TTreeReaderValue<float> rv_l_1_e(reader, "dau1_e");
     TTreeReaderValue<float> rv_l_1_iso(reader, "dau1_iso");
+    TTreeReaderValue<float> rv_l_1_dxy(reader, "dau1_dxy");
+    TTreeReaderValue<float> rv_l_1_dz(reader, "dau1_dz",);
     TTreeReaderValue<int> rv_l_1_eleMVAiso(reader, "dau1_eleMVAiso");
+    TTreeReaderValue<int> rv_l_1_charge(reader, "dau1_charge");
+    
     LorentzVectorPEP pep_l_1;
     LorentzVector l_1;
-    float dau1_iso;
-    int dau1_eleMVAiso;
+    float dau1_iso, dau_1dxy, dau1_dz;
+    int dau1_eleMVAiso, dau1_charge;
 
     // l2 feats
     TTreeReaderValue<float> rv_l_2_pT(reader, "dau2_pt");
     TTreeReaderValue<float> rv_l_2_eta(reader, "dau2_eta");
     TTreeReaderValue<float> rv_l_2_phi(reader, "dau2_phi");
     TTreeReaderValue<float> rv_l_2_e(reader, "dau2_e");
+    TTreeReaderValue<float> rv_l_2_iso(reader, "dau2_iso");
+    TTreeReaderValue<float> rv_l_2_dxy(reader, "dau2_dxy");
+    TTreeReaderValue<float> rv_l_2_dz(reader, "dau2_dz",);
+    TTreeReaderValue<int> rv_l_2_charge(reader, "dau2_charge");
+    TTreeReaderValue<int> rv_l_2_eleMVAiso(reader, "dau2_eleMVAiso");
+
     LorentzVectorPEP pep_l_2;
     LorentzVector l_2;
+    float dau2_iso, dau_2dxy, dau2_dz;
+    int dau2_eleMVAiso, dau2_charge;
 
     // MET feats
     TTreeReaderValue<float> rv_met_pT(reader, "met_et"); // seems strange.. I know
@@ -151,6 +175,7 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     LorentzVector met;
 
     // b1 feats
+              "bjet1_pnet_bb", "bjet1_pnet_cc", "bjet1_pnet_b", "bjet1_pnet_c", "bjet1_pnet_g", "bjet1_pnet_uds", "bjet1_pnet_pu", "bjet1_pnet_undef", "bjet1_HHbtag",
     TTreeReaderValue<float> rv_b_1_pT(reader, "bjet1_pt");
     TTreeReaderValue<float> rv_b_1_eta(reader, "bjet1_eta");
     TTreeReaderValue<float> rv_b_1_phi(reader, "bjet1_phi");
