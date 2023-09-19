@@ -1,5 +1,4 @@
 #include "cms_runII_data_proc/processing/interface/file_looper.hh"
-#include "cms_runII_data_proc/processing/interface/kinfitter.hh"
 #include "TH1D.h"
 
 int use_kl = 1;
@@ -106,24 +105,46 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     TTreeReaderValue<int> rv_isLeptrigger(reader, "isLeptrigger");
     int pairType, nleps, nbjetscand, isLeptrigger;
 
+    // DeepMET
+    TTreeReaderValue<float> rv_DeepMET_ResponseTune_px(reader,"DeepMET_ResponseTune_px");
+    TTreeReaderValue<float> rv_DeepMET_ResponseTune_py(reader,"DeepMET_ResponseTune_py");
+    TTreeReaderValue<float> rv_DeepMET_ResolutionTune_px(reader,"DeepMET_ResolutionTune_px");
+    TTreeReaderValue<float> rv_DeepMET_ResolutionTune_py(reader,"DeepMET_ResolutionTune_py");
+
+    // Pnet 
+    TTreeReaderValue<float> rv_bjet1_pnet_bb(reader, "bjet1_pnet_bb");
+    TTreeReaderValue<float> rv_bjet1_pnet_cc(reader, "bjet1_pnet_cc");
+    TTreeReaderValue<float> rv_bjet1_pnet_b(reader, "bjet1_pnet_b");
+    TTreeReaderValue<float> rv_bjet1_pnet_c(reader, "bjet1_pnet_c");
+    TTreeReaderValue<float> rv_bjet1_pnet_g(reader, "bjet1_pnet_g");
+    TTreeReaderValue<float> rv_bjet1_pnet_uds(reader, "bjet1_pnet_uds");
+    TTreeReaderValue<float> rv_bjet1_pnet_pu(reader, "bjet1_pnet_pu");
+    TTreeReaderValue<float> rv_bjet1_pnet_undef(reader, "bjet1_pnet_undef");
+    float bjet1_pnet_bb, bjet1_pnet_cc, bjet1_pnet_b, bjet1_pnet_c;
+    float bjet1_pnet_g, bjet1_pnet_uds, bjet1_pnet_pu, bjet1_pnet_undef;
+
+    // Pnet 
+    TTreeReaderValue<float> rv_bjet2_pnet_bb(reader, "bjet2_pnet_bb");
+    TTreeReaderValue<float> rv_bjet2_pnet_cc(reader, "bjet2_pnet_cc");
+    TTreeReaderValue<float> rv_bjet2_pnet_b(reader, "bjet2_pnet_b");
+    TTreeReaderValue<float> rv_bjet2_pnet_c(reader, "bjet2_pnet_c");
+    TTreeReaderValue<float> rv_bjet2_pnet_g(reader, "bjet2_pnet_g");
+    TTreeReaderValue<float> rv_bjet2_pnet_uds(reader, "bjet2_pnet_uds");
+    TTreeReaderValue<float> rv_bjet2_pnet_pu(reader, "bjet2_pnet_pu");
+    TTreeReaderValue<float> rv_bjet2_pnet_undef(reader, "bjet2_pnet_undef");
+    float bjet2_pnet_bb, bjet2_pnet_cc, bjet2_pnet_b, bjet2_pnet_c;
+    float bjet2_pnet_g, bjet2_pnet_uds, bjet2_pnet_pu, bjet2_pnet_undef;
+
     // Tagging
-             "bjet1_pnet_bb", "bjet1_pnet_cc", "bjet1_pnet_b", "bjet1_pnet_c", "bjet1_pnet_g", "bjet1_pnet_uds", "bjet1_pnet_pu", "bjet1_pnet_undef", "bjet1_HHbtag",
-             "bjet2_pt", "bjet2_eta", "bjet2_phi", "bjet2_e", "bjet2_btag_deepFlavor", "bjet2_cID_deepFlavor", "bjet2_pnet_bb", "bjet2_pnet_cc", "bjet2_pnet_b", "bjet2_pnet_c", "bjet2_pnet_g", "bjet2_pnet_uds", "bjet2_pnet_pu", "bjet2_pnet_undef", "bjet2_HHbtag",
-             "pairType", "dau1_decayMode", "dau2_decayMode",
-             "genNu1_pt", "genNu1_eta", "genNu1_phi",  # "genNu1_e",
-             "genNu2_pt", "genNu2_eta", "genNu2_phi",  # "genNu2_e",
-             # "npu", "npv",
-             # "tauH_mass",
-             "DeepMET_ResponseTune_px", "DeepMET_ResponseTune_py", "DeepMET_ResolutionTune_px", "DeepMET_ResolutionTune_py",
-             "recoGenTauH_mass",
-             "EventNumber",
-    TTreeReaderValue<float> rv_b_1_btag(reader, "bjet1_btag_deepFlavor",);
-    TTreeReaderValue<float> rv_b_1_csv(reader, "bjet1_bID_deepFlavor");
+    TTreeReaderValue<float> rv_b_1_bID(reader, "bjet1_bID_deepFlavor");
     TTreeReaderValue<float> rv_b_1_cID(reader, "bjet1_cID_deepFlavor");
-    TTreeReaderValue<float> rv_b_2_csv(reader, "bjet2_bID_deepFlavor");
+    float b_1_csv, b_1_cID;
+
+    TTreeReaderValue<float> rv_b_2_bID(reader, "bjet2_bID_deepFlavor");
+    TTreeReaderValue<float> rv_b_2_cID(reader, "bjet2_cID_deepFlavor");
+    float b_2_csv, b_2_cID;
+
     TTreeReaderValue<int> rv_is_boosted(reader, "isBoosted");
-    float b_1_csv, b_1_cID, rv_b_1_btag, b_2_csv,
-    int is_boosted;
 
     // SVFit feats
     TTreeReaderValue<float> rv_svfit_pT(reader, "tauH_SVFIT_pt");
@@ -140,14 +161,15 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     TTreeReaderValue<float> rv_l_1_e(reader, "dau1_e");
     TTreeReaderValue<float> rv_l_1_iso(reader, "dau1_iso");
     TTreeReaderValue<float> rv_l_1_dxy(reader, "dau1_dxy");
-    TTreeReaderValue<float> rv_l_1_dz(reader, "dau1_dz",);
+    TTreeReaderValue<float> rv_l_1_dz(reader, "dau1_dz");
     TTreeReaderValue<int> rv_l_1_eleMVAiso(reader, "dau1_eleMVAiso");
     TTreeReaderValue<int> rv_l_1_charge(reader, "dau1_charge");
+    TTreeReaderValue<float> rv_l_1_decayMode(reader, "dau1_decayMode");
     
     LorentzVectorPEP pep_l_1;
     LorentzVector l_1;
-    float dau1_iso, dau_1dxy, dau1_dz;
-    int dau1_eleMVAiso, dau1_charge;
+    float dau1_iso;
+    int dau1_eleMVAiso;
 
     // l2 feats
     TTreeReaderValue<float> rv_l_2_pT(reader, "dau2_pt");
@@ -156,14 +178,13 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     TTreeReaderValue<float> rv_l_2_e(reader, "dau2_e");
     TTreeReaderValue<float> rv_l_2_iso(reader, "dau2_iso");
     TTreeReaderValue<float> rv_l_2_dxy(reader, "dau2_dxy");
-    TTreeReaderValue<float> rv_l_2_dz(reader, "dau2_dz",);
+    TTreeReaderValue<float> rv_l_2_dz(reader, "dau2_dz");
     TTreeReaderValue<int> rv_l_2_charge(reader, "dau2_charge");
     TTreeReaderValue<int> rv_l_2_eleMVAiso(reader, "dau2_eleMVAiso");
+    TTreeReaderValue<float> rv_l_2_decayMode(reader, "dau2_decayMode");
 
     LorentzVectorPEP pep_l_2;
     LorentzVector l_2;
-    float dau2_iso, dau_2dxy, dau2_dz;
-    int dau2_eleMVAiso, dau2_charge;
 
     // MET feats
     TTreeReaderValue<float> rv_met_pT(reader, "met_et"); // seems strange.. I know
@@ -175,7 +196,6 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     LorentzVector met;
 
     // b1 feats
-              "bjet1_pnet_bb", "bjet1_pnet_cc", "bjet1_pnet_b", "bjet1_pnet_c", "bjet1_pnet_g", "bjet1_pnet_uds", "bjet1_pnet_pu", "bjet1_pnet_undef", "bjet1_HHbtag",
     TTreeReaderValue<float> rv_b_1_pT(reader, "bjet1_pt");
     TTreeReaderValue<float> rv_b_1_eta(reader, "bjet1_eta");
     TTreeReaderValue<float> rv_b_1_phi(reader, "bjet1_phi");
@@ -198,6 +218,24 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     float b_2_hhbtag, b_2_cvsl, b_2_cvsb;
     LorentzVectorPEP pep_b_2;
     LorentzVector b_2;
+
+    // Gen Nu
+    TTreeReaderValue<float> rv_genNu1_pt(reader, "genNu1_pt");
+    TTreeReaderValue<float> rv_genNu1_eta(reader, "genNu1_eta");
+    TTreeReaderValue<float> rv_genNu1_phi(reader, "genNu1_phi");
+    TTreeReaderValue<float> rv_genNu1_e(reader, "genNu1_e");
+    LorentzVectorPEP pep_Nu_1;
+    LorentzVector Nu_1;
+
+    TTreeReaderValue<float> rv_genNu2_pt(reader, "genNu2_pt");
+    TTreeReaderValue<float> rv_genNu2_eta(reader, "genNu2_eta");
+    TTreeReaderValue<float> rv_genNu2_phi(reader, "genNu2_phi");
+    TTreeReaderValue<float> rv_genNu2_e(reader, "genNu2_e");
+    LorentzVectorPEP pep_Nu_2;
+    LorentzVector Nu_2;
+
+    //TTreeReaderValue<float> rv_recoGenTauH_mass(reader, "recoGenTauH_mass");
+    //float recoGenTauH_mass;
 
     // VBF trigger
     TTreeReaderValue<int> rv_isVBFtrigger(reader, "isVBFtrigger");
@@ -268,24 +306,6 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     data_even->Branch("RunID", &run);
     data_even->Branch("LuminosityBlock", &lumi);
 
-    data_even->Branch("tauH_mass", &tauH_mass);
-    data_even->Branch("tauH_e", &tauH_e);
-    data_even->Branch("tauH_phi", &tauH_phi);
-    data_even->Branch("tauH_pt", &tauH_pt);
-    data_even->Branch("tauH_eta", &tauH_eta);
-
-    data_even->Branch("bH_mass", &bH_mass);
-    data_even->Branch("bH_e", &bH_e);
-    data_even->Branch("bH_phi", &bH_phi);
-    data_even->Branch("bH_pt", &bH_pt);
-    data_even->Branch("bH_eta", &bH_eta);
-
-    data_even->Branch("HH_mass", &HH_mass);
-    data_even->Branch("HH_e", &HH_e);
-    data_even->Branch("HH_phi", &HH_phi);
-    data_even->Branch("HH_pt", &HH_pt);
-    data_even->Branch("HH_eta", &HH_eta);
-
     // simone's vars
     //data_even->Branch("ML_MassHH_HIGH", &ML_MassHH_HIGH);
     //data_even->Branch("ML_MassHH_LOW", &ML_MassHH_LOW);
@@ -298,30 +318,12 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     //data_even->Branch("ML_classifier2_HIGH",&ML_classifier2_HIGH);
     //data_even->Branch("ML_classifier2_LOW",&ML_classifier2_LOW);
 
-    data_even->Branch("kinfit_mass", &kinfit_mass);
+    //data_even->Branch("kinfit_mass", &kinfit_mass);
     FileLooper::_prep_file(data_odd, feat_vals, &weight, &sample_id, &region_id, &jet_cat, &class_id, &strat_key);
 
     data_odd->Branch("EventID", &evt);
     data_odd->Branch("RunID", &run);
     data_odd->Branch("LuminosityBlock", &lumi);
-
-    data_odd->Branch("tauH_mass", &tauH_mass);
-    data_odd->Branch("tauH_e", &tauH_e);
-    data_odd->Branch("tauH_phi", &tauH_phi);
-    data_odd->Branch("tauH_pt", &tauH_pt);
-    data_odd->Branch("tauH_eta", &tauH_eta);
-
-    data_odd->Branch("bH_mass", &bH_mass);
-    data_odd->Branch("bH_e", &bH_e);
-    data_odd->Branch("bH_phi", &bH_phi);
-    data_odd->Branch("bH_pt", &bH_pt);
-    data_odd->Branch("bH_eta", &bH_eta);
-
-    data_odd->Branch("HH_mass", &HH_mass);
-    data_odd->Branch("HH_e", &HH_e);
-    data_odd->Branch("HH_phi", &HH_phi);
-    data_odd->Branch("HH_pt", &HH_pt);
-    data_odd->Branch("HH_eta", &HH_eta);
 
     //data_odd->Branch("ML_MassHH_HIGH", &ML_MassHH_HIGH);
     //data_odd->Branch("ML_MassHH_LOW", &ML_MassHH_LOW);
@@ -334,7 +336,7 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     //data_odd->Branch("ML_classifier2_HIGH",&ML_classifier2_HIGH);
     //data_odd->Branch("ML_classifier2_LOW",&ML_classifier2_LOW);
 
-    data_odd->Branch("kinfit_mass", &kinfit_mass);
+    //data_odd->Branch("kinfit_mass", &kinfit_mass);
 
     std::cout << "\tprepared.\nBeginning loop.\n";
 
@@ -354,6 +356,7 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
         customTauIdSF = *rv_customTauIdSF;
         DYscale_MTT = *rv_DYscale_MTT;
         IdAndIsoAndFakeSF_deep_pt = *rv_IdAndIsoAndFakeSF_deep_pt;
+
         // calc weight
         weight = 1.0;
         if (sample_id != 0)
@@ -412,12 +415,11 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
             continue;
         }
 
-        is_boosted = *rv_is_boosted;
-        bool boosted = is_boosted != 0;
+        bool boosted = *rv_is_boosted != 0;
 
         // Load tagging
-        b_1_csv = *rv_b_1_csv;
-        b_2_csv = *rv_b_2_csv;
+        b_1_csv = *rv_b_1_bID;
+        b_2_csv = *rv_b_2_bID;
         int num_btag_loose = 0;
         int num_btag_medium = 0;
         if ((b_1_csv > 0.049) ^ (b_2_csv > 0.049))
@@ -473,6 +475,8 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
         pep_b_2.SetCoordinates(*rv_b_2_pT, *rv_b_2_eta, *rv_b_2_phi, *rv_b_2_e);
         pep_vbf_1.SetCoordinates(*rv_vbf_1_pT, *rv_vbf_1_eta, *rv_vbf_1_phi, *rv_vbf_1_e);
         pep_vbf_2.SetCoordinates(*rv_vbf_2_pT, *rv_vbf_2_eta, *rv_vbf_2_phi, *rv_vbf_2_e);
+        pep_Nu_1.SetCoordinates(*rv_genNu1_pt, *rv_genNu1_eta, *rv_genNu1_phi, *rv_genNu1_e);
+        pep_Nu_2.SetCoordinates(*rv_genNu2_pt, *rv_genNu2_eta, *rv_genNu2_phi, *rv_genNu2_e);
 
         svfit.SetCoordinates(pep_svfit.Px(), pep_svfit.Py(), pep_svfit.Pz(), pep_svfit.M());
         l_1.SetCoordinates(pep_l_1.Px(), pep_l_1.Py(), pep_l_1.Pz(), pep_l_1.M());
@@ -482,31 +486,28 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
         b_2.SetCoordinates(pep_b_2.Px(), pep_b_2.Py(), pep_b_2.Pz(), pep_b_2.M());
         vbf_1.SetCoordinates(pep_vbf_1.Px(), pep_vbf_1.Py(), pep_vbf_1.Pz(), pep_vbf_1.M());
         vbf_2.SetCoordinates(pep_vbf_2.Px(), pep_vbf_2.Py(), pep_vbf_2.Pz(), pep_vbf_2.M());
-
+        Nu_1.SetCoordinates(pep_Nu_1.Px(), pep_Nu_1.Py(), pep_Nu_1.Pz(), 0);
+        Nu_2.SetCoordinates(pep_Nu_2.Px(), pep_Nu_2.Py(), pep_Nu_2.Pz(), 0);
         // Convergence
         svfit_conv = *rv_svfit_mass > 0;
         hh_kinfit_conv = kinfit_chi2 > 0;
 
-        _evt_proc->process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit, vbf_1, vbf_2, kinfit_mass, kinfit_chi2, mt2, boosted, b_1_csv, b_2_csv,
-                                  e_channel, e_year, res_mass, spin, klambda, n_vbf, svfit_conv, hh_kinfit_conv, b_1_hhbtag, b_2_hhbtag, vbf_1_hhbtag,
-                                  vbf_2_hhbtag, b_1_cvsl, b_2_cvsl, vbf_1_cvsl, vbf_2_cvsl, b_1_cvsb, b_2_cvsb, vbf_1_cvsb, vbf_2_cvsb, cv, c2v, c3, true);
-        tauH_mass = *rv_tauH_mass;
-        tauH_pt = *rv_tauH_pt;
-        tauH_eta = *rv_tauH_eta;
-        tauH_phi = *rv_tauH_phi;
-        tauH_e = *rv_tauH_e;
-
-        bH_mass = *rv_bH_mass;
-        bH_pt = *rv_bH_pt;
-        bH_eta = *rv_bH_eta;
-        bH_phi = *rv_bH_phi;
-        bH_e = *rv_bH_e;
-
-        HH_mass = *rv_HH_mass;
-        HH_pt = *rv_HH_pt;
-        HH_eta = *rv_HH_eta;
-        HH_phi = *rv_HH_phi;
-        HH_e = *rv_HH_e;
+        _evt_proc->process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit,vbf_1, vbf_2, Nu_1, Nu_2, 
+                                  kinfit_mass, kinfit_chi2, mt2, boosted, b_1_csv, b_2_csv,
+                                  e_channel, e_year, res_mass, spin, klambda, n_vbf, 
+                                  pairType, *rv_l_1_decayMode, *rv_l_2_decayMode, *rv_l_1_charge, *rv_l_2_charge,
+                                  svfit_conv, hh_kinfit_conv, b_1_hhbtag, b_2_hhbtag, vbf_1_hhbtag,
+                                  vbf_2_hhbtag, b_1_cvsl, b_2_cvsl, vbf_1_cvsl, vbf_2_cvsl, 
+                                  b_1_cvsb, b_2_cvsb, vbf_1_cvsb, vbf_2_cvsb, cv, c2v, c3, true,
+                                  *rv_met_pT, *rv_met_phi, 
+                                  *rv_DeepMET_ResponseTune_px, *rv_DeepMET_ResponseTune_py, 
+                                  *rv_DeepMET_ResolutionTune_px, *rv_DeepMET_ResolutionTune_py,
+                                  *rv_bjet1_pnet_bb, *rv_bjet1_pnet_cc, *rv_bjet1_pnet_b, *rv_bjet1_pnet_c,
+                                  *rv_bjet1_pnet_g, *rv_bjet1_pnet_uds, *rv_bjet1_pnet_pu, *rv_bjet1_pnet_undef,
+                                  *rv_b_1_bID, *rv_b_1_cID,
+                                  *rv_bjet2_pnet_bb, *rv_bjet2_pnet_cc, *rv_bjet2_pnet_b, *rv_bjet2_pnet_c,
+                                  *rv_bjet2_pnet_g, *rv_bjet2_pnet_uds, *rv_bjet2_pnet_pu, *rv_bjet2_pnet_undef,
+                                  *rv_b_2_bID, *rv_b_2_cID);
 
         // read simone's vars
         //if (simone_vars == 1){
@@ -591,13 +592,16 @@ void FileLooper::_prep_file(TTree *tree, const std::vector<std::unique_ptr<float
 {
     /* Add branches to tree and set addresses for values */
 
-    for (unsigned int i = 0; i < _n_feats; i++)
+    for (unsigned int i = 0; i < _n_feats; i++){
+        std::cout << _feat_names[i].c_str() << std::endl;
         tree->Branch(_feat_names[i].c_str(), feat_vals[i].get());
+    }
     tree->Branch("weight", weight);
     tree->Branch("sample", sample);
     tree->Branch("region", region_id);
     tree->Branch("jet_cat", jet_cat);
     tree->Branch("strat_key", strat_key);
+    std::cout << "finished prep_file: " << std::endl;
 }
 
 Channel FileLooper::_get_channel(std::string channel)
