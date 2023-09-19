@@ -162,9 +162,9 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     TTreeReaderValue<float> rv_l_1_iso(reader, "dau1_iso");
     TTreeReaderValue<float> rv_l_1_dxy(reader, "dau1_dxy");
     TTreeReaderValue<float> rv_l_1_dz(reader, "dau1_dz");
+    TTreeReaderValue<float> rv_l_1_flav(reader, "dau1_flav");
     TTreeReaderValue<int> rv_l_1_eleMVAiso(reader, "dau1_eleMVAiso");
-    TTreeReaderValue<int> rv_l_1_charge(reader, "dau1_charge");
-    TTreeReaderValue<float> rv_l_1_decayMode(reader, "dau1_decayMode");
+    TTreeReaderValue<int> rv_l_1_decayMode(reader, "dau1_decayMode");
     
     LorentzVectorPEP pep_l_1;
     LorentzVector l_1;
@@ -179,9 +179,8 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     TTreeReaderValue<float> rv_l_2_iso(reader, "dau2_iso");
     TTreeReaderValue<float> rv_l_2_dxy(reader, "dau2_dxy");
     TTreeReaderValue<float> rv_l_2_dz(reader, "dau2_dz");
-    TTreeReaderValue<int> rv_l_2_charge(reader, "dau2_charge");
-    TTreeReaderValue<int> rv_l_2_eleMVAiso(reader, "dau2_eleMVAiso");
-    TTreeReaderValue<float> rv_l_2_decayMode(reader, "dau2_decayMode");
+    TTreeReaderValue<float> rv_l_2_flav(reader, "dau2_flav");
+    TTreeReaderValue<int> rv_l_2_decayMode(reader, "dau2_decayMode");
 
     LorentzVectorPEP pep_l_2;
     LorentzVector l_2;
@@ -495,7 +494,7 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
         _evt_proc->process_to_vec(feat_vals, b_1, b_2, l_1, l_2, met, svfit,vbf_1, vbf_2, Nu_1, Nu_2, 
                                   kinfit_mass, kinfit_chi2, mt2, boosted, b_1_csv, b_2_csv,
                                   e_channel, e_year, res_mass, spin, klambda, n_vbf, 
-                                  pairType, *rv_l_1_decayMode, *rv_l_2_decayMode, *rv_l_1_charge, *rv_l_2_charge,
+                                  pairType, *rv_l_1_decayMode, *rv_l_2_decayMode, *rv_l_1_flav, *rv_l_2_flav,
                                   svfit_conv, hh_kinfit_conv, b_1_hhbtag, b_2_hhbtag, vbf_1_hhbtag,
                                   vbf_2_hhbtag, b_1_cvsl, b_2_cvsl, vbf_1_cvsl, vbf_2_cvsl, 
                                   b_1_cvsb, b_2_cvsb, vbf_1_cvsb, vbf_2_cvsb, cv, c2v, c3, true,
@@ -593,7 +592,6 @@ void FileLooper::_prep_file(TTree *tree, const std::vector<std::unique_ptr<float
     /* Add branches to tree and set addresses for values */
 
     for (unsigned int i = 0; i < _n_feats; i++){
-        std::cout << _feat_names[i].c_str() << std::endl;
         tree->Branch(_feat_names[i].c_str(), feat_vals[i].get());
     }
     tree->Branch("weight", weight);
