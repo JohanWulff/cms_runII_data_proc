@@ -339,24 +339,25 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
         trigSF = *rv_trigSF;
         customTauIdSF = *rv_customTauIdSF;
         DYscale_MTT = *rv_DYscale_MTT;
-        IdAndIsoAndFakeSF_deep_pt = *rv_IdAndIsoAndFakeSF_deep_pt;
-        IdFakeSF_deep_2d = *rv_IdFakeSF_deep_2d;
 
         // calc weight
         weight = 1.0;
         if (sample_id != 0)
         {
             if (year == "2016" || year == "2016APV"){
+                IdAndIsoAndFakeSF_deep_pt = *rv_IdAndIsoAndFakeSF_deep_pt;
                 weight *= MC_weight * trigSF * IdAndIsoAndFakeSF_deep_pt * DYscale_MTT;
                 weight *= bTagweightReshape * PUReweight * PUjetID_SF * L1pref_weight;
                 weight /= sum_w;
             }
             if (year == "2017"){
+                IdAndIsoAndFakeSF_deep_pt = *rv_IdAndIsoAndFakeSF_deep_pt;
                 weight *= MC_weight * trigSF * IdAndIsoAndFakeSF_deep_pt * DYscale_MTT  ;
                 weight *= bTagweightReshape * PUReweight * PUjetID_SF * L1pref_weight * prescaleWeight *  customTauIdSF ;
                 weight /= sum_w;
             }
             if (year == "2018"){
+                IdFakeSF_deep_2d = *rv_IdFakeSF_deep_2d;
                 weight *= MC_weight * trigSF * IdFakeSF_deep_2d;
                 weight *= bTagweightReshape * PUReweight * PUjetID_SF * L1pref_weight * prescaleWeight;
                 weight /= sum_w;
