@@ -54,14 +54,14 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     TTreeReaderValue<float> rv_PUReweight(reader, "PUReweight");
     TTreeReaderValue<float> rv_bTagweightReshape(reader, "bTagweightReshape");
     TTreeReaderValue<float> rv_trigSF(reader, "trigSF");
-    TTreeReaderValue<float> rv_IdAndIsoAndFakeSF_deep_pt(reader, "IdAndIsoAndFakeSF_deep_pt");
+    //TTreeReaderValue<float> rv_IdAndIsoAndFakeSF_deep_pt(reader, "IdAndIsoAndFakeSF_deep_pt");
     TTreeReaderValue<float> rv_IdFakeSF_deep_2d(reader, "IdFakeSF_deep_2d");
-    TTreeReaderValue<float> rv_DYscale_MTT(reader, "DYscale_MTT");
-    TTreeReaderValue<float> rv_customTauIdSF(reader, "customTauIdSF");
+    // TTreeReaderValue<float> rv_DYscale_MTT(reader, "DYscale_MTT");
+    //TTreeReaderValue<float> rv_customTauIdSF(reader, "customTauIdSF");
 
     double weight;
     float bTagweightReshape, PUReweight, PUjetID_SF, L1pref_weight, prescaleWeight, MC_weight;
-    float trigSF, DYscale_MTT, IdAndIsoAndFakeSF_deep_pt, IdFakeSF_deep_2d, customTauIdSF;
+    float trigSF, IdFakeSF_deep_2d;// customTauIdSF; DYscale_MTT, IdAndIsoAndFakeSF_deep_pt
 
     std::cout << " Extracted\n";
 
@@ -161,6 +161,7 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     
     LorentzVectorPEP pep_dau1;
     LorentzVector dau1;
+    float dau1_e;
     float dau1_iso;
     int dau1_eleMVAiso;
 
@@ -337,31 +338,17 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
         prescaleWeight = *rv_prescaleWeight;
         MC_weight = *rv_MC_weight;
         trigSF = *rv_trigSF;
-        customTauIdSF = *rv_customTauIdSF;
-        DYscale_MTT = *rv_DYscale_MTT;
+        IdFakeSF_deep_2d = *rv_IdFakeSF_deep_2d;
+        //customTauIdSF = *rv_customTauIdSF;
+        //DYscale_MTT = *rv_DYscale_MTT;
 
         // calc weight
         weight = 1.0;
         if (sample_id != 0)
         {
-            if (year == "2016" || year == "2016APV"){
-                IdAndIsoAndFakeSF_deep_pt = *rv_IdAndIsoAndFakeSF_deep_pt;
-                weight *= MC_weight * trigSF * IdAndIsoAndFakeSF_deep_pt * DYscale_MTT;
-                weight *= bTagweightReshape * PUReweight * PUjetID_SF * L1pref_weight;
-                weight /= sum_w;
-            }
-            if (year == "2017"){
-                IdAndIsoAndFakeSF_deep_pt = *rv_IdAndIsoAndFakeSF_deep_pt;
-                weight *= MC_weight * trigSF * IdAndIsoAndFakeSF_deep_pt * DYscale_MTT  ;
-                weight *= bTagweightReshape * PUReweight * PUjetID_SF * L1pref_weight * prescaleWeight *  customTauIdSF ;
-                weight /= sum_w;
-            }
-            if (year == "2018"){
-                IdFakeSF_deep_2d = *rv_IdFakeSF_deep_2d;
-                weight *= MC_weight * trigSF * IdFakeSF_deep_2d;
-                weight *= bTagweightReshape * PUReweight * PUjetID_SF * L1pref_weight * prescaleWeight;
-                weight /= sum_w;
-            }
+            weight *= MC_weight * PUReweight * L1pref_weight; 
+            weight *= trigSF * IdFakeSF_deep_2d * prescaleWeight * PUjetID_SF * bTagweightReshape;
+            weight /= sum_w;
         }
 
         // baseline selection
@@ -437,9 +424,17 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
         // Load HL feats
         kinfit_chi2 = *rv_kinfit_chi2;
 
+        if (channel == "muTau") {  // Fix mass for light leptons
+            dau1_e = MU_MASS;
+        } else if (channel == "eTau") {
+            dau1_e = E_MASS;
+        } else {
+            dau1_e = *rv_dau1_e;
+        }
+
         // Load vectors
         pep_svfit.SetCoordinates(*rv_svfit_pT, *rv_svfit_eta, *rv_svfit_phi, *rv_svfit_mass);
-        pep_dau1.SetCoordinates(*rv_dau1_pT, *rv_dau1_eta, *rv_dau1_phi, *rv_dau1_e);
+        pep_dau1.SetCoordinates(*rv_dau1_pT, *rv_dau1_eta, *rv_dau1_phi, dau1_e);
         pep_dau2.SetCoordinates(*rv_dau2_pT, *rv_dau2_eta, *rv_dau2_phi, *rv_dau2_e);
         pep_met.SetCoordinates(*rv_met_eT, 0, *rv_met_phi, 0);
         pep_b_1.SetCoordinates(*rv_b_1_pT, *rv_b_1_eta, *rv_b_1_phi, *rv_b_1_e);
