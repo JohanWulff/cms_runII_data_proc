@@ -21,7 +21,7 @@ FileLooper::~FileLooper()
     delete _evt_proc;
 }
 
-bool FileLooper::loop_file(const std::string &fname, const std::string &oname, const std::string &channel,
+bool FileLooper::loop_file(const std::string &fname, const std::string &oname,
                            const std::string &year, std::string &sample_str, double sum_w,
                            const long int &n_events, const long int &start_evt, const long int &end_evt)
 {
@@ -36,7 +36,6 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
     TTreeReader reader("HTauTauTree", in_file);
 
     // Enums
-    Channel e_channel = FileLooper::_get_channel(channel);
     Year e_year = FileLooper::_get_year(year);
     Spin spin(nonres);
 
@@ -359,7 +358,7 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
         bool pass_baseline;
         bool has_b_pair = true;
 
-        pass_baseline = FileLooper::_apply_baseline(channel, c_event, pairType, nleps, nbjetscand, isLeptrigger);
+        pass_baseline = FileLooper::_apply_baseline(c_event, pairType, nleps, nbjetscand, isLeptrigger);
         if (pass_baseline == 0)
             continue;
         c_event++;
@@ -382,7 +381,7 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
         isOS = *rv_isOS;
         dau1_iso = *rv_dau1_iso;
         dau1_eleMVAiso = *rv_dau1_eleMVAiso;
-        region_id = FileLooper::_get_region(channel, isOS, dau1_deepTauVsJet, dau2_deepTauVsJet, dau1_iso, dau1_eleMVAiso);
+        region_id = FileLooper::_get_region(pairType, isOS, dau1_deepTauVsJet, dau2_deepTauVsJet, dau1_iso, dau1_eleMVAiso);
 
         if (region_id == -1){
             continue;
@@ -419,14 +418,14 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
 
         n_saved_events++;
 
-        strat_key = FileLooper::_get_strat_key(sample_id, jet_cat, e_channel, e_year, region_id);
+        strat_key = FileLooper::_get_strat_key(sample_id, jet_cat, pairType, e_year, region_id);
 
         // Load HL feats
         kinfit_chi2 = *rv_kinfit_chi2;
 
-        if (channel == "muTau") {  // Fix mass for light leptons
+        if (pairType == 0) {  // Fix mass for light leptons
             dau1_e = MU_MASS;
-        } else if (channel == "eTau") {
+        } else if (pairType == 1) {
             dau1_e = E_MASS;
         } else {
             dau1_e = *rv_dau1_e;
@@ -473,7 +472,6 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname, c
                                   *rv_kinfit_chi2,
                                   *rv_mt2,
                                   *rv_is_boosted,
-                                  e_channel,
                                   e_year,
                                   res_mass,
                                   spin,
@@ -679,46 +677,20 @@ int FileLooper::_jet_cat_lookup(const bool has_b_pair, const bool has_vbf_pair, 
     return 0;     // 2j
 }
 
-bool FileLooper::_apply_baseline(std::string channel, int c_event, int pairType, int nleps, int nbjetscand, int isLeptrigger)
+bool FileLooper::_apply_baseline(int c_event, int pairType, int nleps, int nbjetscand, int isLeptrigger)
 {
-    // channel-dependant baseline selection
-    if (channel == "tauTau")
+    if ((nleps == 0) && (nbjetscand > 1) && ((pairType == 2) || (pairType == 1) || (pairType == 0)) && (isLeptrigger == 1))
     {
-        if ((nleps == 0) && (nbjetscand > 1) && (pairType == 2) && (isLeptrigger == 1))
-        {
-            return 1;
-        }
-        else
-            return 0;
-    }
-    else if (channel == "muTau")
-    {
-        if ((nleps == 0) && (nbjetscand > 1) && (pairType == 0) && (isLeptrigger == 1))
-        {
-            return 1;
-        }
-        else
-            return 0;
-    }
-    else if (channel == "eTau")
-    {
-        if ((nleps == 0) && (nbjetscand > 1) && (pairType == 1) && (isLeptrigger == 1))
-        {
-            return 1;
-        }
-        else
-            return 0;
+        return 1;
     }
     else
-    {
-        std::cout << "Specified channel: " << channel << std::endl;
-        throw std::invalid_argument("Channel should either be tauTau, muTau or eTau!");
-    }
+        return 0;
 }
 
-int FileLooper::_get_region(std::string channel, int isOS, float dau1_deepTauVsJet, float dau2_deepTauVsJet, float dau1_iso, float dau1_eleMVAiso)
+int FileLooper::_get_region(int pairType, int isOS, float dau1_deepTauVsJet, float dau2_deepTauVsJet, float dau1_iso, float dau1_eleMVAiso)
 {
-    if (channel == "tauTau")
+    // tautau
+    if (pairType == 2)
     {
         if (isOS != 0 && dau1_deepTauVsJet >= 5 && dau2_deepTauVsJet >= 5){
             //region = "SR"; // signal region: opposite sign, isolated taus
@@ -741,7 +713,8 @@ int FileLooper::_get_region(std::string channel, int isOS, float dau1_deepTauVsJ
             return -1;
         }
     }
-    else if (channel == "muTau")
+    //else if (channel == "muTau")
+    else if (pairType == 0)
     {
         if (isOS != 0 && dau1_iso < 0.15 && dau2_deepTauVsJet >= 5){
             //region = "SR"; // signal region: opposite sign, isolated taus
@@ -764,7 +737,8 @@ int FileLooper::_get_region(std::string channel, int isOS, float dau1_deepTauVsJ
             return -1;
         }
     }
-    else if (channel == "eTau")
+    // else if (channel == "eTau")
+    else if (pairType == 1)
     {
         if (isOS != 0 && dau1_eleMVAiso == 1 && dau2_deepTauVsJet >= 5){
             //region = "SR"; // signal region: opposite sign, isolated taus
@@ -789,8 +763,8 @@ int FileLooper::_get_region(std::string channel, int isOS, float dau1_deepTauVsJ
     }
     else
     {
-        std::cout << "Specified channel: " << channel << std::endl;
-        throw std::invalid_argument("Channel should either be tauTau, muTau or eTau!");
+        std::cout << "Specified pairType: " << pairType << std::endl;
+        throw std::invalid_argument("pairType should be in [0,1,2]!");
     }
 }
 
@@ -1100,16 +1074,16 @@ bool FileLooper::_accept_evt(const int &region_id, const int &jet_cat, const int
     return true;
 }
 
-unsigned long long int FileLooper::_get_strat_key(const int &sample, const int &jet_cat, const Channel &channel, const Year &year, const int &region)
+unsigned long long int FileLooper::_get_strat_key(const int &sample, const int &jet_cat, const int pairType, const Year &year, const int &region)
 {
     unsigned long long int strat_key = std::pow(2, std::abs(sample)) *
                                        std::pow(3, jet_cat) *
-                                       std::pow(5, (float)channel) *
+                                       std::pow(5, (float)pairType) *
                                        std::pow(7, (float)year) *
                                        std::pow(11, region);
     if (strat_key == 0)
     {
-        std::cout << "sample " << sample << " jet_cat " << jet_cat << " channel " << channel << " year " << year << " region " << region << "\n";
+        std::cout << "sample " << sample << " jet_cat " << jet_cat << " pairType " << pairType  << " year " << year << " region " << region << "\n";
         throw std::overflow_error("Strat key overflow\n");
     }
     return strat_key;

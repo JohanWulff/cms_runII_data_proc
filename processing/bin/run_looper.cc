@@ -143,7 +143,7 @@ int main(int argc, char *argv[]) {
                                         "dau2_charge"};
     FileLooper file_looper(false, requested, true, true, false, false, true, true);
     std::cout << "Using sumw of " << std::stof(options["--sum_w"]) << std::endl;
-    bool ok = file_looper.loop_file(options["-i"], options["-o"], options["-c"], options["-y"],
+    bool ok = file_looper.loop_file(options["-i"], options["-o"], options["-y"],
                                     options["--sample"], std::stof(options["--sum_w"]), 
                                     std::stoi(options["-n"]), std::stoi(options["-s"]), std::stoi(options["-e"]));
     if (ok) std::cout << "File loop ran ok!\n";
