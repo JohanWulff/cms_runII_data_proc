@@ -7,7 +7,6 @@ void show_help() {
     /* Show help for input arguments */
 
     std::cout << "-y : Year\n";
-    std::cout << "-c : Channel\n";
     std::cout << "--sample : sample name\n";
     std::cout << "-n : # events, default = -1 (all)\n";
     std::cout << "-s : start event number, default = 0\n";
@@ -21,7 +20,6 @@ std::map<std::string, std::string> get_options(int argc, char* argv[]) {
 
     std::map<std::string, std::string> options;
     options.insert(std::make_pair("-y", "")); // Year
-    options.insert(std::make_pair("-c", "")); // Channel
     options.insert(std::make_pair("--sample", "")); // sample str. 
     options.insert(std::make_pair("--sum_w", "1.0")); // sample sum_w. 
     options.insert(std::make_pair("-n", "-1")); // # events
@@ -64,8 +62,10 @@ int main(int argc, char *argv[]) {
                                         "ll_mt",
                                         "sv_mass",
                                         "dR_l1_l2_x_sv_pT",
-                                        "l_2_pT",
-                                        "l_1_mt",
+                                        "dau1_pT",
+                                        "dau2_pT",
+                                        "dau1_mt",
+                                        "dau2_mt",
                                         "hh_kinfit_chi2",
                                         "hh_kinfit_m",
                                         "diH_mass_met",
@@ -75,7 +75,6 @@ int main(int argc, char *argv[]) {
                                         "dphi_hbb_met",
                                         "res_mass",
                                         "boosted",
-                                        "channel",
                                         "is_vbf",
                                         "spin",
                                         "year",
@@ -94,14 +93,14 @@ int main(int argc, char *argv[]) {
                                         "dau1_px",
                                         "dau1_py",
                                         "dau1_pz",
-                                        "l_1_E",
+                                        "dau1_E",
                                         "dau1_dxy",
                                         "dau1_dz",
                                         "dau1_iso",
                                         "dau2_px",
                                         "dau2_py",
                                         "dau2_pz",
-                                        "l_2_E",
+                                        "dau2_E",
                                         "dau2_dxy",
                                         "dau2_dz",
                                         "dau2_iso",
@@ -111,7 +110,7 @@ int main(int argc, char *argv[]) {
                                         "bjet1_px",
                                         "bjet1_py",
                                         "bjet1_pz",
-                                        "b_1_E",
+                                        "bjet1_E",
                                         "bjet1_bID_deepFlavor",
                                         "bjet1_cID_deepFlavor",
                                         "bjet1_pnet_bb",
@@ -125,7 +124,7 @@ int main(int argc, char *argv[]) {
                                         "bjet2_px",
                                         "bjet2_py",
                                         "bjet2_pz",
-                                        "b_2_E",
+                                        "bjet2_E",
                                         "bjet2_bID_deepFlavor",
                                         "bjet2_cID_deepFlavor",
                                         "bjet2_pnet_bb",
