@@ -139,7 +139,7 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname,
     TTreeReaderValue<int> rv_is_boosted(reader, "isBoosted");
 
     // SVFit feats
-    TTreeReaderValue<float> rv_svfit_pT(reader, "tauH_SVFIT_pt");
+    TTreeReaderValue<float> rv_svfit_pt(reader, "tauH_SVFIT_pt");
     TTreeReaderValue<float> rv_svfit_eta(reader, "tauH_SVFIT_eta");
     TTreeReaderValue<float> rv_svfit_phi(reader, "tauH_SVFIT_phi");
     TTreeReaderValue<float> rv_svfit_mass(reader, "tauH_SVFIT_mass");
@@ -147,7 +147,7 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname,
     LorentzVector svfit;
 
     // l1 feats
-    TTreeReaderValue<float> rv_dau1_pT(reader, "dau1_pt");
+    TTreeReaderValue<float> rv_dau1_pt(reader, "dau1_pt");
     TTreeReaderValue<float> rv_dau1_eta(reader, "dau1_eta");
     TTreeReaderValue<float> rv_dau1_phi(reader, "dau1_phi");
     TTreeReaderValue<float> rv_dau1_e(reader, "dau1_e");
@@ -165,7 +165,7 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname,
     int dau1_eleMVAiso;
 
     // l2 feats
-    TTreeReaderValue<float> rv_dau2_pT(reader, "dau2_pt");
+    TTreeReaderValue<float> rv_dau2_pt(reader, "dau2_pt");
     TTreeReaderValue<float> rv_dau2_eta(reader, "dau2_eta");
     TTreeReaderValue<float> rv_dau2_phi(reader, "dau2_phi");
     TTreeReaderValue<float> rv_dau2_e(reader, "dau2_e");
@@ -188,7 +188,7 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname,
     LorentzVector met;
 
     // b1 feats
-    TTreeReaderValue<float> rv_b_1_pT(reader, "bjet1_pt");
+    TTreeReaderValue<float> rv_b_1_pt(reader, "bjet1_pt");
     TTreeReaderValue<float> rv_b_1_eta(reader, "bjet1_eta");
     TTreeReaderValue<float> rv_b_1_phi(reader, "bjet1_phi");
     TTreeReaderValue<float> rv_b_1_e(reader, "bjet1_e");
@@ -197,7 +197,7 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname,
     LorentzVector b_1;
 
     // b2 feats
-    TTreeReaderValue<float> rv_b_2_pT(reader, "bjet2_pt");
+    TTreeReaderValue<float> rv_b_2_pt(reader, "bjet2_pt");
     TTreeReaderValue<float> rv_b_2_eta(reader, "bjet2_eta");
     TTreeReaderValue<float> rv_b_2_phi(reader, "bjet2_phi");
     TTreeReaderValue<float> rv_b_2_e(reader, "bjet2_e");
@@ -232,7 +232,7 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname,
     TTreeReaderValue<float> rv_VBFjj_deltaEta(reader, "VBFjj_deltaEta");
 
     // vbf1 feats
-    TTreeReaderValue<float> rv_vbf_1_pT(reader, "VBFjet1_pt");
+    TTreeReaderValue<float> rv_vbf_1_pt(reader, "VBFjet1_pt");
     TTreeReaderValue<float> rv_vbf_1_eta(reader, "VBFjet1_eta");
     TTreeReaderValue<float> rv_vbf_1_phi(reader, "VBFjet1_phi");
     TTreeReaderValue<float> rv_vbf_1_e(reader, "VBFjet1_e");
@@ -243,7 +243,7 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname,
     LorentzVector vbf_1;
 
     // vbf2 feats
-    TTreeReaderValue<float> rv_vbf_2_pT(reader, "VBFjet2_pt");
+    TTreeReaderValue<float> rv_vbf_2_pt(reader, "VBFjet2_pt");
     TTreeReaderValue<float> rv_vbf_2_eta(reader, "VBFjet2_eta");
     TTreeReaderValue<float> rv_vbf_2_phi(reader, "VBFjet2_phi");
     TTreeReaderValue<float> rv_vbf_2_e(reader, "VBFjet2_e");
@@ -407,8 +407,8 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname,
 
         bool has_vbf_pair = false;
         if (*rv_isVBF == 1 && *rv_VBFjj_mass > 500 && *rv_VBFjj_deltaEta > 3 &&
-            (((*rv_dau1_pT > 25 && *rv_dau2_pT > 25 && (*rv_dau1_pT <= 40 || *rv_dau2_pT <= 40)) &&
-              *rv_VBFjj_mass > 800 && *rv_vbf_1_pT > 140 && *rv_vbf_2_pT > 60) ||
+            (((*rv_dau1_pt > 25 && *rv_dau2_pt > 25 && (*rv_dau1_pt <= 40 || *rv_dau2_pt <= 40)) &&
+              *rv_VBFjj_mass > 800 && *rv_vbf_1_pt > 140 && *rv_vbf_2_pt > 60) ||
              *rv_isVBFtrigger == 0))
         {
             has_vbf_pair = true;
@@ -432,14 +432,14 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname,
         }
 
         // Load vectors
-        pep_svfit.SetCoordinates(*rv_svfit_pT, *rv_svfit_eta, *rv_svfit_phi, *rv_svfit_mass);
-        pep_dau1.SetCoordinates(*rv_dau1_pT, *rv_dau1_eta, *rv_dau1_phi, dau1_e);
-        pep_dau2.SetCoordinates(*rv_dau2_pT, *rv_dau2_eta, *rv_dau2_phi, *rv_dau2_e);
+        pep_svfit.SetCoordinates(*rv_svfit_pt, *rv_svfit_eta, *rv_svfit_phi, *rv_svfit_mass);
+        pep_dau1.SetCoordinates(*rv_dau1_pt, *rv_dau1_eta, *rv_dau1_phi, dau1_e);
+        pep_dau2.SetCoordinates(*rv_dau2_pt, *rv_dau2_eta, *rv_dau2_phi, *rv_dau2_e);
         pep_met.SetCoordinates(*rv_met_eT, 0, *rv_met_phi, 0);
-        pep_b_1.SetCoordinates(*rv_b_1_pT, *rv_b_1_eta, *rv_b_1_phi, *rv_b_1_e);
-        pep_b_2.SetCoordinates(*rv_b_2_pT, *rv_b_2_eta, *rv_b_2_phi, *rv_b_2_e);
-        pep_vbf_1.SetCoordinates(*rv_vbf_1_pT, *rv_vbf_1_eta, *rv_vbf_1_phi, *rv_vbf_1_e);
-        pep_vbf_2.SetCoordinates(*rv_vbf_2_pT, *rv_vbf_2_eta, *rv_vbf_2_phi, *rv_vbf_2_e);
+        pep_b_1.SetCoordinates(*rv_b_1_pt, *rv_b_1_eta, *rv_b_1_phi, *rv_b_1_e);
+        pep_b_2.SetCoordinates(*rv_b_2_pt, *rv_b_2_eta, *rv_b_2_phi, *rv_b_2_e);
+        pep_vbf_1.SetCoordinates(*rv_vbf_1_pt, *rv_vbf_1_eta, *rv_vbf_1_phi, *rv_vbf_1_e);
+        pep_vbf_2.SetCoordinates(*rv_vbf_2_pt, *rv_vbf_2_eta, *rv_vbf_2_phi, *rv_vbf_2_e);
         pep_Nu_1.SetCoordinates(*rv_genNu1_pt, *rv_genNu1_eta, *rv_genNu1_phi, *rv_genNu1_e);
         pep_Nu_2.SetCoordinates(*rv_genNu2_pt, *rv_genNu2_eta, *rv_genNu2_phi, *rv_genNu2_e);
 
