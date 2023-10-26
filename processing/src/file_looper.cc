@@ -684,33 +684,30 @@ bool FileLooper::_apply_baseline(std::string channel, int c_event, int pairType,
     // channel-dependant baseline selection
     if (channel == "tauTau")
     {
-        if (nleps != 0 || nbjetscand < 2 || pairType != 2 || isLeptrigger != 1)
+        if ((nleps == 0) && (nbjetscand > 1) && (pairType == 2) && (isLeptrigger == 1))
         {
-            c_event++;
-            return 0;
+            return 1;
         }
         else
-            return 1;
+            return 0;
     }
     else if (channel == "muTau")
     {
-        if (nleps != 0 || nbjetscand < 2 || pairType != 0 || isLeptrigger != 1)
+        if ((nleps == 0) && (nbjetscand > 1) && (pairType == 0) && (isLeptrigger == 1))
         {
-            c_event++;
-            return 0;
+            return 1;
         }
         else
-            return 1;
+            return 0;
     }
     else if (channel == "eTau")
     {
-        if (nleps != 0 || nbjetscand < 2 || pairType != 1 || isLeptrigger != 1)
+        if ((nleps == 0) && (nbjetscand > 1) && (pairType == 1) && (isLeptrigger == 1))
         {
-            c_event++;
-            return 0;
+            return 1;
         }
         else
-            return 1;
+            return 0;
     }
     else
     {
