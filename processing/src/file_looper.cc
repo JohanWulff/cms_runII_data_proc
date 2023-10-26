@@ -305,9 +305,9 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname,
     //data_even->Branch("kinfit_mass", &kinfit_mass);
     FileLooper::_prep_file(data_odd, feat_vals, &weight, &sample_id, &region_id, &jet_cat, &class_id, &strat_key);
 
-    data_odd->Branch("EventID", &evt);
-    data_odd->Branch("RunID", &run);
-    data_odd->Branch("LuminosityBlock", &lumi);
+    data_odd->Branch("EventNumber", &evt);
+    data_odd->Branch("RunNumber", &run);
+    data_odd->Branch("lumi", &lumi);
 
     //data_odd->Branch("ML_MassHH_HIGH", &ML_MassHH_HIGH);
     //data_odd->Branch("ML_MassHH_LOW", &ML_MassHH_LOW);
