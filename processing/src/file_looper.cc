@@ -100,6 +100,7 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname,
     TTreeReaderValue<int> rv_nbjetscand(reader, "nbjetscand");
     TTreeReaderValue<int> rv_isLeptrigger(reader, "isLeptrigger");
     int pairType, nleps, nbjetscand, isLeptrigger;
+    bool pass_baseline;
 
     // DeepMET
     TTreeReaderValue<float> rv_DeepMET_ResponseTune_px(reader,"DeepMET_ResponseTune_px");
@@ -130,11 +131,11 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname,
     // Tagging
     TTreeReaderValue<float> rv_b_1_bID(reader, "bjet1_bID_deepFlavor");
     TTreeReaderValue<float> rv_b_1_cID(reader, "bjet1_cID_deepFlavor");
-    float b_1_csv;
+    float bjet1_bID_deepFlavor;
 
     TTreeReaderValue<float> rv_b_2_bID(reader, "bjet2_bID_deepFlavor");
     TTreeReaderValue<float> rv_b_2_cID(reader, "bjet2_cID_deepFlavor");
-    float b_2_csv;
+    float bjet2_bID_deepFlavor;
 
     TTreeReaderValue<int> rv_is_boosted(reader, "isBoosted");
 
@@ -286,10 +287,15 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname,
     TTree *data_odd = new TTree("data_1", "Odd id data");
     FileLooper::_prep_file(data_even, feat_vals, &weight, &sample_id, &region_id, &jet_cat, &class_id, &strat_key);
 
-    data_even->Branch("EventID", &evt);
-    data_even->Branch("RunID", &run);
-    data_even->Branch("LuminosityBlock", &lumi);
+    data_even->Branch("EventNumber", &evt);
+    data_even->Branch("RunNumber", &run);
+    data_even->Branch("lumi", &lumi);
 
+    data_even->Branch("nleps", &nleps);
+    data_even->Branch("nbjetscand", &nbjetscand);
+    data_even->Branch("pairType", &pairType);
+    data_even->Branch("isLeptrigger", &isLeptrigger);
+    //data_even->Branch("pass_baseline", &pass_baseline);
     // simone's vars
     //data_even->Branch("ML_MassHH_HIGH", &ML_MassHH_HIGH);
     //data_even->Branch("ML_MassHH_LOW", &ML_MassHH_LOW);
@@ -309,6 +315,12 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname,
     data_odd->Branch("RunNumber", &run);
     data_odd->Branch("lumi", &lumi);
 
+    data_odd->Branch("nleps", &nleps);
+    data_odd->Branch("nbjetscand", &nbjetscand);
+    data_odd->Branch("pairType", &pairType);
+    data_odd->Branch("isLeptrigger", &isLeptrigger);
+
+    //data_odd->Branch("pass_baseline", &pass_baseline);
     //data_odd->Branch("ML_MassHH_HIGH", &ML_MassHH_HIGH);
     //data_odd->Branch("ML_MassHH_LOW", &ML_MassHH_LOW);
     //data_odd->Branch("ML_MassTauTau_HIGH", &ML_MassTauTau_HIGH);
@@ -355,7 +367,6 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname,
         nleps = *rv_nleps;
         nbjetscand = *rv_nbjetscand;
         isLeptrigger = *rv_isLeptrigger;
-        bool pass_baseline;
         bool has_b_pair = true;
 
         pass_baseline = FileLooper::_apply_baseline(c_event, pairType, nleps, nbjetscand, isLeptrigger);
@@ -383,24 +394,24 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname,
         dau1_eleMVAiso = *rv_dau1_eleMVAiso;
         region_id = FileLooper::_get_region(pairType, isOS, dau1_deepTauVsJet, dau2_deepTauVsJet, dau1_iso, dau1_eleMVAiso);
 
-        if (region_id == -1){
-            continue;
-        }
+        //if (region_id == -1){
+        //    continue;
+        //}
 
         bool boosted = *rv_is_boosted != 0;
 
         // Load tagging
-        b_1_csv = *rv_b_1_bID;
-        b_2_csv = *rv_b_2_bID;
+        bjet1_bID_deepFlavor = *rv_b_1_bID;
+        bjet2_bID_deepFlavor = *rv_b_2_bID;
         int num_btag_loose = 0;
         int num_btag_medium = 0;
-        if ((b_1_csv > 0.049) ^ (b_2_csv > 0.049))
+        if ((bjet1_bID_deepFlavor > 0.049) ^ (bjet2_bID_deepFlavor > 0.049))
             num_btag_loose = 1;
-        if ((b_1_csv > 0.049) && (b_2_csv > 0.049))
+        if ((bjet1_bID_deepFlavor > 0.049) && (bjet2_bID_deepFlavor > 0.049))
             num_btag_loose = 2;
-        if ((b_1_csv > 0.2783) ^ (b_2_csv > 0.2783))
+        if ((bjet1_bID_deepFlavor > 0.2783) ^ (bjet2_bID_deepFlavor > 0.2783))
             num_btag_medium = 1;
-        if ((b_1_csv > 0.2783) && (b_2_csv > 0.2783))
+        if ((bjet1_bID_deepFlavor > 0.2783) && (bjet2_bID_deepFlavor > 0.2783))
             num_btag_medium = 2;
 
         // VBF
@@ -681,10 +692,10 @@ bool FileLooper::_apply_baseline(int c_event, int pairType, int nleps, int nbjet
 {
     if ((nleps == 0) && (nbjetscand > 1) && ((pairType == 2) || (pairType == 1) || (pairType == 0)) && (isLeptrigger == 1))
     {
-        return 1;
+        return true;
     }
     else
-        return 0;
+        return false;
 }
 
 int FileLooper::_get_region(int pairType, int isOS, float dau1_deepTauVsJet, float dau2_deepTauVsJet, float dau1_iso, float dau1_eleMVAiso)
@@ -763,6 +774,7 @@ int FileLooper::_get_region(int pairType, int isOS, float dau1_deepTauVsJet, flo
     }
     else
     {
+        //return -2;
         std::cout << "Specified pairType: " << pairType << std::endl;
         throw std::invalid_argument("pairType should be in [0,1,2]!");
     }
