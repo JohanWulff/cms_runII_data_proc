@@ -137,7 +137,7 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname,
     TTreeReaderValue<float> rv_b_2_cID(reader, "bjet2_cID_deepFlavor");
     float bjet2_bID_deepFlavor;
 
-    TTreeReaderValue<int> rv_is_boosted(reader, "isBoosted");
+    TTreeReaderValue<int> rv_isBoosted(reader, "isBoosted");
 
     // SVFit feats
     TTreeReaderValue<float> rv_svfit_pt(reader, "tauH_SVFIT_pt");
@@ -398,7 +398,7 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname,
         //    continue;
         //}
 
-        bool boosted = *rv_is_boosted != 0;
+        bool isBoosted = *rv_isBoosted != 0;
 
         // Load tagging
         bjet1_bID_deepFlavor = *rv_b_1_bID;
@@ -425,7 +425,7 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname,
             has_vbf_pair = true;
         }
         n_vbf = has_vbf_pair ? 2 : 0;
-        jet_cat = FileLooper::_jet_cat_lookup(has_b_pair, has_vbf_pair, boosted, num_btag_loose, num_btag_medium);
+        jet_cat = FileLooper::_jet_cat_lookup(has_b_pair, has_vbf_pair, isBoosted, num_btag_loose, num_btag_medium);
 
         n_saved_events++;
 
@@ -482,7 +482,7 @@ bool FileLooper::loop_file(const std::string &fname, const std::string &oname,
                                   *rv_kinfit_mass,
                                   *rv_kinfit_chi2,
                                   *rv_mt2,
-                                  *rv_is_boosted,
+                                  *rv_isBoosted,
                                   e_year,
                                   res_mass,
                                   spin,
@@ -665,19 +665,19 @@ Year FileLooper::_get_year(std::string year)
     }
     else if (year == "2016APV")
     {
-        return Year(y17);
+        return Year(y16APV);
     }
     throw std::invalid_argument("Invalid year: options are 2016, 2017, 2018");
     return Year(y16);
 }
 
-int FileLooper::_jet_cat_lookup(const bool has_b_pair, const bool has_vbf_pair, const bool is_boosted, const int num_btag_Loose, const int num_btag_Medium)
+int FileLooper::_jet_cat_lookup(const bool has_b_pair, const bool has_vbf_pair, const bool isBoosted, const int num_btag_Loose, const int num_btag_Medium)
 {
     if (!has_b_pair)
         return -1;
     if (has_vbf_pair && num_btag_Loose >= 1)
         return 5; // 2j1b+_VBFL, 2j1b+_VBF, 2j1b+_VBFT
-    if (!has_vbf_pair && is_boosted && num_btag_Loose >= 2)
+    if (!has_vbf_pair && isBoosted && num_btag_Loose >= 2)
         return 4; // 2j2Lb+B_noVBF
     if (!has_vbf_pair && num_btag_Medium >= 2)
         return 3; // 2j2b+R_noVBF
